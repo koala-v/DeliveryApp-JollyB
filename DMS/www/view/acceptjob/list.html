@@ -1,0 +1,36 @@
+<ion-view title="AcceptJob-List">
+    <ion-header-bar align-title="center" no-tap-scroll=true class="bar-positive">
+        <div class="buttons">
+            <button class="button button-icon button-clear ion-android-arrow-back" ng-click="returnSearch()"></button>
+        </div>
+        <h1 class="title"><span ng-bind="List.BookingNo"></span></h1>
+    </ion-header-bar>
+    <ion-content>
+        <div style="height: 43px;"></div>
+        <div class="list">
+            <ion-item class="item" ng-repeat="job in jobs" ng-click="gotoDetail(job)">
+                <div class="row">
+					<div class="col col-40">
+						<p><span ng-bind="job.action"></span>&nbsp;&nbsp;<span ng-bind="job.amt"></span></p>
+						<p><span ng-bind="job.time"></span></p>
+						<p><span ng-bind="job.code"></span></p>
+					</div>
+					<div class="col">
+						<p><span ng-bind="job.customer.name"></span></p>
+						<p><span ng-bind="job.customer.address"></span></p>
+					</div>
+				</div>
+            </ion-item>
+        </div>
+    </ion-content>
+    <ion-footer-bar class="bar-positive hide-on-keyboard-open">
+        <div class="row" style="padding: 0px;">
+            <button class="col button" ng-click="save()">
+                <i class="icon ion-android-done"></i>&nbsp;&nbsp;OK
+            </button>
+            <button class="col button" ng-click="returnSearch()">
+                <i class="icon ion-arrow-return-right"></i>&nbsp;&nbsp;Cancel
+            </button>
+        </div>
+    </ion-footer-bar>
+</ion-view>

@@ -1,85 +1,132 @@
-// Ionic Starter App
-
-// angular.module is a global place for creating, registering and retrieving Angular modules
-// 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
-// the 2nd parameter is an array of 'requires'
-// 'starter.services' is found in services.js
-// 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
-
-.run(function($ionicPlatform) {
-  $ionicPlatform.ready(function() {
-    // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
-    // for form inputs)
-    if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
-      cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
-      cordova.plugins.Keyboard.disableScroll(true);
-
-    }
-    if (window.StatusBar) {
-      // org.apache.cordova.statusbar required
-      StatusBar.styleDefault();
-    }
-  });
-})
-
-.config(function($stateProvider, $urlRouterProvider) {
-
-  // Ionic uses AngularUI Router which uses the concept of states
-  // Learn more here: https://github.com/angular-ui/ui-router
-  // Set up the various states which the app can be in.
-  // Each state's controller can be found in controllers.js
-  $stateProvider
-
-  // setup an abstract state for the tabs directive
-    .state('tab', {
-    url: '/tab',
-    abstract: true,
-    templateUrl: 'templates/tabs.html'
-  })
-
-  // Each tab has its own nav history stack:
-
-  .state('tab.dash', {
-    url: '/dash',
-    views: {
-      'tab-dash': {
-        templateUrl: 'templates/tab-dash.html',
-        controller: 'DashCtrl'
-      }
-    }
-  })
-
-  .state('tab.chats', {
-      url: '/chats',
-      views: {
-        'tab-chats': {
-          templateUrl: 'templates/tab-chats.html',
-          controller: 'ChatsCtrl'
-        }
-      }
-    })
-    .state('tab.chat-detail', {
-      url: '/chats/:chatId',
-      views: {
-        'tab-chats': {
-          templateUrl: 'templates/chat-detail.html',
-          controller: 'ChatDetailCtrl'
-        }
-      }
-    })
-
-  .state('tab.account', {
-    url: '/account',
-    views: {
-      'tab-account': {
-        templateUrl: 'templates/tab-account.html',
-        controller: 'AccountCtrl'
-      }
-    }
-  });
-
-  // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/tab/dash');
-
+'use strict';
+var app = angular.module('DMS', [
+    'ionic',
+    'ionic-datepicker',
+    'jett.ionic.filter.bar',
+    'ionic.ion.headerShrink',
+    'ionMdInput',
+    'ngMessages',
+    'ngCordova.plugins.sms',
+    'ngCordova.plugins.toast',
+    'ngCordova.plugins.dialogs',
+    'ngCordova.plugins.appVersion',
+    'ngCordova.plugins.file',
+    'ngCordova.plugins.fileTransfer',
+    'ngCordova.plugins.fileOpener2',
+    'ngCordova.plugins.actionSheet',
+    'ngCordova.plugins.inAppBrowser',
+    'ngCordova.plugins.actionSheet',
+    'DMS.config',
+    'DMS.services'
+]);
+app.run(['$ionicPlatform', '$rootScope', '$state', '$location', '$timeout', '$ionicHistory', '$ionicLoading', '$cordovaToast',
+    function ($ionicPlatform, $rootScope, $state, $location, $timeout, $ionicHistory, $ionicLoading, $cordovaToast) {
+        $ionicPlatform.ready(function () {
+            // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
+            // for form inputs)
+            if (window.cordova && window.cordova.plugins.Keyboard) {
+                cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
+                cordova.plugins.Keyboard.disableScroll(true);
+            }
+            if (window.StatusBar) {
+                // org.apache.cordova.statusbar required
+                StatusBar.styleDefault();
+            }
+        });
+        $ionicPlatform.registerBackButtonAction(function (e) {
+            e.preventDefault();
+            // Is there a page to go back to?  $state.include ??
+            if ($state.includes('index.main') || $state.includes('index.login') || $state.includes('splash')) {
+                if ($rootScope.backButtonPressedOnceToExit) {
+                    ionic.Platform.exitApp();
+                } else {
+                    $rootScope.backButtonPressedOnceToExit = true;
+                    $cordovaToast.showShortBottom('Press again to exit.');
+                    setTimeout(function () {
+                        $rootScope.backButtonPressedOnceToExit = false;
+                    }, 2000);
+                }
+            } else if ($ionicHistory.backView()) {
+                $ionicHistory.goBack();
+            } else {
+                // This is the last page: Show confirmation popup
+                $rootScope.backButtonPressedOnceToExit = true;
+                $cordovaToast.showShortBottom('Press again to exit.');
+                setTimeout(function () {
+                    $rootScope.backButtonPressedOnceToExit = false;
+                }, 2000);
+            }
+            return false;
+        }, 101);
+    }]);
+app.config(['ENV', '$stateProvider', '$urlRouterProvider', '$ionicConfigProvider', '$ionicFilterBarConfigProvider',
+    function (ENV, $stateProvider, $urlRouterProvider, $ionicConfigProvider, $ionicFilterBarConfigProvider) {
+        $ionicConfigProvider.backButton.previousTitleText(false);
+        $stateProvider
+            .state( 'index', {
+                url: '',
+                abstract: true,
+                templateUrl: 'view//menu/menu.html',
+                controller: 'IndexCtrl'
+            } )
+            .state('splash', {
+                url: '/splash',
+                cache: 'false',
+                templateUrl: 'view/splash/splash.html',
+                controller: 'SplashCtrl'
+            })
+            .state('index.login', {
+                url: '/login',
+                views: {
+                    'menuContent': {
+                        templateUrl: 'view/login/login.html',
+                        controller: 'LoginCtrl'
+                    }
+                }
+            })
+            .state('index.main', {
+                url: '/main',
+                views: {
+                    'menuContent': {
+                        templateUrl: "view/main/main.html",
+                        controller: 'MainCtrl'
+                    }
+                }
+            })
+            .state('acceptJob', {
+                url: '/acceptjob/search',
+                cache: 'false',
+                templateUrl: 'view/acceptjob/search.html',
+                controller: 'AcceptJobCtrl'
+            })
+            .state('acceptJobList', {
+                url: '/acceptjob/list',
+                cache: 'false',
+                templateUrl: 'view/acceptjob/list.html',
+                controller: 'AcceptJobListCtrl'
+            })
+            .state('jobListing', {
+                url: '/joblisting/search',
+                cache: 'false',
+                templateUrl: 'view/joblisting/search.html',
+                controller: 'JoblistingCtrl'
+            })
+            .state('jobListingList', {
+                url: '/joblisting/list',
+                cache: 'false',
+                templateUrl: 'view/joblisting/list.html',
+                controller: 'JoblistingListCtrl'
+            });
+        $urlRouterProvider.otherwise('/splash');
+        /*
+        $ionicFilterBarConfigProvider.theme('calm');
+        $ionicFilterBarConfigProvider.clear('ion-close');
+        $ionicFilterBarConfigProvider.search('ion-search');
+        $ionicFilterBarConfigProvider.backdrop(false);
+        $ionicFilterBarConfigProvider.transition('vertical');
+        $ionicFilterBarConfigProvider.placeholder('Filter');
+        */
+    }]);
+app.constant('$ionicLoadingConfig', {
+    template: '<div class="loader"><svg class="circular"><circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10"/></svg></div>'
 });
