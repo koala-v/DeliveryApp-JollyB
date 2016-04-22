@@ -45,7 +45,7 @@ app.controller('JoblistingListCtrl',
                 time : '11:00 - 13:00',
                 code : 'PC 603234',
                 customer : {
-                    name : 'John Tan',
+                    name : 'Kenny Wong',
                     address : '32 Jurong East...'
                 },
                 status : {
@@ -75,7 +75,7 @@ app.controller('JoblistingListCtrl',
                 time : '14:00 - 16:00',
                 code : 'PC 643456',
                 customer : {
-                    name : 'John Tan',
+                    name : 'Lim Soon Hock',
                     address : '165 Jurong North...'
                 },
                 status : {
@@ -94,5 +94,53 @@ app.controller('JoblistingListCtrl',
             $state.go('jobListingDetail', {}, {
                 reload: true
             });
+        };
+    }]);
+app.controller('JoblistingDetailCtrl',
+    ['$scope','$state',
+    function ($scope, $state) {
+        $scope.gotoConfirm = function() {
+            $state.go('jobListingConfirm', {}, {
+                reload: true
+            });
+        };
+        $scope.returnList = function() {
+            $state.go('jobListingList', {}, {
+                reload: true
+            });
+        };
+    }]);
+app.controller('JoblistingConfirmCtrl',
+    ['$scope','$state',
+    function ($scope, $state) {
+        $scope.returnList = function() {
+            $state.go('jobListingList', {}, {
+                reload: true
+            });
+        };
+        $scope.returnDetail = function() {
+            $state.go('jobListingDetail', {}, {
+                reload: true
+            });
+        };
+        var canvas = document.getElementById( 'signatureCanvas' );
+        resizeCanvas();
+        var signaturePad = new SignaturePad( canvas );
+        //signaturePad.backgroundColor = "white";
+        //signaturePad.minWidth = 2;
+        //signaturePad.maxWidth = 4.5;
+        $scope.clearCanvas = function() {
+          $scope.signature = null;
+          signaturePad.clear();
+        }
+        $scope.saveCanvas = function() {
+          var sigImg = signaturePad.toDataURL();
+          $scope.signature = sigImg;
+        }
+
+        function resizeCanvas() {
+          var ratio = window.devicePixelRatio || 1;
+          canvas.width = window.innerWidth - 50;
+          canvas.height = window.innerHeight / 4 - 50;
         };
     }]);

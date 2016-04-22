@@ -20,8 +20,13 @@
 						<p><span ng-bind="job.customer.address"></span></p>
 					</div>
                     <div class="col col-10">
-                        <i class="icon ion-android-done" ng-if="job.status.success"></i>
-                        <i class="icon ion-android-refresh" ng-if="job.status.inprocess"></i>
+                        <p>
+                            &nbsp;
+                        </p>
+                        <p>
+                            <i class="icon ion-android-done" ng-if="job.status.success"></i>
+                            <i class="icon ion-android-refresh" ng-if="job.status.inprocess"></i>
+                        </p>
 					</div>
 				</div>
             </ion-item>

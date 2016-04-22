@@ -5,13 +5,13 @@ ion-content {
     top: 0 !important;
 }
 .s-green {
-    background-color:green;
+    background-color: #009900;
 }
 .s-green p {
     color : #fff;
 }
 .s-red {
-    background-color:red;
+    background-color: #ff3333;
 }
 .s-red p {
     color : #fff;
