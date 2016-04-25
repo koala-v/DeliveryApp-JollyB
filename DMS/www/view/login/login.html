@@ -1,0 +1,40 @@
+<ion-view title="Login">
+    <ion-nav-buttons>
+        <button class="button button-icon icon ion-navicon" menu-toggle="left"></button>
+    </ion-nav-buttons>
+    <ion-nav-title>
+    </ion-nav-title>
+    <ion-nav-bar style="background-color:#fff;">
+    </ion-nav-bar>
+	<ion-pane>
+        <div style="height: 44px"></div>
+        <div style="text-align:center; margin-left:auto; margin-right:auto;">
+			<img src="./img/TMS-logo.jpg" width="120px;" height="120px;">
+		</div>
+		<div class="list list-inset">
+            <div class="item item-divider">
+                <span>Driver ID</span>
+            </div>
+            <label class="item item-input">
+                <i class="icon ion-android-person placeholder-icon"></i>&nbsp;&nbsp;
+                <input type="text" id="iDriverId" placeholder="" required ng-model="logininfo.strDriverId">
+            </label>
+			<button class="button button-block button-positive" ng-click="funcLogin(false)">SIGN IN</button>
+		</div>
+        <div class="list list-inset">
+            <a class="button button-small button-clear button-positive pull-right">
+                Forgot password ?
+            </a>
+        </div>
+        <div class="list list-inset" style="margin-top:1em;">
+			<button class="button button-block button-outline button-stable" ng-click="funcLogin(true)">
+                Don't have Driver ID ? Click here.
+            </button>
+        </div>
+        <div class="bar bar-footer bar-light">
+          <div class="title">
+              <span class="h6" style="color:#b2b2b2;">&copy; 2016 SysMagic</span>
+          </div>
+        </div>
+	</ion-pane>
+</ion-view>
