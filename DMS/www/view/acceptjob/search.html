@@ -3,21 +3,60 @@
         <div class="buttons">
             <button class="button button-icon button-clear ion-android-arrow-back" ng-click="returnMain()"></button>
         </div>
-        <h1 class="title">Scan Job</h1>
+        <h1 class="title">Accept Job</h1>
     </ion-header-bar>
-    <ion-pane>
+    <ion-pane style="height:110px; overflow:visible;">
         <div style="height: 43px;"></div>
-        <ion-list>
-            <div class="card">
-                <div class="item">
-                    <ion-md-input type="text" id="iBookingNo" class="pull-left" style="width:80%;" placeholder="Scan Booking No To Accept" highlight-color="balanced" ng-model="Search.BookingNo"></ion-md-input>
-                    <div style="width:20%;position:relative;">
-                        <button class="button button-clear" style="position:absolute; top:50%; margin-top:12px;" ng-click="gotoList()">
-                            <i class="icon iconfont ion-android-search"></i>
-                        </button>
+        <div class="card" style="margin: 10px 10px;">
+            <div class="item" style="padding: 2px;">
+                <!--ion-md-input type="text" id="iBookingNo" class="pull-left" style="width:80%;" placeholder="Scan Booking No To Accept" highlight-color="balanced" ng-model="Search.BookingNo"></ion-md-input>
+                <div style="width:20%;position:relative;">
+                    <button class="button button-clear" style="position:absolute; top:50%; margin-top:12px;" ng-click="openCam()">
+                        <i class="icon iconfont ion-qr-scanner"></i>
+                    </button>
+                </div-->
+                <div class="row">
+                    <div class="col col-80" style="padding:0px;">
+                        <label class="item item-input" style="padding-left: 0px;">
+                            <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Booking No.&nbsp;</span>
+                            <input type="text" id="txt-bookingno" ng-model="Search.BookingNo" style="padding-right: 14px;">
+                        </label>
+                    </div>
+                    <div class="col col-10">
+                        <button class="button button-clear button-small" ng-click="openCam()"><i class="icon ion-qr-scanner"></i></button>
+                    </div>
+                    <div class="col">
+                        <button class="button button-clear button-small" ng-click="clearInput()"><i class="icon ion-android-close"></i></button>
                     </div>
                 </div>
             </div>
-        </ion-list>
+        </div>
     </ion-pane>
+    <ion-content style="margin-top:110px;">
+        <ion-list tabindex="-1" id="div-list">
+            <ion-item class="item" ng-repeat="job in jobs" ng-click="gotoDetail(job)">
+                <div class="row">
+					<div class="col col-40">
+						<p><span ng-bind="job.action"></span>&nbsp;&nbsp;<span ng-bind="job.amt"></span></p>
+						<p><span ng-bind="job.time"></span></p>
+						<p><span ng-bind="job.code"></span></p>
+					</div>
+					<div class="col">
+						<p><span ng-bind="job.customer.name"></span></p>
+						<p><span ng-bind="job.customer.address"></span></p>
+					</div>
+				</div>
+            </ion-item>
+        </ion-list>
+    </ion-content>
+    <ion-footer-bar class="bar-positive hide-on-keyboard-open">
+        <div class="row" style="padding: 0px;">
+            <button class="col button" ng-click="save()">
+                <i class="icon ion-android-done"></i>&nbsp;&nbsp;OK
+            </button>
+            <button class="col button" ng-click="returnMain()">
+                <i class="icon ion-arrow-return-right"></i>&nbsp;&nbsp;Cancel
+            </button>
+        </div>
+    </ion-footer-bar>
 </ion-view>

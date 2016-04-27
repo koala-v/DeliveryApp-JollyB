@@ -1,5 +1,5 @@
 //'use strict';
-var appDirectives = angular.module('DMS.directives', []);
+var appDirectives = angular.module('TMS.directives', []);
 // appDirectives.directive('dateFormat', ['$filter', function ($filter) {
 //     var dateFilter = $filter('date');
 //     return {

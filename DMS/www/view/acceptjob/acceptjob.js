@@ -1,26 +1,10 @@
 'use strict';
 app.controller('AcceptJobCtrl',
-    ['$scope','$state',
-    function ($scope, $state) {
+    ['$scope','$state', '$ionicPopup', '$cordovaKeyboard', '$cordovaBarcodeScanner', 'ApiService',
+    function ($scope, $state, $ionicPopup, $cordovaKeyboard, $cordovaBarcodeScanner, ApiService) {
+        var alertPopup = null,
+            dataResults = new Array();
         $scope.Search = {
-            BookingNo:''
-        };
-        $scope.returnMain = function() {
-            $state.go('index.main', {}, {
-                reload: true
-            });
-        };
-        $scope.gotoList = function() {
-            $state.go('acceptJobList', {}, {
-                reload: true
-            });
-        };
-    }]);
-
-app.controller('AcceptJobListCtrl',
-    ['$scope','$state',
-    function ($scope, $state) {
-        $scope.List = {
             BookingNo:''
         };
         $scope.jobs = [
@@ -65,8 +49,19 @@ app.controller('AcceptJobListCtrl',
                 }
             }
         ];
-        $scope.returnSearch = function() {
-            $state.go('acceptJob', {}, {
+        var showPopup = function( title, type ){
+            if (alertPopup === null) {
+                alertPopup = $ionicPopup.alert( {
+                    title: title,
+                    okType: 'button-' + type
+                } );
+            } else {
+                alertPopup.close();
+                alertPopup = null;
+            }
+        };
+        $scope.returnMain = function() {
+            $state.go('index.main', {}, {
                 reload: true
             });
         };
@@ -75,4 +70,46 @@ app.controller('AcceptJobListCtrl',
                 reload: true
             });
         };
+
+        var showTobk = function( bookingNo ) {
+            if ( is.not.empty(bookingNo) ) {
+                var strUri = '/api/tms/tobk1?BookingNo=' + bookingNo;
+                ApiService.GetParam( strUri, true ).then( function success( result ) {
+                    dataResults = dataResults.concat( result.data.results );
+                    $scope.jobs = dataResults;
+                    $scope.Search.BookingNo = '';
+                    $scope.$apply();
+                    $( '#div-list' ).focus();
+                } );
+            }else{
+                showPopup('Wrong Booking No','assertive');
+            }
+        };
+        $scope.openCam = function() {
+            $cordovaBarcodeScanner.scan().then( function( imageData ) {
+                $scope.Search.BookingNo = imageData.text;
+                showTobk( $scope.Search.BookingNo );
+            }, function( error ) {
+                $cordovaToast.showShortBottom( error );
+            } );
+        };
+        $scope.clearInput = function() {
+            if ( is.not.empty($scope.Search.BookingNo) ) {
+                $scope.Search.BookingNo = '';
+                $( '#txt-bookingno' ).select();
+            }
+        };
+        $( '#txt-bookingno' ).on( 'keydown', function( e ) {
+            if ( e.which === 9 || e.which === 13 ) {
+                if ( window.cordova ) {
+                    $cordovaKeyboard.close();
+                }
+                if (alertPopup === null) {
+                    showTobk( $scope.Search.BookingNo);
+                } else {
+                    alertPopup.close();
+                    alertPopup = null;
+                }
+            }
+        } );
     }]);
