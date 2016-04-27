@@ -1,5 +1,5 @@
 'use strict';
-var appServices = angular.module('DMS.services', [])
+var appServices = angular.module('TMS.services', [])
 appServices.service('ApiService', ['$q', 'ENV', '$http', '$ionicLoading', '$ionicPopup', '$timeout',
     function ($q, ENV, $http, $ionicLoading, $ionicPopup, $timeout) {
         this.Post = function (requestUrl, requestData, blnShowLoad) {

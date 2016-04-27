@@ -1,5 +1,5 @@
 'use strict';
-var app = angular.module('DMS', [
+var app = angular.module('TMS', [
     'ionic',
     'ionic-datepicker',
     'jett.ionic.filter.bar',
@@ -10,23 +10,87 @@ var app = angular.module('DMS', [
     'ngCordova.plugins.toast',
     'ngCordova.plugins.dialogs',
     'ngCordova.plugins.appVersion',
+    'ngCordova.plugins.keyboard',
     'ngCordova.plugins.file',
     'ngCordova.plugins.fileTransfer',
     'ngCordova.plugins.fileOpener2',
     'ngCordova.plugins.actionSheet',
     'ngCordova.plugins.inAppBrowser',
-    'ngCordova.plugins.actionSheet',
-    'DMS.config',
-    'DMS.services'
+    'ngCordova.plugins.datePicker',
+    'ngCordova.plugins.barcodeScanner',
+    'TMS.config',
+    'TMS.services'
 ]);
-app.run(['$ionicPlatform', '$rootScope', '$state', '$location', '$timeout', '$ionicHistory', '$ionicLoading', '$cordovaToast',
-    function ($ionicPlatform, $rootScope, $state, $location, $timeout, $ionicHistory, $ionicLoading, $cordovaToast) {
+app.run([ 'ENV', '$ionicPlatform', '$rootScope', '$state', '$location', '$timeout', '$ionicHistory', '$ionicLoading', '$cordovaToast', '$cordovaKeyboard', '$cordovaFile',
+    function ( ENV, $ionicPlatform, $rootScope, $state, $location, $timeout, $ionicHistory, $ionicLoading, $cordovaToast, $cordovaKeyboard, $cordovaFile) {
         $ionicPlatform.ready(function () {
-            // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
-            // for form inputs)
-            if (window.cordova && window.cordova.plugins.Keyboard) {
-                cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
-                cordova.plugins.Keyboard.disableScroll(true);
+            if ( window.cordova ) {
+                ENV.fromWeb = false;
+                $cordovaKeyboard.hideAccessoryBar(true);
+                $cordovaKeyboard.disableScroll(true);
+                //
+                var data = 'website=' + ENV.website + '##api=' + ENV.api + '##ssl=' + ENV.ssl;
+                var path = cordova.file.externalRootDirectory;
+                var directory = ENV.rootPath;
+                var file = directory + '/' + ENV.configFile;
+                $cordovaFile.createDir( path, directory, false )
+                    .then( function( success ) {
+                        $cordovaFile.writeFile( path, file, data, true )
+                            .then( function( success ) {
+                                var blnSSL = ENV.ssl === 0 ? false : true;
+                                ENV.website = appendProtocol( ENV.website, blnSSL, ENV.port );
+                                ENV.api = appendProtocol( ENV.api, blnSSL, ENV.port );
+                            }, function( error ) {
+                                $cordovaToast.showShortBottom( error );
+                            } );
+                    }, function( error ) { // If an existing directory exists
+                        $cordovaFile.checkFile( path, file )
+                            .then( function( success ) {
+                                $cordovaFile.readAsText( path, file )
+                                    .then( function( success ) {
+                                        var arConf = success.split( '##' );
+                                        if ( is.not.empty( arConf[ 0 ] ) ) {
+                                            var arWebServiceURL = arConf[ 0 ].split( '=' );
+                                            if ( is.not.empty( arWebServiceURL[ 1 ] ) ) {
+                                                ENV.website = arWebServiceURL[ 1 ];
+                                            }
+                                        }
+                                        if ( is.not.empty( arConf[ 1 ] ) ) {
+                                            var arWebSiteURL = arConf[ 1 ].split( '=' );
+                                            if ( is.not.empty( arWebSiteURL[ 1 ] ) ) {
+                                                ENV.api = arWebSiteURL[ 1 ];
+                                            }
+                                        }
+                                        if ( is.not.empty( arConf[ 2 ] ) ) {
+                                            var arSSL = arConf[ 2 ].split( '=' );
+                                            if ( is.not.empty( arSSL[ 1 ] ) ) {
+                                                ENV.ssl = arSSL[ 1 ];
+                                            }
+                                        }
+                                        var blnSSL = ENV.ssl === 0 ? false : true;
+                                        ENV.website = appendProtocol( ENV.website, blnSSL, ENV.port );
+                                        ENV.api = appendProtocol( ENV.api, blnSSL, ENV.port );
+                                        //
+                                    }, function( error ) {
+                                        $cordovaToast.showShortBottom( error );
+                                    } );
+                            }, function( error ) {
+                                // If file not exists
+                                $cordovaFile.writeFile( path, file, data, true )
+                                    .then( function( success ) {
+                                        var blnSSL = ENV.ssl === 0 ? false : true;
+                                        ENV.website = appendProtocol( ENV.website, blnSSL, ENV.port );
+                                        ENV.api = appendProtocol( ENV.api, blnSSL, ENV.port );
+                                    }, function( error ) {
+                                        $cordovaToast.showShortBottom( error );
+                                    } );
+                            } );
+                    } );
+            } else {
+                var blnSSL = 'https:' === document.location.protocol ? true : false;
+                ENV.ssl = blnSSL ? '1' : '0';
+                ENV.website = appendProtocol( ENV.website, blnSSL, ENV.port );
+                ENV.api = appendProtocol( ENV.api, blnSSL, ENV.port );
             }
             if (window.StatusBar) {
                 // org.apache.cordova.statusbar required
@@ -98,12 +162,6 @@ app.config(['ENV', '$stateProvider', '$urlRouterProvider', '$ionicConfigProvider
                 cache: 'false',
                 templateUrl: 'view/acceptjob/search.html',
                 controller: 'AcceptJobCtrl'
-            })
-            .state('acceptJobList', {
-                url: '/acceptjob/list',
-                cache: 'false',
-                templateUrl: 'view/acceptjob/list.html',
-                controller: 'AcceptJobListCtrl'
             })
             .state('jobListing', {
                 url: '/joblisting/search',
