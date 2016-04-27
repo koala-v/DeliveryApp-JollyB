@@ -79,8 +79,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApiServices.cs" />
-    <Compile Include="DMS\LoginService.cs" />
+    <Compile Include="TMS\LoginService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TMS\TableService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\API.ServiceModel\API.ServiceModel.csproj">

@@ -10,9 +10,9 @@ using ServiceStack.Common.Web;
 using ServiceStack.ServiceHost;
 using ServiceStack.ServiceInterface;
 using WebApi.ServiceModel;
-using WebApi.ServiceModel.DMS;
+using WebApi.ServiceModel.TMS;
 using WebApi.ServiceModel.Utils;
-using WebApi.ServiceInterface.DMS;
+using WebApi.ServiceInterface.TMS;
 using File = System.IO.File;
 using System.Reflection;
 
@@ -21,25 +21,38 @@ namespace WebApi.ServiceInterface
     public class ApiServices : Service
     {        
         public Auth auth { get; set; }
-								#region DMS
-								public ServiceModel.DMS.Dms_Login_Logic Dms_Login_Logic { get; set; }
-								public object Any(ServiceModel.DMS.Dms_Login request)
+								#region TMS
+								public ServiceModel.TMS.Tms_Login_Logic Dms_Login_Logic { get; set; }
+								public object Any(ServiceModel.TMS.Tms_Login request)
 								{
 												CommonResponse ecr = new CommonResponse();
 												ecr.initial();
 												try
 												{
-																ServiceInterface.DMS.LoginService ls = new ServiceInterface.DMS.LoginService();
+																ServiceInterface.TMS.LoginService ls = new ServiceInterface.TMS.LoginService();
 																ls.initial(auth, request, Dms_Login_Logic, ecr, this.Request.Headers.GetValues("Signature"), this.Request.RawUrl);
 												}
 												catch (Exception ex) { cr(ecr, ex); }
 												return ecr;
 								}
 
-								#endregion
+        public ServiceModel.TMS.Tobk_Logic tms_Tobk_Logic { get; set; }
+        public object Any(ServiceModel.TMS.Tobk request)
+        {
+            CommonResponse ecr = new CommonResponse();
+            ecr.initial();
+            try
+            {
+                ServiceInterface.TMS.TableService ts = new ServiceInterface.TMS.TableService();
+                ts.TS_Tobk(auth,request, tms_Tobk_Logic, ecr, this.Request.Headers.GetValues("Signature"), this.Request.RawUrl);             
+            }
+            catch (Exception ex) { cr(ecr, ex); }
+            return ecr;
+        }
+        #endregion
 
-								#region Common
-								public object Post(Uploading request)
+        #region Common
+        public object Post(Uploading request)
 								{
 												//string[] segments = base.Request.QueryString.GetValues(0);
 												//string strFileName = segments[0];

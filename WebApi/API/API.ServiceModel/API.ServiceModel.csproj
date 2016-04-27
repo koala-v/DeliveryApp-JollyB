@@ -80,7 +80,9 @@
     <Compile Include="Auth.cs" />
     <Compile Include="CommonResponse.cs" />
     <Compile Include="ConfigInterface.cs" />
-    <Compile Include="DMS\Dms_Login.cs" />
+    <Compile Include="Tables\Tobk1.cs" />
+    <Compile Include="TMS\Tms_Login.cs" />
+    <Compile Include="TMS\Tobk.cs" />
     <Compile Include="Utils\Download.cs" />
     <Compile Include="Utils\Uploading.cs" />
     <Compile Include="Modfunction.cs" />

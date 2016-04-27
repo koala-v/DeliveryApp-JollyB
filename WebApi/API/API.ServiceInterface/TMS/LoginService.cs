@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using WebApi.ServiceModel;
-using WebApi.ServiceModel.DMS;
+using WebApi.ServiceModel.TMS;
 
-namespace WebApi.ServiceInterface.DMS
+namespace WebApi.ServiceInterface.TMS
 {
     class LoginService
     {
-        public void initial(Auth auth, Dms_Login request, Dms_Login_Logic loginLogic, CommonResponse ecr, string[] token, string uri)
+        public void initial(Auth auth, Tms_Login request, Tms_Login_Logic loginLogic, CommonResponse ecr, string[] token, string uri)
         {
             if (auth.AuthResult(token, uri))
             {
@@ -17,12 +17,12 @@ namespace WebApi.ServiceInterface.DMS
                 {
                     ecr.meta.code = 200;
                     ecr.meta.message = "OK";
-                    ecr.data.results = request.DriverId;
+                    ecr.data.results = loginLogic.LoginCheck(request);
                 }
                 else
                 {
                     ecr.meta.code = 612;
-                    ecr.meta.message = "Invalid Driver";
+                    ecr.meta.message = "Invalid User";
                 }
             }
             else
