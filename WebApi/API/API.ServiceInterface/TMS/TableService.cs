@@ -13,14 +13,15 @@ namespace WebApi.ServiceInterface.TMS
         {
             if (auth.AuthResult(token, uri))
             {
-                if (uri.IndexOf("/tms/tobk1") > 0)
+                 
+                if (uri.IndexOf("/tms/tobk1/sps") > 0)
                 {
                     ecr.data.results = tobk_Logic.Get_Tobk1_List(request);
-                }
-                else if (uri.IndexOf("/tms/tobk1/sps") > 0)
+                }else if (uri.IndexOf("/tms/tobk1") > 0)
                 {
                     ecr.data.results = tobk_Logic.Get_Tobk1_SpsList(request);
                 }
+               else
                 ecr.meta.code = 200;
                 ecr.meta.message = "OK";
             }
@@ -30,6 +31,6 @@ namespace WebApi.ServiceInterface.TMS
                 ecr.meta.message = "Unauthorized";
             }
         }
-
+       
     }
 }

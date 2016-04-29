@@ -68,6 +68,7 @@ namespace WebApi
             //TMS
             container.RegisterAutoWired<WebApi.ServiceModel.TMS.Tms_Login_Logic>();
             container.RegisterAutoWired<WebApi.ServiceModel.TMS.Tobk_Logic>();
+      
         }
         #region DES
         //private string DESKey = "F322186F";

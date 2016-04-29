@@ -9,11 +9,12 @@ using WebApi.ServiceModel.Tables;
 
 namespace WebApi.ServiceModel.TMS
 {
-    [Route("/tms/tobk1/sps", "Get")]
-    [Route("/tms/tobk1", "Get")]
-   public class Tobk : IReturn<CommonResponse>
+    [Route("/tms/tobk1/sps", "Get")]  // sps?RecordCount=
+    [Route("/tms/tobk1", "Get")]      //tobk1?BookingNo=
+    public class Tobk : IReturn<CommonResponse>
     {
         public string RecordCount { get; set; }
+        public string BookingNo { get; set; }
     }
     public class Tobk_Logic
     {
@@ -26,9 +27,31 @@ namespace WebApi.ServiceModel.TMS
             {
                 using (var db = DbConnectionFactory.OpenDbConnection("TMS"))
                 {
-                    string strSQL = "select BookingNo,DeliveryEndDateTime,TotalPcs,UOMCode  from tobk1 where StatusCode <>'DEL'";
+                    int count = 0;
+                    if (!string.IsNullOrEmpty(request.RecordCount))
+                    {
+                        count = int.Parse(request.RecordCount);
+                    }
+                    string strWhere = "";
+                    if (!string.IsNullOrEmpty(request.BookingNo))
+                    {
+
+                        strWhere = "Where BookingNo='" + request.BookingNo + "'";
+
+                    }
+                    var strSQL = "SELECT t1.BookingNo,JobNo,CustomerCode,CustomerName,CustomerRefNo,DeliveryEndDateTime,TotalPcs,Toaddress1,Toaddress2,Toaddress3,Toaddress4,UOMCode" +
+                         " FROM Tobk1 t1," +
+                         "(SELECT TOP " + (count + 20) + "row_number() OVER(ORDER BY bookingNo ASC) n, bookingNo FROM Tobk1  " + strWhere + " ) t2 " +
+                         "WHERE t1.bookingNo = t2.bookingNo AND StatusCode<> 'DEL' AND t2.n >" + count +
+                         "ORDER BY t2.n ASC";
                     Result = db.Select<Tobk1>(strSQL);
+
                 }
+                //using (var db = DbConnectionFactory.OpenDbConnection("TMS"))
+                //{ 
+                //    string strSQL = "select BookingNo,JobNo,CustomerCode,CustomerName,CustomerRefNo,DeliveryEndDateTime,TotalPcs,Toaddress1,Toaddress2,Toaddress3,Toaddress4,UOMCode  from tobk1 where StatusCode <>'DEL'";
+                //    Result = db.Select<Tobk1>(strSQL);
+                //}
 
             }
             catch { throw; }
@@ -43,12 +66,23 @@ namespace WebApi.ServiceModel.TMS
             {
                 using (var db = DbConnectionFactory.OpenDbConnection("TMS"))
                 {
-                    int count = int.Parse(request.RecordCount);
-                    var strSQL = "SELECT r1.BookingNo,DeliveryEndDateTime,TotalPcs,UOMCode" +
-                         " FROM Tobk1 r1," +
-                         "(SELECT TOP " + (count + 20) + "row_number() OVER(ORDER BY bookingNo ASC) n, bookingNo FROM Tobk1 ) r2" +
-                         "WHERE r1.bookingNo = r2.bookingNo AND StatusCode<> 'DEL' AND r2.n >" + count+
-                         "ORDER BY r2.n ASC";
+                    int count = 0;
+                    if (!string.IsNullOrEmpty(request.RecordCount))
+                    {
+                        count = int.Parse(request.RecordCount);
+                    }             
+                    string strWhere = "";
+                    if (!string.IsNullOrEmpty(request.BookingNo))
+                    {
+
+                        strWhere = "Where BookingNo='" + request.BookingNo + "'";
+                      
+                    }
+                    var strSQL = "SELECT t1.BookingNo,JobNo,CustomerCode,CustomerName,CustomerRefNo,DeliveryEndDateTime,TotalPcs,Toaddress1,Toaddress2,Toaddress3,Toaddress4,UOMCode" +
+                         " FROM Tobk1 t1," +
+                         "(SELECT TOP " + (count + 20) + "row_number() OVER(ORDER BY bookingNo ASC) n, bookingNo FROM Tobk1  "+ strWhere +" ) t2 " +
+                         "WHERE t1.bookingNo = t2.bookingNo AND StatusCode<> 'DEL' AND t2.n >" + count+
+                         "ORDER BY t2.n ASC";
                     Result = db.Select<Tobk1>(strSQL);
 
                 }
