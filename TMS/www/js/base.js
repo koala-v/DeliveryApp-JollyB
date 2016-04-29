@@ -23,3 +23,23 @@ var rmProtocol = function(url) {
     }
     return url;
 };
+
+var dbInfo = {
+    dbName: 'TmsDB',
+    dbVersion: '1.0',
+    dbDisplayName: 'TMS Database',
+    dbEstimatedSize: 10 * 11024 * 1024
+};
+var dbSql = '';
+function dbError(tx, error) {
+    console.log(error.message);
+}
+var dbTms = window.openDatabase(dbInfo.dbName, dbInfo.dbVersion, dbInfo.dbDisplayName, dbInfo.dbEstimatedSize);
+if (dbTms) {
+    dbTms.transaction(function (tx) {
+        dbSql = 'DROP TABLE if exists Tobk1_Accept';
+        tx.executeSql(dbSql, [], null, dbError);
+        dbSql = "CREATE TABLE Tobk1_Accept (BookingNo TEXT, JobNo TEXT)";
+        tx.executeSql(dbSql, [], null, dbError);
+    });
+}

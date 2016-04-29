@@ -7,6 +7,7 @@ app.controller('AcceptJobCtrl',
         $scope.Search = {
             BookingNo:''
         };
+        /*
         $scope.jobs = [
             {
                 action : 'Collect',
@@ -49,6 +50,7 @@ app.controller('AcceptJobCtrl',
                 }
             }
         ];
+        */
         var showPopup = function( title, type ){
             if (alertPopup === null) {
                 alertPopup = $ionicPopup.alert( {
@@ -60,6 +62,31 @@ app.controller('AcceptJobCtrl',
                 alertPopup = null;
             }
         };
+        var showTobk = function( bookingNo ) {
+            if ( is.not.empty(bookingNo) ) {
+                var strUri = '/api/tms/tobk1?BookingNo=' + bookingNo;
+                ApiService.GetParam( strUri, true ).then( function success( result ) {
+                    var results = result.data.results;
+                    var tobk1 = {
+                        action : 'Collect',
+                        amt : results[0].TotalPcs + ' ' + is.undefind(results[0].UOMCode) ? '' : results[0].UOMCode,
+                        time : moment( results[0].DeliveryEndDateTime ).format( 'DD-MMM-YYYY' ),
+                        code : ' ',
+                        customer : {
+                            name : results[0].CustomerName,
+                            address : results[0].ToAddress1 + results[0].ToAddress2 + results[0].ToAddress3 + results[0].ToAddress4
+                        }
+                    };
+                    dataResults = dataResults.concat( tobk1 );
+                    $scope.jobs = dataResults;
+                    $scope.Search.BookingNo = '';
+                    $scope.$apply();
+                    $( '#div-list' ).focus();
+                } );
+            }else{
+                showPopup('Wrong Booking No','assertive');
+            }
+        };
         $scope.returnMain = function() {
             $state.go('index.main', {}, {
                 reload: true
@@ -69,21 +96,6 @@ app.controller('AcceptJobCtrl',
             $state.go('index.main', {}, {
                 reload: true
             });
-        };
-
-        var showTobk = function( bookingNo ) {
-            if ( is.not.empty(bookingNo) ) {
-                var strUri = '/api/tms/tobk1?BookingNo=' + bookingNo;
-                ApiService.GetParam( strUri, true ).then( function success( result ) {
-                    dataResults = dataResults.concat( result.data.results );
-                    $scope.jobs = dataResults;
-                    $scope.Search.BookingNo = '';
-                    $scope.$apply();
-                    $( '#div-list' ).focus();
-                } );
-            }else{
-                showPopup('Wrong Booking No','assertive');
-            }
         };
         $scope.openCam = function() {
             $cordovaBarcodeScanner.scan().then( function( imageData ) {
