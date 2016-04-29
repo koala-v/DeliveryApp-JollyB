@@ -1,7 +1,6 @@
 'use strict';
-app.controller('LoginCtrl',
-    ['ENV', '$log', '$scope', '$http', '$state', '$stateParams', '$ionicPopup', '$timeout', '$cordovaToast', '$cordovaFile', '$cordovaAppVersion', 'ApiService',
-    function (ENV, $log, $scope, $http, $state, $stateParams, $ionicPopup, $timeout, $cordovaToast, $cordovaFile, $cordovaAppVersion, ApiService) {
+app.controller('LoginCtrl', ['ENV', '$rootScope','$log', '$scope', '$http', '$state', '$stateParams', '$ionicPopup', '$timeout', '$cordovaToast', '$cordovaFile', '$cordovaAppVersion', 'ApiService',
+  function(ENV, $rootScope,$log, $scope, $http, $state, $stateParams, $ionicPopup, $timeout, $cordovaToast, $cordovaFile, $cordovaAppVersion, ApiService) {
         var alertPopup = null;
         var alertPopupTitle = '';
         $scope.logininfo = {
@@ -46,6 +45,13 @@ app.controller('LoginCtrl',
                 }
             }
         };
+
+    $scope.goDriverCode = function() {
+      $state.go('driverCodeCtrl', {}, {
+        reload: true
+      });
+    }
+
         $('#iDriverId').on('keydown', function (e) {
             if (e.which === 9 || e.which === 13) {
                 if(alertPopup === null){

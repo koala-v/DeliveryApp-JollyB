@@ -181,6 +181,22 @@ app.config(['ENV', '$stateProvider', '$urlRouterProvider', '$ionicConfigProvider
                 templateUrl: 'view/joblisting/detail.html',
                 controller: 'JoblistingDetailCtrl'
             })
+
+            .state('goDriverCodeCtrl', {
+                url: '/login',
+                views: {
+                    'menuContent': {
+                        templateUrl: 'view/login/login.html',
+                        controller: 'goDriverCodeCtrl'
+                    }
+                }
+            })
+            .state('driverCodeCtrl', {
+                url: '/driverCode/driverCode',
+                cache: 'false',
+                templateUrl: 'view/driverCode/driverCode.html',
+                controller: 'driverCodeCtrl'
+            })
             .state('jobListingConfirm', {
                 url: '/joblisting/confirm',
                 cache: 'false',
