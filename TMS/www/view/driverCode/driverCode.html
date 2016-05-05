@@ -1,0 +1,27 @@
+<ion-view title="DriverCode">
+    <ion-header-bar align-title="center" no-tap-scroll=false class="bar-positive">
+        <div class="buttons">
+            <button class="button button-icon button-clear ion-android-arrow-back" ng-click="returnMain()"></button>
+        </div>
+        <h1 class="title">Driver Code</h1>
+    </ion-header-bar>
+    <ion-pane>
+        <div style="height: 43px;"></div>
+        <ion-list>
+            <div class="card">
+                <div class="item">
+                    <ion-md-input type="number" id="iBookingNo" class="pull-left" style="width:80%;" placeholder="Enter PhoneNumber" highlight-color="balanced" ng-model="Search.driverPhoneNumber"></ion-md-input>
+                    <ion-md-input type="text" id="iBookingNo" class="pull-left" style="width:80%;" highlight-color="balanced" placeholder="Enter message" ng-model="Search.message"></ion-md-input>
+                    <div style="width:20%;position:relative;">
+                        <!-- <button class="button button-clear" style="position:absolute; top:50%; margin-top:12px;" ng-click="" >
+                            <i class="icon iconfont ion-android-search"></i>
+                        </button> -->
+                    </div>
+                </div>
+            </div>
+            <div>
+              	<button class="button button-block button-positive" ng-click="sendSMS()">SMS</button>
+            </div>
+        </ion-list>
+    </ion-pane>
+</ion-view>

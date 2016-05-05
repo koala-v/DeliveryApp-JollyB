@@ -2,10 +2,25 @@
   "name": "DMS",
   "private": "true",
   "devDependencies": {
-    "ionic": "driftyco/ionic-bower#1.2.4"
+    "ngCordova": ">=0.1.23-alpha",
+    "jquery": ">=2.1.4",
+    "ionic": "driftyco/ionic-bower#1.2.4",
+    "ionic-datepicker": "^0.9.0",
+    "ionic-ion-header-shrink": "*",
+    "ionic-filter-bar": "^1.1.1",
+    "angular-messages": ">=1.4.7",
+    "moment": "^2.11.2",
+    "is_js": "^0.7.6",
+    "signature_pad": "^1.5.3"
   },
   "dependencies": {
     "ion-md-input": "^1.0.4",
     "hashmap": "^2.0.5"
+  },
+  "resolutions": {
+    "angular-animate": "1.4.3",
+    "angular-sanitize": "1.4.3",
+    "angular": ">= 1.2.23",
+    "ionic": "1.2.4"
   }
 }

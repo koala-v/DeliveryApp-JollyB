@@ -49,14 +49,14 @@ namespace WebApi
             this.Plugins.Add(cf);
             this.Plugins.Add(new SwaggerFeature());
             //DB
-												var dbConnectionFactory = new OrmLiteConnectionFactory(GetConnectionString("DMS"), SqlServerDialect.Provider)
+												var dbConnectionFactory = new OrmLiteConnectionFactory(GetConnectionString("TMS"), SqlServerDialect.Provider)
                                                 {
                                                     ConnectionFilter =
                     x =>
                     new ProfiledDbConnection(x, Profiler.Current)
                                                 };
 
-            dbConnectionFactory.RegisterConnection("DMS", GetConnectionString("DMS"), SqlServerDialect.Provider);
+            dbConnectionFactory.RegisterConnection("TMS", GetConnectionString("TMS"), SqlServerDialect.Provider);
 
 
             container.Register<IDbConnectionFactory>(dbConnectionFactory);
@@ -65,9 +65,10 @@ namespace WebApi
             container.Register<WebApi.ServiceModel.ISecretKey>(secretKey);
             //Auth
             container.RegisterAutoWired<WebApi.ServiceModel.Auth>();
-            //DMS
-            container.RegisterAutoWired<WebApi.ServiceModel.DMS.Dms_Login_Logic>();
-
+            //TMS
+            container.RegisterAutoWired<WebApi.ServiceModel.TMS.Tms_Login_Logic>();
+            container.RegisterAutoWired<WebApi.ServiceModel.TMS.Tobk_Logic>();
+      
         }
         #region DES
         //private string DESKey = "F322186F";
@@ -142,9 +143,9 @@ namespace WebApi
             string[] strDataBase = new string[3];
             if (string.IsNullOrEmpty(strAppSetting))
             {
-																if (string.Equals(type, "DMS"))
+																if (string.Equals(type, "TMS"))
 																{
-																				strAppSetting = System.Configuration.ConfigurationManager.AppSettings["DMS_DB"];
+																				strAppSetting = System.Configuration.ConfigurationManager.AppSettings["TMS_DB"];
 																}
 															
 																strSecretKey = System.Configuration.ConfigurationManager.AppSettings["SecretKey"];
