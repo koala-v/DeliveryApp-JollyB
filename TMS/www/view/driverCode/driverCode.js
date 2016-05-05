@@ -29,8 +29,8 @@ app.controller('driverCodeCtrl',
            if ( window.cordova && window.cordova.plugins.Keyboard ) {
                          cordova.plugins.Keyboard.close();
                      }
-      // $cordovaToast.showShortBottom($scope.Search.driverPhoneNumber);
-      //   $cordovaToast.showShortBottom($scope.Search.message);
+      //  $cordovaToast.showShortBottom($scope.Search.driverPhoneNumber);
+      //    $cordovaToast.showShortBottom($scope.Search.message);
           var options = {
            replaceLineBreaks: false, // true to replace \n by a new line, false by default
            android: {
