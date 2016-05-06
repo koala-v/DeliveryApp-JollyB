@@ -105,7 +105,7 @@ app.controller('AcceptJobCtrl', ['$scope', '$state', '$ionicPopup', '$cordovaKey
 
     };
     $scope.openCam = function() {
-      $cordovaBarcodeScanner.scan().then( function( imageData ) {
+    $cordovaBarcodeScanner.scan().then( function( imageData ) {
           $scope.Search.BookingNo = imageData.text;
           showTobk( $scope.Search.BookingNo );
       }, function( error ) {
