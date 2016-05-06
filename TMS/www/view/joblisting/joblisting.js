@@ -1,6 +1,6 @@
 'use strict';
-app.controller('JoblistingListCtrl', ['$scope', '$state', '$ionicLoading', '$ionicPopup', '$ionicFilterBar',
-  function($scope, $state, $ionicLoading, $ionicPopup, $ionicFilterBar) {
+app.controller('JoblistingListCtrl', ['$scope', '$state', '$ionicLoading', '$ionicPopup', '$ionicFilterBar', '$ionicActionSheet',
+  function($scope, $state, $ionicLoading, $ionicPopup, $ionicFilterBar, $ionicActionSheet) {
     var filterBarInstance,
       dataResults = new Array();
     // $scope.Search = {
@@ -25,10 +25,10 @@ app.controller('JoblistingListCtrl', ['$scope', '$state', '$ionicLoading', '$ion
               for (var i = 0; i < results.rows.length; i++) {
                 var UomCode = is.undefined(results.rows.item(i).UOMCode) ? '' : results.rows.item(i).UOMCode;
                 var jobs = [{
-                  bookingno : results.rows.item(i).BookingNo,
+                  bookingno: results.rows.item(i).BookingNo,
                   action: 'Collect',
                   amt: results.rows.item(i).TotalPcs + ' ' + UomCode,
-                   time: moment(results.rows.item(i).DeliveryEndDateTime).format('DD-MMM-YYYY'),
+                  time: moment(results.rows.item(i).DeliveryEndDateTime).format('DD-MMM-YYYY'),
                   code: results.rows.item(i).CustomerCode,
                   customer: {
                     name: results.rows.item(i).CustomerName,
@@ -42,7 +42,7 @@ app.controller('JoblistingListCtrl', ['$scope', '$state', '$ionicLoading', '$ion
                 }]
                 dataResults = dataResults.concat(jobs);
                 $scope.jobs = dataResults;
-                console.log(jobs);
+
               }
             }
           });
@@ -53,8 +53,8 @@ app.controller('JoblistingListCtrl', ['$scope', '$state', '$ionicLoading', '$ion
     $scope.showFilterBar = function() {
       filterBarInstance = $ionicFilterBar.show({
         items: $scope.jobs,
-        expression : function (filterText, value, index, array) {
-          return value.bookingno.indexOf(filterText)>-1;
+        expression: function(filterText, value, index, array) {
+          return value.bookingno.indexOf(filterText) > -1;
         },
         //filterProperties: ['bookingno'],
         update: function(filteredItems, filterText) {
@@ -194,18 +194,54 @@ app.controller('JoblistingCtrl', ['$scope', '$state', '$stateParams',
     };
   }
 ]);
-app.controller('JoblistingDetailCtrl', ['$scope', '$state',
-  function($scope, $state) {
+app.controller('JoblistingDetailCtrl', ['ENV', '$scope', '$state', '$ionicActionSheet', '$cordovaSms',
+  function(ENV, $scope, $state, $ionicActionSheet, $cordovaSms) {
+    $scope.showActionSheet = function() {
+      var actionSheet = $ionicActionSheet.show({
+        buttons: [{
+          text: 'CALL'
+        }, {
+          text: 'SMS'
+        }],
+        //destructiveText: 'Delete',
+        titleText: 'Select Picture',
+        cancelText: 'Cancel',
+        cancel: function() {
+          // add cancel code..
+        },
+        buttonClicked: function(index) {
+          if (index === 0) {} else if (index === 1) {
+            SMS();
+          }
+          return true;
+        }
+      });
+    };
     $scope.gotoConfirm = function() {
       $state.go('jobListingConfirm', {}, {
         reload: true
       });
     };
     $scope.returnList = function() {
-      $state.go('jobListingList', {}, {
-        reload: true
-      });
+      $state.go('jobListingList', {}, {});
     };
+    var SMS = function() {
+      $scope.PhoneNumber = '18065981961';
+      $scope.message = 'sms';
+      if (window.cordova && window.cordova.plugins.Keyboard) {
+        cordova.plugins.Keyboard.close();
+      }
+      var options = {
+        replaceLineBreaks: false, // true to replace \n by a new line, false by default
+        android: {
+          intent: 'INTENT' // send SMS with the native android SMS messaging
+            //intent: '' // send SMS without open any other app
+        }
+      };
+      var success = function() {};
+      var error = function(e) {};
+      $cordovaSms.send($scope.PhoneNumber, $scope.message, options, success, error);
+    }
   }
 ]);
 app.controller('JoblistingConfirmCtrl', ['$scope', '$state',
