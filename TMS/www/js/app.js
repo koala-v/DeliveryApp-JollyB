@@ -170,7 +170,7 @@ app.config(['ENV', '$stateProvider', '$urlRouterProvider', '$ionicConfigProvider
                 controller: 'JoblistingCtrl'
             })
             .state('jobListingList', {
-                url: '/joblisting/list/:BookingNo',
+                url: '/joblisting/list',
                 cache: 'false',
                 templateUrl: 'view/joblisting/list.html',
                 controller: 'JoblistingListCtrl'

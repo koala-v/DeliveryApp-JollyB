@@ -20,7 +20,7 @@ app.controller('MainCtrl',
             });
         };
         $scope.func_JL = function() {
-            $state.go('jobListing', {}, {
+            $state.go('jobListingList', {}, {
                 reload: true
             });
         };

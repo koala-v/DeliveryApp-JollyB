@@ -1,44 +1,93 @@
 'use strict';
-app.controller('JoblistingCtrl', ['$scope', '$rootScope', '$state', '$ionicLoading','$ionicPopup',
-  function($scope, $rootScope, $state, $ionicLoading, $ionicPopup) {
-
-    $scope.Search = {
-      BookingNo: ''
-    };
+app.controller('JoblistingListCtrl', ['$scope', '$state', '$ionicLoading', '$ionicPopup', '$ionicFilterBar',
+  function($scope, $state, $ionicLoading, $ionicPopup, $ionicFilterBar) {
+    var filterBarInstance,
+      dataResults = new Array();
+    // $scope.Search = {
+    //   BookingNo: ''
+    // };
     $scope.returnMain = function() {
       $state.go('index.main', {}, {
         reload: true
       });
     };
-    $scope.gotoList = function() {
-      if ($scope.Search.BookingNo !== '') {
-        // $ionicLoading.show();
-        if (dbTms) {
-          dbTms.transaction(function(tx) {
-            dbSql = 'select * from Tobk1_Accept';
-            tx.executeSql(dbSql, [], function(tx, results) {
-              if (results.rows.length > 0) {
-                for (var i = 0; i < results.rows.length; i++) {
-                  if ($scope.Search.BookingNo === results.rows.item(i).BookingNo) {
-                    $state.go('jobListingList', {
-                      'BookingNo': $scope.Search.BookingNo
-                    }, {
-                      reload: true
-                    });
-                  }
-                }
-              }
-            });
-          }, dbError);
-        }
+    $('#txt-BookingNo').on('keydown', function(e) {
+      if (e.which === 9 || e.which === 13) {
+        getBookingNo();
       }
+    });
+    var getBookingNo = function() {
+      if (dbTms) {
+        dbTms.transaction(function(tx) {
+          dbSql = 'select * from Tobk1_Accept';
+          tx.executeSql(dbSql, [], function(tx, results) {
+            if (results.rows.length > 0) {
+              for (var i = 0; i < results.rows.length; i++) {
+                var UomCode = is.undefined(results.rows.item(i).UOMCode) ? '' : results.rows.item(i).UOMCode;
+                var jobs = [{
+                  bookingno : results.rows.item(i).BookingNo,
+                  action: 'Collect',
+                  amt: results.rows.item(i).TotalPcs + ' ' + UomCode,
+                   time: moment(results.rows.item(i).DeliveryEndDateTime).format('DD-MMM-YYYY'),
+                  code: results.rows.item(i).CustomerCode,
+                  customer: {
+                    name: results.rows.item(i).CustomerName,
+                    address: results.rows.item(i).ToAddress1 + results.rows.item(i).ToAddress2 + results.rows.item(i).ToAddress3 + results.rows.item(i).ToAddress4
+                  },
+                  status: {
+                    inprocess: false,
+                    success: true,
+                    failed: false
+                  }
+                }]
+                dataResults = dataResults.concat(jobs);
+                $scope.jobs = dataResults;
+                console.log(jobs);
+              }
+            }
+          });
+        }, dbError);
+      }
+    };
+    getBookingNo();
+    $scope.showFilterBar = function() {
+      filterBarInstance = $ionicFilterBar.show({
+        items: $scope.jobs,
+        expression : function (filterText, value, index, array) {
+          return value.bookingno.indexOf(filterText)>-1;
+        },
+        //filterProperties: ['bookingno'],
+        update: function(filteredItems, filterText) {
+          $scope.jobs = filteredItems;
+          console.log(filteredItems + ' Obj');
+          if (filterText) {
+            console.log(filterText);
+          }
+        }
+      });
+    };
 
+    $scope.refreshItems = function() {
+      if (filterBarInstance) {
+        filterBarInstance();
+        filterBarInstance = null;
+      }
+      $timeout(function() {
+        getBookingNo();
+        $scope.$broadcast('scroll.refreshComplete');
+      }, 1000);
+    };
+
+    $scope.gotoDetail = function(job) {
+      $state.go('jobListingDetail', {}, {
+        reload: true
+      });
     };
   }
 ]);
 
-app.controller('JoblistingListCtrl', ['$scope', '$rootScope', '$state', '$stateParams',
-  function($scope, $rootScope, $state, $stateParams) {
+app.controller('JoblistingCtrl', ['$scope', '$state', '$stateParams',
+  function($scope, $state, $stateParams) {
     $scope.List = {
       BookingNo: $stateParams.BookingNo
     };
@@ -47,26 +96,26 @@ app.controller('JoblistingListCtrl', ['$scope', '$rootScope', '$state', '$stateP
         dbSql = 'select * from Tobk1_Accept';
         tx.executeSql(dbSql, [], function(tx, results) {
           if (results.rows.length > 0) {
-                  for (var i = 0; i < results.rows.length; i++) {
+            for (var i = 0; i < results.rows.length; i++) {
               if ($scope.List.BookingNo === results.rows.item(i).BookingNo) {
-                var UomCode = is.undefined(results.rows.item(i).UOMCode) ? '' :results.rows.item(i).UOMCode;
-              $scope.jobs = [{
-                action: 'Collect',
-                amt: results.rows.item(i).TotalPcs+' '+UomCode,
-                time: moment(results.rows.item(i).DeliveryEndDateTime).format('DD-MMM-YYYY'),
-                code: results.rows.item(i).CustomerCode,
-                customer: {
-                  name: results.rows.item(i).CustomerName,
-                  address: results.rows.item(i).ToAddress1+results.rows.item(i).ToAddress2+results.rows.item(i).ToAddress3+results.rows.item(i).ToAddress4
-                },
-                status: {
-                  inprocess: false,
-                  success: true,
-                  failed: false
-                }
-              }]
+                var UomCode = is.undefined(results.rows.item(i).UOMCode) ? '' : results.rows.item(i).UOMCode;
+                $scope.jobs = [{
+                  action: 'Collect',
+                  amt: results.rows.item(i).TotalPcs + ' ' + UomCode,
+                  time: moment(results.rows.item(i).DeliveryEndDateTime).format('DD-MMM-YYYY'),
+                  code: results.rows.item(i).CustomerCode,
+                  customer: {
+                    name: results.rows.item(i).CustomerName,
+                    address: results.rows.item(i).ToAddress1 + results.rows.item(i).ToAddress2 + results.rows.item(i).ToAddress3 + results.rows.item(i).ToAddress4
+                  },
+                  status: {
+                    inprocess: false,
+                    success: true,
+                    failed: false
+                  }
+                }]
 
-            }
+              }
             }
           }
         });
