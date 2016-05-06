@@ -25,7 +25,7 @@ app.controller('MainCtrl',
             $state.go('acceptJob', {}, {});
         };
         $scope.func_JL = function() {
-            $state.go('jobListing', {}, {});
+            $state.go('jobListingList', {}, {});
         };
         $scope.func_DC = function() {
             showPopup('Stay Tuned','calm');

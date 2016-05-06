@@ -105,7 +105,7 @@ app.controller( 'AcceptJobCtrl', [ '$scope', '$state', '$ionicPopup', '$cordovaK
     };
     $scope.save = function() {
         if(is.not.empty($scope.jobs)){
-            $state.go( 'jobListing', {}, {} );
+            $state.go( 'jobListingList', {}, {} );
         }else{
           showPopup( 'No Job Accepted', 'calm' );
         }
