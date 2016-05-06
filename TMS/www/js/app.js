@@ -19,7 +19,8 @@ var app = angular.module('TMS', [
     'ngCordova.plugins.datePicker',
     'ngCordova.plugins.barcodeScanner',
     'TMS.config',
-    'TMS.services'
+    'TMS.services',
+    'TMS.factories'
 ]);
 app.run([ 'ENV', '$ionicPlatform', '$rootScope', '$state', '$location', '$timeout', '$ionicHistory', '$ionicLoading', '$cordovaToast', '$cordovaKeyboard', '$cordovaFile',
     function ( ENV, $ionicPlatform, $rootScope, $state, $location, $timeout, $ionicHistory, $ionicLoading, $cordovaToast, $cordovaKeyboard, $cordovaFile) {
