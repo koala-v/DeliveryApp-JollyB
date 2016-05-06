@@ -104,9 +104,11 @@ app.controller( 'AcceptJobCtrl', [ '$scope', '$state', '$ionicPopup', '$cordovaK
       } );
     };
     $scope.save = function() {
-      $state.go( 'index.main', {}, {
-        reload: true
-      } );
+        if(is.not.empty($scope.jobs)){
+            $state.go( 'jobListing', {}, {} );
+        }else{
+          showPopup( 'No Job Accepted', 'calm' );
+        }
     };
     $scope.clear = function() {
         dataResults = new Array();
