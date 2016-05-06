@@ -1,76 +1,75 @@
 'use strict';
-app.controller('JoblistingCtrl', ['$scope', '$rootScope', '$state', '$ionicLoading','$ionicPopup',
-  function($scope, $rootScope, $state, $ionicLoading, $ionicPopup) {
-
+app.controller( 'JoblistingCtrl', [ '$scope', '$state', '$ionicLoading', '$ionicPopup',
+  function( $scope, $state, $ionicLoading, $ionicPopup ) {
     $scope.Search = {
       BookingNo: ''
     };
     $scope.returnMain = function() {
-      $state.go('index.main', {}, {
+      $state.go( 'index.main', {}, {
         reload: true
-      });
+      } );
     };
     $scope.gotoList = function() {
-      if ($scope.Search.BookingNo !== '') {
+      if ( $scope.Search.BookingNo !== '' ) {
         // $ionicLoading.show();
-        if (dbTms) {
-          dbTms.transaction(function(tx) {
+        if ( dbTms ) {
+          dbTms.transaction( function( tx ) {
             dbSql = 'select * from Tobk1_Accept';
-            tx.executeSql(dbSql, [], function(tx, results) {
-              if (results.rows.length > 0) {
-                for (var i = 0; i < results.rows.length; i++) {
-                  if ($scope.Search.BookingNo === results.rows.item(i).BookingNo) {
-                    $state.go('jobListingList', {
+            tx.executeSql( dbSql, [], function( tx, results ) {
+              if ( results.rows.length > 0 ) {
+                for ( var i = 0; i < results.rows.length; i++ ) {
+                  if ( $scope.Search.BookingNo === results.rows.item( i ).BookingNo ) {
+                    $state.go( 'jobListingList', {
                       'BookingNo': $scope.Search.BookingNo
                     }, {
                       reload: true
-                    });
+                    } );
                   }
                 }
               }
-            });
-          }, dbError);
+            } );
+          }, dbError );
         }
       }
 
     };
   }
-]);
+] );
 
-app.controller('JoblistingListCtrl', ['$scope', '$rootScope', '$state', '$stateParams',
-  function($scope, $rootScope, $state, $stateParams) {
+app.controller( 'JoblistingListCtrl', [ '$scope', '$state', '$stateParams',
+  function( $scope, $state, $stateParams ) {
     $scope.List = {
       BookingNo: $stateParams.BookingNo
     };
-    if (dbTms) {
-      dbTms.transaction(function(tx) {
+    if ( dbTms ) {
+      dbTms.transaction( function( tx ) {
         dbSql = 'select * from Tobk1_Accept';
-        tx.executeSql(dbSql, [], function(tx, results) {
-          if (results.rows.length > 0) {
-                  for (var i = 0; i < results.rows.length; i++) {
-              if ($scope.List.BookingNo === results.rows.item(i).BookingNo) {
-                var UomCode = is.undefined(results.rows.item(i).UOMCode) ? '' :results.rows.item(i).UOMCode;
-              $scope.jobs = [{
-                action: 'Collect',
-                amt: results.rows.item(i).TotalPcs+' '+UomCode,
-                time: moment(results.rows.item(i).DeliveryEndDateTime).format('DD-MMM-YYYY'),
-                code: results.rows.item(i).CustomerCode,
-                customer: {
-                  name: results.rows.item(i).CustomerName,
-                  address: results.rows.item(i).ToAddress1+results.rows.item(i).ToAddress2+results.rows.item(i).ToAddress3+results.rows.item(i).ToAddress4
-                },
-                status: {
-                  inprocess: false,
-                  success: true,
-                  failed: false
-                }
-              }]
+        tx.executeSql( dbSql, [], function( tx, results ) {
+          if ( results.rows.length > 0 ) {
+            for ( var i = 0; i < results.rows.length; i++ ) {
+              if ( $scope.List.BookingNo === results.rows.item( i ).BookingNo ) {
+                var UomCode = is.undefined( results.rows.item( i ).UOMCode ) ? '' : results.rows.item( i ).UOMCode;
+                $scope.jobs = [ {
+                  action: 'Collect',
+                  amt: results.rows.item( i ).TotalPcs + ' ' + UomCode,
+                  time: moment( results.rows.item( i ).DeliveryEndDateTime ).format( 'DD-MMM-YYYY' ),
+                  code: results.rows.item( i ).CustomerCode,
+                  customer: {
+                    name: results.rows.item( i ).CustomerName,
+                    address: results.rows.item( i ).ToAddress1 + results.rows.item( i ).ToAddress2 + results.rows.item( i ).ToAddress3 + results.rows.item( i ).ToAddress4
+                  },
+                  status: {
+                    inprocess: false,
+                    success: true,
+                    failed: false
+                  }
+              } ]
 
-            }
+              }
             }
           }
-        });
-      }, dbError);
+        } );
+      }, dbError );
     }
 
 
@@ -134,46 +133,46 @@ app.controller('JoblistingListCtrl', ['$scope', '$rootScope', '$state', '$stateP
     // }];
 
     $scope.returnSearch = function() {
-      $state.go('jobListing', {}, {
+      $state.go( 'jobListing', {}, {
         reload: true
-      });
+      } );
     };
-    $scope.gotoDetail = function(job) {
-      $state.go('jobListingDetail', {}, {
+    $scope.gotoDetail = function( job ) {
+      $state.go( 'jobListingDetail', {}, {
         reload: true
-      });
+      } );
     };
   }
-]);
-app.controller('JoblistingDetailCtrl', ['$scope', '$state',
-  function($scope, $state) {
+] );
+app.controller( 'JoblistingDetailCtrl', [ '$scope', '$state',
+  function( $scope, $state ) {
     $scope.gotoConfirm = function() {
-      $state.go('jobListingConfirm', {}, {
+      $state.go( 'jobListingConfirm', {}, {
         reload: true
-      });
+      } );
     };
     $scope.returnList = function() {
-      $state.go('jobListingList', {}, {
+      $state.go( 'jobListingList', {}, {
         reload: true
-      });
+      } );
     };
   }
-]);
-app.controller('JoblistingConfirmCtrl', ['$scope', '$state',
-  function($scope, $state) {
+] );
+app.controller( 'JoblistingConfirmCtrl', [ '$scope', '$state',
+  function( $scope, $state ) {
     $scope.returnList = function() {
-      $state.go('jobListingList', {}, {
+      $state.go( 'jobListingList', {}, {
         reload: true
-      });
+      } );
     };
     $scope.returnDetail = function() {
-      $state.go('jobListingDetail', {}, {
+      $state.go( 'jobListingDetail', {}, {
         reload: true
-      });
+      } );
     };
-    var canvas = document.getElementById('signatureCanvas');
+    var canvas = document.getElementById( 'signatureCanvas' );
     resizeCanvas();
-    var signaturePad = new SignaturePad(canvas);
+    var signaturePad = new SignaturePad( canvas );
     //signaturePad.backgroundColor = "white";
     //signaturePad.minWidth = 2;
     //signaturePad.maxWidth = 4.5;
@@ -192,4 +191,4 @@ app.controller('JoblistingConfirmCtrl', ['$scope', '$state',
       canvas.height = window.innerHeight / 4 - 50;
     };
   }
-]);
+] );
