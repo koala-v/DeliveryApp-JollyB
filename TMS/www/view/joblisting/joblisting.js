@@ -1,75 +1,125 @@
 'use strict';
-app.controller( 'JoblistingCtrl', [ '$scope', '$state', '$ionicLoading', '$ionicPopup',
-  function( $scope, $state, $ionicLoading, $ionicPopup ) {
-    $scope.Search = {
-      BookingNo: ''
-    };
+app.controller('JoblistingListCtrl', ['$scope', '$state', '$ionicLoading', '$ionicPopup', '$ionicFilterBar', '$ionicActionSheet',
+  function($scope, $state, $ionicLoading, $ionicPopup, $ionicFilterBar, $ionicActionSheet) {
+    var filterBarInstance,
+      dataResults = new Array();
+    // $scope.Search = {
+    //   BookingNo: ''
+    // };
     $scope.returnMain = function() {
-      $state.go( 'index.main', {}, {
+      $state.go('index.main', {}, {
         reload: true
-      } );
+      });
     };
-    $scope.gotoList = function() {
-      if ( $scope.Search.BookingNo !== '' ) {
-        // $ionicLoading.show();
-        if ( dbTms ) {
-          dbTms.transaction( function( tx ) {
-            dbSql = 'select * from Tobk1_Accept';
-            tx.executeSql( dbSql, [], function( tx, results ) {
-              if ( results.rows.length > 0 ) {
-                for ( var i = 0; i < results.rows.length; i++ ) {
-                  if ( $scope.Search.BookingNo === results.rows.item( i ).BookingNo ) {
-                    $state.go( 'jobListingList', {
-                      'BookingNo': $scope.Search.BookingNo
-                    }, {
-                      reload: true
-                    } );
-                  }
-                }
-              }
-            } );
-          }, dbError );
-        }
+    $('#txt-BookingNo').on('keydown', function(e) {
+      if (e.which === 9 || e.which === 13) {
+        getBookingNo();
       }
-
-    };
-  }
-] );
-
-app.controller( 'JoblistingListCtrl', [ '$scope', '$state', '$stateParams',
-  function( $scope, $state, $stateParams ) {
-    $scope.List = {
-      BookingNo: $stateParams.BookingNo
-    };
-    if ( dbTms ) {
-      dbTms.transaction( function( tx ) {
-        dbSql = 'select * from Tobk1_Accept';
-        tx.executeSql( dbSql, [], function( tx, results ) {
-          if ( results.rows.length > 0 ) {
-            for ( var i = 0; i < results.rows.length; i++ ) {
-              if ( $scope.List.BookingNo === results.rows.item( i ).BookingNo ) {
-                var UomCode = is.undefined( results.rows.item( i ).UOMCode ) ? '' : results.rows.item( i ).UOMCode;
-                $scope.jobs = [ {
+    });
+    var getBookingNo = function() {
+      if (dbTms) {
+        dbTms.transaction(function(tx) {
+          dbSql = 'select * from Tobk1_Accept';
+          tx.executeSql(dbSql, [], function(tx, results) {
+            if (results.rows.length > 0) {
+              for (var i = 0; i < results.rows.length; i++) {
+                var UomCode = is.undefined(results.rows.item(i).UOMCode) ? '' : results.rows.item(i).UOMCode;
+                var jobs = [{
+                  bookingno: results.rows.item(i).BookingNo,
                   action: 'Collect',
-                  amt: results.rows.item( i ).TotalPcs + ' ' + UomCode,
-                  time: moment( results.rows.item( i ).DeliveryEndDateTime ).format( 'DD-MMM-YYYY' ),
-                  code: results.rows.item( i ).CustomerCode,
+                  amt: results.rows.item(i).TotalPcs + ' ' + UomCode,
+                  time: moment(results.rows.item(i).DeliveryEndDateTime).format('DD-MMM-YYYY'),
+                  code: results.rows.item(i).CustomerCode,
                   customer: {
-                    name: results.rows.item( i ).CustomerName,
-                    address: results.rows.item( i ).ToAddress1 + results.rows.item( i ).ToAddress2 + results.rows.item( i ).ToAddress3 + results.rows.item( i ).ToAddress4
+                    name: results.rows.item(i).CustomerName,
+                    address: results.rows.item(i).ToAddress1 + results.rows.item(i).ToAddress2 + results.rows.item(i).ToAddress3 + results.rows.item(i).ToAddress4
                   },
                   status: {
                     inprocess: false,
                     success: true,
                     failed: false
                   }
-              } ]
+                }]
+                dataResults = dataResults.concat(jobs);
+                $scope.jobs = dataResults;
+
+              }
+            }
+          });
+        }, dbError);
+      }
+    };
+    getBookingNo();
+    $scope.showFilterBar = function() {
+      filterBarInstance = $ionicFilterBar.show({
+        items: $scope.jobs,
+        expression: function(filterText, value, index, array) {
+          return value.bookingno.indexOf(filterText) > -1;
+        },
+        //filterProperties: ['bookingno'],
+        update: function(filteredItems, filterText) {
+          $scope.jobs = filteredItems;
+          console.log(filteredItems + ' Obj');
+          if (filterText) {
+            console.log(filterText);
+          }
+        }
+      });
+    };
+
+    $scope.refreshItems = function() {
+      if (filterBarInstance) {
+        filterBarInstance();
+        filterBarInstance = null;
+      }
+      $timeout(function() {
+        getBookingNo();
+        $scope.$broadcast('scroll.refreshComplete');
+      }, 1000);
+    };
+
+    $scope.gotoDetail = function(job) {
+      $state.go('jobListingDetail', {}, {
+        reload: true
+      });
+    };
+  }
+]);
+
+app.controller('JoblistingCtrl', ['$scope', '$state', '$stateParams',
+  function($scope, $state, $stateParams) {
+    $scope.List = {
+      BookingNo: $stateParams.BookingNo
+    };
+    if (dbTms) {
+      dbTms.transaction(function(tx) {
+        dbSql = 'select * from Tobk1_Accept';
+        tx.executeSql(dbSql, [], function(tx, results) {
+          if (results.rows.length > 0) {
+            for (var i = 0; i < results.rows.length; i++) {
+              if ($scope.List.BookingNo === results.rows.item(i).BookingNo) {
+                var UomCode = is.undefined(results.rows.item(i).UOMCode) ? '' : results.rows.item(i).UOMCode;
+                $scope.jobs = [{
+                  action: 'Collect',
+                  amt: results.rows.item(i).TotalPcs + ' ' + UomCode,
+                  time: moment(results.rows.item(i).DeliveryEndDateTime).format('DD-MMM-YYYY'),
+                  code: results.rows.item(i).CustomerCode,
+                  customer: {
+                    name: results.rows.item(i).CustomerName,
+                    address: results.rows.item(i).ToAddress1 + results.rows.item(i).ToAddress2 + results.rows.item(i).ToAddress3 + results.rows.item(i).ToAddress4
+                  },
+                  status: {
+                    inprocess: false,
+                    success: true,
+                    failed: false
+                  }
+                }]
 
               }
             }
           }
-        } );
-      }, dbError );
+        });
+      }, dbError);
     }
 
 
@@ -133,46 +183,82 @@ app.controller( 'JoblistingListCtrl', [ '$scope', '$state', '$stateParams',
     // }];
 
     $scope.returnSearch = function() {
-      $state.go( 'jobListing', {}, {
+      $state.go('jobListing', {}, {
         reload: true
-      } );
+      });
     };
-    $scope.gotoDetail = function( job ) {
-      $state.go( 'jobListingDetail', {}, {
+    $scope.gotoDetail = function(job) {
+      $state.go('jobListingDetail', {}, {
         reload: true
-      } );
+      });
     };
   }
-] );
-app.controller( 'JoblistingDetailCtrl', [ '$scope', '$state',
-  function( $scope, $state ) {
+]);
+app.controller('JoblistingDetailCtrl', ['ENV', '$scope', '$state', '$ionicActionSheet', '$cordovaSms',
+  function(ENV, $scope, $state, $ionicActionSheet, $cordovaSms) {
+    $scope.showActionSheet = function() {
+      var actionSheet = $ionicActionSheet.show({
+        buttons: [{
+          text: 'CALL'
+        }, {
+          text: 'SMS'
+        }],
+        //destructiveText: 'Delete',
+        titleText: 'Select Picture',
+        cancelText: 'Cancel',
+        cancel: function() {
+          // add cancel code..
+        },
+        buttonClicked: function(index) {
+          if (index === 0) {} else if (index === 1) {
+            SMS();
+          }
+          return true;
+        }
+      });
+    };
     $scope.gotoConfirm = function() {
-      $state.go( 'jobListingConfirm', {}, {
+      $state.go('jobListingConfirm', {}, {
         reload: true
-      } );
+      });
     };
     $scope.returnList = function() {
-      $state.go( 'jobListingList', {}, {
-        reload: true
-      } );
+      $state.go('jobListingList', {}, {});
     };
+    var SMS = function() {
+      $scope.PhoneNumber = '18065981961';
+      $scope.message = 'sms';
+      if (window.cordova && window.cordova.plugins.Keyboard) {
+        cordova.plugins.Keyboard.close();
+      }
+      var options = {
+        replaceLineBreaks: false, // true to replace \n by a new line, false by default
+        android: {
+          intent: 'INTENT' // send SMS with the native android SMS messaging
+            //intent: '' // send SMS without open any other app
+        }
+      };
+      var success = function() {};
+      var error = function(e) {};
+      $cordovaSms.send($scope.PhoneNumber, $scope.message, options, success, error);
+    }
   }
-] );
-app.controller( 'JoblistingConfirmCtrl', [ '$scope', '$state',
-  function( $scope, $state ) {
+]);
+app.controller('JoblistingConfirmCtrl', ['$scope', '$state',
+  function($scope, $state) {
     $scope.returnList = function() {
-      $state.go( 'jobListingList', {}, {
+      $state.go('jobListingList', {}, {
         reload: true
-      } );
+      });
     };
     $scope.returnDetail = function() {
-      $state.go( 'jobListingDetail', {}, {
+      $state.go('jobListingDetail', {}, {
         reload: true
-      } );
+      });
     };
-    var canvas = document.getElementById( 'signatureCanvas' );
+    var canvas = document.getElementById('signatureCanvas');
     resizeCanvas();
-    var signaturePad = new SignaturePad( canvas );
+    var signaturePad = new SignaturePad(canvas);
     //signaturePad.backgroundColor = "white";
     //signaturePad.minWidth = 2;
     //signaturePad.maxWidth = 4.5;
@@ -191,4 +277,4 @@ app.controller( 'JoblistingConfirmCtrl', [ '$scope', '$state',
       canvas.height = window.innerHeight / 4 - 50;
     };
   }
-] );
+]);

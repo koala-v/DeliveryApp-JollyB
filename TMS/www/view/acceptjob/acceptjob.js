@@ -105,7 +105,7 @@ app.controller( 'AcceptJobCtrl', [ '$scope', '$state', '$ionicPopup', '$cordovaK
     };
     $scope.save = function() {
         if(is.not.empty($scope.jobs)){
-            $state.go( 'jobListing', {}, {} );
+            $state.go( 'jobListingList', {}, {} );
         }else{
           showPopup( 'No Job Accepted', 'calm' );
         }
@@ -117,7 +117,7 @@ app.controller( 'AcceptJobCtrl', [ '$scope', '$state', '$ionicPopup', '$cordovaK
         $scope.Search.BookingNo = '';
     };
     $scope.openCam = function() {
-      $cordovaBarcodeScanner.scan().then( function( imageData ) {
+    $cordovaBarcodeScanner.scan().then( function( imageData ) {
         $scope.Search.BookingNo = imageData.text;
         showTobk( $scope.Search.BookingNo );
       }, function( error ) {
