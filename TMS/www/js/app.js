@@ -190,7 +190,7 @@ app.config(['ENV', '$stateProvider', '$urlRouterProvider', '$ionicConfigProvider
         controller: 'JoblistingListCtrl'
       })
       .state('jobListingDetail', {
-        url: '/joblisting/detail',
+        url: '/joblisting/detail/:BookingNo',
         cache: 'false',
         templateUrl: 'view/joblisting/detail.html',
         controller: 'JoblistingDetailCtrl'
@@ -212,7 +212,7 @@ app.config(['ENV', '$stateProvider', '$urlRouterProvider', '$ionicConfigProvider
         controller: 'driverCodeCtrl'
       })
       .state('jobListingConfirm', {
-        url: '/joblisting/confirm',
+        url: '/joblisting/confirm/:BookingNo',
         cache: 'false',
         templateUrl: 'view/joblisting/confirm.html',
         controller: 'JoblistingConfirmCtrl'

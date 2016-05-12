@@ -13,16 +13,26 @@ namespace WebApi.ServiceInterface.TMS
         {
             if (auth.AuthResult(token, uri))
             {
-                 
+
                 if (uri.IndexOf("/tms/tobk1/sps") > 0)
-                {
-                    ecr.data.results = tobk_Logic.Get_Tobk1_List(request);
-                }else if (uri.IndexOf("/tms/tobk1") > 0)
                 {
                     ecr.data.results = tobk_Logic.Get_Tobk1_SpsList(request);
                 }
-               else
-                ecr.meta.code = 200;
+                else if (uri.IndexOf("/tms/tobk1/update") > 0)
+                {
+                    ecr.data.results = tobk_Logic.update_tobk1(request);
+                }
+                else if (uri.IndexOf("/tms/tobk1") > 0)
+                {
+                    ecr.data.results = tobk_Logic.Get_Tobk1_List(request);
+
+                }
+                else if (uri.IndexOf("/tms/tobk2") > 0)
+                {
+                    ecr.data.results = tobk_Logic.Get_Tobk2_List(request);
+                }
+                else
+                    ecr.meta.code = 200;
                 ecr.meta.message = "OK";
             }
             else

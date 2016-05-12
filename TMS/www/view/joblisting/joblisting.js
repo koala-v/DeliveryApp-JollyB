@@ -1,11 +1,12 @@
 'use strict';
-app.controller('JoblistingListCtrl', ['$scope', '$state', '$ionicLoading', '$ionicPopup', '$ionicFilterBar', '$ionicActionSheet',
-  function($scope, $state, $ionicLoading, $ionicPopup, $ionicFilterBar, $ionicActionSheet) {
+app.controller('JoblistingListCtrl', ['$scope', '$state', '$ionicLoading', '$ionicPopup', '$ionicFilterBar', '$ionicActionSheet','ApiService',
+  function($scope, $state, $ionicLoading, $ionicPopup, $ionicFilterBar, $ionicActionSheet,ApiService) {
     var filterBarInstance,
       dataResults = new Array();
     // $scope.Search = {
     //   BookingNo: ''
     // };
+    console.log(sessionStorage.getItem('strDriverId'));
     $scope.returnMain = function() {
       $state.go('index.main', {}, {
         reload: true
@@ -23,27 +24,61 @@ app.controller('JoblistingListCtrl', ['$scope', '$state', '$ionicLoading', '$ion
           tx.executeSql(dbSql, [], function(tx, results) {
             if (results.rows.length > 0) {
               for (var i = 0; i < results.rows.length; i++) {
-                var UomCode = is.undefined(results.rows.item(i).UOMCode) ? '' : results.rows.item(i).UOMCode;
+                var tobk1_acc = results.rows.item(i);
                 var jobs = [{
-                  bookingno: results.rows.item(i).BookingNo,
-                  action: 'Collect',
-                  amt: results.rows.item(i).TotalPcs + ' ' + UomCode,
-                  time: moment(results.rows.item(i).DeliveryEndDateTime).format('DD-MMM-YYYY'),
-                  code: results.rows.item(i).CustomerCode,
+                  bookingno: tobk1_acc.BookingNo,
+                  // action: 'Collect',
+                  action: is.equal(tobk1_acc.JobType, 'DE') ? 'Deliver' : 'Collect',
+                  amt: tobk1_acc.TotalPcs + ' ' + tobk1_acc.UomCode,
+                 time: checkDatetime(tobk1_acc.DeliveryEndDateTime),
+                  code: tobk1_acc.CustomerCode,
                   customer: {
-                    name: results.rows.item(i).CustomerName,
-                    address: results.rows.item(i).ToAddress1 + results.rows.item(i).ToAddress2 + results.rows.item(i).ToAddress3 + results.rows.item(i).ToAddress4
+                    name: tobk1_acc.CustomerName,
+                    address: tobk1_acc.ToAddress1 + tobk1_acc.ToAddress2 + tobk1_acc.ToAddress3 + tobk1_acc.ToAddress4
                   },
                   status: {
-                    inprocess: false,
-                    success: true,
+                    inprocess: is.equal(tobk1_acc.CompletedFlag, 'Y') ? false : true,
+                    success: is.equal(tobk1_acc.CompletedFlag, 'Y') ? true : false,
                     failed: false
                   }
-                }]
+                }];
                 dataResults = dataResults.concat(jobs);
                 $scope.jobs = dataResults;
 
               }
+            }
+            else {
+              console.log('lllll');
+            var strUri = '/api/tms/tobk1?DriverCode=' + sessionStorage.getItem('strDriverCode');
+            ApiService.GetParam( strUri, true ).then( function success( result ) {
+              var results = result.data.results;
+              if(is.not.empty(results)){
+                for(var intI =0; intI<results.length;intI++ ){
+                  var tobk1_acc = results[intI];
+                  var jobs = [{
+                    bookingno: tobk1_acc.BookingNo,
+                    // action: 'Collect',
+                    action: is.equal(tobk1_acc.JobType, 'DE') ? 'Deliver' : 'Collect',
+                    amt: tobk1_acc.TotalPcs + ' ' + tobk1_acc.UomCode,
+                   time: checkDatetime(tobk1_acc.DeliveryEndDateTime),
+                    code: tobk1_acc.CustomerCode,
+                    customer: {
+                      name: tobk1_acc.CustomerName,
+                      address: tobk1_acc.ToAddress1 + tobk1_acc.ToAddress2 + tobk1_acc.ToAddress3 + tobk1_acc.ToAddress4
+                    },
+                    status: {
+                      inprocess: is.equal(tobk1_acc.CompletedFlag, 'Y') ? false : true,
+                      success: is.equal(tobk1_acc.CompletedFlag, 'Y') ? true : false,
+                      failed: false
+                    }
+                  }];
+                  dataResults = dataResults.concat(jobs);
+                  $scope.jobs = dataResults;
+
+                }
+              }
+});
+              console.log('22222');
             }
           });
         }, dbError);
@@ -79,7 +114,9 @@ app.controller('JoblistingListCtrl', ['$scope', '$state', '$ionicLoading', '$ion
     };
 
     $scope.gotoDetail = function(job) {
-      $state.go('jobListingDetail', {}, {
+      $state.go('jobListingDetail', {
+        'BookingNo': job.bookingno,
+      }, {
         reload: true
       });
     };
@@ -194,8 +231,51 @@ app.controller('JoblistingCtrl', ['$scope', '$state', '$stateParams',
     };
   }
 ]);
-app.controller('JoblistingDetailCtrl', ['ENV', '$scope', '$state', '$ionicActionSheet', '$cordovaSms',
-  function(ENV, $scope, $state, $ionicActionSheet, $cordovaSms) {
+
+app.controller('JoblistingDetailCtrl', ['ENV', '$scope', '$state', '$ionicActionSheet', '$cordovaSms', '$stateParams', 'ApiService',
+  function(ENV, $scope, $state, $ionicActionSheet, $cordovaSms, $stateParams, ApiService) {
+    $scope.BookingNo = $stateParams.BookingNo;
+    $scope.CompletedFlagDetail = $stateParams.CompletedFlagDetail;
+    console.log($stateParams.BookingNo + 'aaaa' + $scope.CompletedFlagDetail);
+    var dataResults = new Array();
+    var showTobk = function() {
+      if (is.not.empty($scope.BookingNo)) {
+        var strUri = '/api/tms/tobk2?BookingNo=' + $scope.BookingNo;
+        ApiService.GetParam(strUri, true).then(function success(result) {
+          var results = result.data.results;
+          if (is.not.empty(results)) {
+            $scope.JobType = results[0].JobType;
+            // if (is.equal(results[0].JobType, 'CO')) {
+            //   $scope.JobType = 'Collect';
+            //   // $scope.title = $scope.JobType + ' : ' + $scope.BookingNo;
+            // } else if (is.equal(results[0].JobType, 'DE')) {
+            //   $scope.JobType = 'Deliver';
+            //   // $scope.title = $scope.JobType + ' : ' + $scope.BookingNo;
+            // }
+            // //  $scope.title = $scope.JobType + ' : ' + $scope.BookingNo;
+            // console.log($scope.JobType + 'jobtype');
+            for (var intI = 0; intI < results.length; intI++) {
+              var Tobk2 = [{
+                ContainerType: results[intI].ContainerType,
+                DeliveryPcs: results[intI].DeliveryPcs,
+                Pcs: results[intI].Pcs
+              }]
+              dataResults = dataResults.concat(Tobk2);
+              $scope.Tobk2S = dataResults;
+            }
+
+          }
+          if (is.equal($scope.JobType, 'DE')) {
+            $scope.title = 'Deliver : ' + $scope.BookingNo;
+          } else {
+            $scope.title = 'Collect : ' + $scope.BookingNo;
+          }
+
+        });
+      }
+    };
+    showTobk();
+
     $scope.showActionSheet = function() {
       var actionSheet = $ionicActionSheet.show({
         buttons: [{
@@ -210,7 +290,9 @@ app.controller('JoblistingDetailCtrl', ['ENV', '$scope', '$state', '$ionicAction
           // add cancel code..
         },
         buttonClicked: function(index) {
-          if (index === 0) {} else if (index === 1) {
+          if (index === 0) {
+
+          } else if (index === 1) {
             SMS();
           }
           return true;
@@ -218,7 +300,9 @@ app.controller('JoblistingDetailCtrl', ['ENV', '$scope', '$state', '$ionicAction
       });
     };
     $scope.gotoConfirm = function() {
-      $state.go('jobListingConfirm', {}, {
+      $state.go('jobListingConfirm', {
+        'BookingNo': $scope.BookingNo
+      }, {
         reload: true
       });
     };
@@ -226,8 +310,8 @@ app.controller('JoblistingDetailCtrl', ['ENV', '$scope', '$state', '$ionicAction
       $state.go('jobListingList', {}, {});
     };
     var SMS = function() {
-      $scope.PhoneNumber = '18065981961';
-      $scope.message = 'sms';
+      $scope.PhoneNumber = '18065981961'; //default PhoneNumber
+      $scope.message = 'sms'; //default sms message
       if (window.cordova && window.cordova.plugins.Keyboard) {
         cordova.plugins.Keyboard.close();
       }
@@ -244,15 +328,26 @@ app.controller('JoblistingDetailCtrl', ['ENV', '$scope', '$state', '$ionicAction
     }
   }
 ]);
-app.controller('JoblistingConfirmCtrl', ['$scope', '$state',
-  function($scope, $state) {
+app.controller('JoblistingConfirmCtrl', ['$scope', '$state', '$stateParams', 'ApiService',
+  function($scope, $state, $stateParams, ApiService) {
+    console.log($stateParams.BookingNo);
     $scope.returnList = function() {
+      var jsonData = 'CompletedFlag=Y' + '&BookingNo=' + $stateParams.BookingNo;
+      var strUri = '/api/tms/tobk1/update?' + jsonData;
+      ApiService.GetParam(strUri, true).then(function success(result) {});
+      var tobk1 = {
+        CompletedFlag: 'Y',
+        BookingNo: $stateParams.BookingNo
+      }
+      db_update_Tobk1_Accept(tobk1);
       $state.go('jobListingList', {}, {
         reload: true
       });
     };
     $scope.returnDetail = function() {
-      $state.go('jobListingDetail', {}, {
+      $state.go('jobListingDetail', {
+        BookingNo: $stateParams.BookingNo
+      }, {
         reload: true
       });
     };

@@ -81,6 +81,8 @@
     <Compile Include="CommonResponse.cs" />
     <Compile Include="ConfigInterface.cs" />
     <Compile Include="Tables\Tobk1.cs" />
+    <Compile Include="Tables\Tobk2.cs" />
+    <Compile Include="Tables\Todr1.cs" />
     <Compile Include="TMS\Tms_Login.cs" />
     <Compile Include="TMS\Tobk.cs" />
     <Compile Include="Utils\Download.cs" />

@@ -17,7 +17,7 @@ namespace WebApi.ServiceInterface.TMS
                 {
                     ecr.meta.code = 200;
                     ecr.meta.message = "OK";
-                    ecr.data.results = loginLogic.LoginCheck(request);
+                    ecr.data.results = loginLogic.GetTodr1(request);
                 }
                 else
                 {

@@ -73,11 +73,11 @@ app.controller( 'AcceptJobCtrl', [ '$scope', '$state', '$ionicPopup', '$cordovaK
         ApiService.GetParam( strUri, true ).then( function success( result ) {
           var results = result.data.results;
           if(is.not.empty(results)){
-              var UomCode = is.undefined( results[ 0 ].UOMCode ) ? '' : results[ 0 ].UOMCode;
+            //  var UomCode = is.undefined( results[ 0 ].UOMCode ) ? '' : results[ 0 ].UOMCode;
               var tobk1 = {
                 action: 'Collect',
-                amt: results[ 0 ].TotalPcs + ' ' + UomCode,
-                time: moment( results[ 0 ].DeliveryEndDateTime ).format( 'DD-MMM-YYYY' ),
+                amt: results[ 0 ].TotalPcs + ' ' + results[ 0 ].UomCode,
+                time: checkDatetime(results[ 0 ].DeliveryEndDateTime),
                 code: ' ',
                 customer: {
                   name: results[ 0 ].CustomerName,
