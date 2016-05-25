@@ -91,6 +91,7 @@
     <Compile Include="TMS\Csbk.cs" />
     <Compile Include="TMS\UploadImg.cs" />
     <Compile Include="Utils\Download.cs" />
+    <Compile Include="Utils\FolderSecurityHelper.cs" />
     <Compile Include="Utils\Uploading.cs" />
     <Compile Include="Modfunction.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

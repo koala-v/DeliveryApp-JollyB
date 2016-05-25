@@ -32,7 +32,7 @@ namespace WebApi.ServiceModel.TMS
         public int upload(UploadImg request)
         {
             int i = -1;
-            string filePath = "";
+            string folderPath = "";
             if (!string.IsNullOrEmpty(request.BookingNo))
             {
                 try
@@ -43,19 +43,22 @@ namespace WebApi.ServiceModel.TMS
                         List<Saco1> saco1 = db.Select<Saco1>(strSQL);
                         if (saco1.Count > 0)
                         {
-                            filePath = saco1[0].DocumentPath  + "\\csbk1\\" + request.BookingNo;        /*2016018 File path */          
-                          //filePath = "E:\\"+"\\Sysfreight\\" + "\\csbk1\\" + request.BookingNo;
+                            folderPath = saco1[0].DocumentPath  + "\\csbk1\\" + request.BookingNo;
                         }
                     }
-                    if (!Directory.Exists(filePath))
+                    if (!Directory.Exists(folderPath))
                     {
-                        Directory.CreateDirectory(filePath);
-                        var security = new DirectorySecurity();
-                        security.AddAccessRule(new FileSystemAccessRule("IIS_IUSRS", FileSystemRights.FullControl, InheritanceFlags.ContainerInherit | InheritanceFlags.ObjectInherit, PropagationFlags.None, AccessControlType.Allow));
-                        Directory.SetAccessControl(filePath, security);
+                        Directory.CreateDirectory(folderPath);
                     }
+																				if (Directory.Exists(folderPath))
+																				{
+																								//if (!FolderSecurityHelper.ExistFolderRights(folderPath))
+																								//{
+																												FolderSecurityHelper.SetFolderRights(folderPath);
+																								//}
+																				}
                     if (string.IsNullOrEmpty(request.FileName)) return i;
-                    string resultFile = Path.Combine(filePath, request.FileName);
+                    string resultFile = Path.Combine(folderPath, request.FileName);
                     if (File.Exists(resultFile))
                     {
                         File.Delete(resultFile);
