@@ -6,12 +6,15 @@ app.controller('LoginCtrl', ['ENV', '$scope', '$http', '$state', '$stateParams',
     $scope.logininfo = {
       strDriverId: ''
     };
+
     $scope.funcLogin = function(blnDemo) {
+
       if (blnDemo) {
         ENV.mock = true;
       } else {
         ENV.mock = false;
       }
+
       if (window.cordova && window.cordova.plugins.Keyboard) {
         cordova.plugins.Keyboard.close();
       }
@@ -23,6 +26,7 @@ app.controller('LoginCtrl', ['ENV', '$scope', '$http', '$state', '$stateParams',
           reload: true
         });
       } else {
+
         if ($scope.logininfo.strDriverId === '') {
           alertPopupTitle = 'Please Enter Driver ID.';
           alertPopup = $ionicPopup.alert({
@@ -30,18 +34,23 @@ app.controller('LoginCtrl', ['ENV', '$scope', '$http', '$state', '$stateParams',
             okType: 'button-assertive'
           });
           alertPopup.then(function(res) {
-            console.log(alertPopupTitle);
+            // console.log(alertPopupTitle);
           });
-        } else {
-          var strUri = '/api/tms/login/check?ContactNo=' + $scope.logininfo.strDriverId;
-          console.log(strUri);
-          ApiService.GetParam(strUri, true).then(function success(result) {
+        }
+        else {
+          // $state.go('index.main', {}, {
+          //   reload: true
+          // });
+          var strUri = '/api/tms/login/check?DriverCode=' + $scope.logininfo.strDriverId;
+            ApiService.GetParam(strUri, true).then(function success(result) {
             var results = result.data.results;
-            if (is.not.undefined(results)) {
+            console.log(results+'result');
+            if (is.not.empty(results)) {
               sessionStorage.clear();
               sessionStorage.setItem('strDriverId', $scope.logininfo.strDriverId);
-              sessionStorage.setItem('strDriverCode', results[0].DriverCode);
+              sessionStorage.setItem('strDriverCode', $scope.logininfo.strDriverId);
               sessionStorage.setItem('strDriverName', results[0].DriverName);
+              console.log( $scope.logininfo.strDriverId+'aa'+'bb'+results[0].DriverName);
               $state.go('index.main', {}, {
                 reload: true
               });

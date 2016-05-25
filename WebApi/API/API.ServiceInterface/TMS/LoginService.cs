@@ -13,16 +13,17 @@ namespace WebApi.ServiceInterface.TMS
         {
             if (auth.AuthResult(token, uri))
             {
-                if (loginLogic.LoginCheck(request) > 0)
+                if (uri.IndexOf("/tms/login/check") > 0)
                 {
+                    
                     ecr.meta.code = 200;
                     ecr.meta.message = "OK";
-                    ecr.data.results = loginLogic.GetTodr1(request);
+                    ecr.data.results = loginLogic.LoginCheck(request);
                 }
                 else
                 {
                     ecr.meta.code = 612;
-                    ecr.meta.message = "Invalid User";
+                    ecr.meta.message = "Invalid DriverID";
                 }
             }
             else

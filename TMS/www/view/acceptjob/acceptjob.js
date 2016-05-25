@@ -1,6 +1,6 @@
 'use strict';
-app.controller( 'AcceptJobCtrl', [ '$scope', '$state', '$ionicPopup', '$cordovaKeyboard', '$cordovaBarcodeScanner', 'ACCEPTJOB_ORM', 'ApiService',
-  function( $scope, $state, $ionicPopup, $cordovaKeyboard, $cordovaBarcodeScanner, ACCEPTJOB_ORM, ApiService ) {
+app.controller('AcceptJobCtrl', ['$scope', '$state', '$ionicPopup', '$cordovaKeyboard', '$cordovaBarcodeScanner', 'ACCEPTJOB_ORM', 'ApiService',
+  function($scope, $state, $ionicPopup, $cordovaKeyboard, $cordovaBarcodeScanner, ACCEPTJOB_ORM, ApiService) {
     var alertPopup = null,
       dataResults = new Array();
     $scope.Search = {
@@ -50,98 +50,114 @@ app.controller( 'AcceptJobCtrl', [ '$scope', '$state', '$ionicPopup', '$cordovaK
         }
     ];
     */
-    var showPopup = function( title, type ) {
-      if ( alertPopup === null ) {
-        alertPopup = $ionicPopup.alert( {
+    var showPopup = function(title, type) {
+      if (alertPopup === null) {
+        alertPopup = $ionicPopup.alert({
           title: title,
           okType: 'button-' + type
-        } );
+        });
       } else {
         alertPopup.close();
         alertPopup = null;
       }
     };
-    var showList = function(){
-        if ( is.not.empty(ACCEPTJOB_ORM.LIST.Tobk1s) ) {
-            dataResults = dataResults.concat( ACCEPTJOB_ORM.LIST.Tobk1s );
-            $scope.jobs = dataResults;
-        }
+    var showList = function() {
+      if (is.not.empty(ACCEPTJOB_ORM.LIST.Csbk1s)) {
+        dataResults = dataResults.concat(ACCEPTJOB_ORM.LIST.Csbk1s);
+        $scope.jobs = dataResults;
+      }
     };
-    var showTobk = function( bookingNo ) {
-      if ( is.not.empty( bookingNo ) ) {
-        var strUri = '/api/tms/tobk1?BookingNo=' + bookingNo;
-        ApiService.GetParam( strUri, true ).then( function success( result ) {
+    var showCsbk = function(bookingNo) {
+      if (is.not.empty(bookingNo)) {
+        var strUri = '/api/tms/csbk1?BookingNo=' + bookingNo;
+        ApiService.GetParam(strUri, true).then(function success(result) {
           var results = result.data.results;
-          if(is.not.empty(results)){
-            //  var UomCode = is.undefined( results[ 0 ].UOMCode ) ? '' : results[ 0 ].UOMCode;
-              var tobk1 = {
-                action: 'Collect',
-                amt: results[ 0 ].TotalPcs + ' ' + results[ 0 ].UomCode,
-                time: checkDatetime(results[ 0 ].DeliveryEndDateTime),
-                code: ' ',
-                customer: {
-                  name: results[ 0 ].CustomerName,
-                  address: results[ 0 ].ToAddress1 + results[ 0 ].ToAddress2 + results[ 0 ].ToAddress3 + results[ 0 ].ToAddress4
-                }
-              };
-              for ( var i = 0; i < results.length; i++ ) {
-                db_add_Tobk1_Accept( results[ i ] );
+          if (is.not.empty(results)) {
+            var reuturnTime = '';
+            if (is.equal(results[0].CollectionTimeStart, '') && is.equal(results[0].CollectionTimeEnd, '')) {
+              reuturnTime = '';
+            } else {
+              reuturnTime = results[0].CollectionTimeStart + '-' + results[0].CollectionTimeEnd;
+            }
+            var DLVReturntime = '';
+            if (is.equal(results[0].CollectionTimeStart, '') && is.equal(results[0].CollectionTimeEnd, '')) {
+              DLVReturntime = '';
+            } else {
+              DLVReturntime = results[0].TimeFrom + '-' + results[0].TimeTo;
+            }
+            console.log(reuturnTime);
+            var Csbk1 = {
+              action: is.equal(results[0].StatusCode, 'DLV') ? 'Deliver' : 'Collect',
+              amt: results[0].Pcs + ' PKG',
+              //  time: is.equal(results[ 0 ].Pcs.JobType, 'DLV') ? '11:00 - 18:00' : checkDatetime(results[ 0 ].CollectionTimeStart)-checkDatetime(results[ 0 ].CollectionTimeEnd),
+              time: is.equal(results[0].StatusCode, 'DLV') ? DLVReturntime : reuturnTime,
+              code: results[0].PostalCode,
+              customer: {
+                name: results[0].BusinessPartyName,
+                address: results[0].Address1 + results[0].Address2 + results[0].Address3 + results[0].Address4
               }
-              dataResults = dataResults.concat( tobk1 );
-              $scope.jobs = dataResults;
-              ACCEPTJOB_ORM.LIST._setTobk( $scope.jobs );
+            };
+            for (var i = 0; i < results.length; i++) {
+              db_add_Csbk1_Accept(results[i]);
+            }
+            dataResults = dataResults.concat(Csbk1);
+            $scope.jobs = dataResults;
+            ACCEPTJOB_ORM.LIST._setCsbk($scope.jobs);
           }
           $scope.Search.BookingNo = '';
-          $( '#div-list' ).focus();
-        } );
+          $('#div-list').focus();
+        });
       } else {
-        showPopup( 'Wrong Booking No', 'assertive' );
+        showPopup('Wrong Booking No', 'assertive');
       }
     };
     $scope.returnMain = function() {
-      $state.go( 'index.main', {}, {
+      $state.go('index.main', {}, {
         reload: true
-      } );
+      });
     };
     $scope.save = function() {
-        if(is.not.empty($scope.jobs)){
-            $state.go( 'jobListingList', {}, {} );
-        }else{
-          showPopup( 'No Job Accepted', 'calm' );
-        }
-    };
-    $scope.clear = function() {
-        dataResults = new Array();
-        $scope.jobs = dataResults;
-        ACCEPTJOB_ORM.LIST._setTobk( $scope.jobs );
-        $scope.Search.BookingNo = '';
-    };
-    $scope.openCam = function() {
-    $cordovaBarcodeScanner.scan().then( function( imageData ) {
-        $scope.Search.BookingNo = imageData.text;
-        showTobk( $scope.Search.BookingNo );
-      }, function( error ) {
-        $cordovaToast.showShortBottom( error );
-      } );
-    };
-    $scope.clearInput = function() {
-      if ( is.not.empty( $scope.Search.BookingNo ) ) {
-        $scope.Search.BookingNo = '';
-        $( '#txt-bookingno' ).select();
+      if (is.not.empty($scope.jobs)) {
+        $state.go('jobListingList', {}, {});
+      } else {
+        showPopup('No Job Accepted', 'calm');
       }
     };
-    $( '#txt-bookingno' ).on( 'keydown', function( e ) {
-      if ( e.which === 9 || e.which === 13 ) {
-        if ( window.cordova ) {
+    $scope.clear = function() {
+      dataResults = new Array();
+      $scope.jobs = dataResults;
+      ACCEPTJOB_ORM.LIST._setCsbk($scope.jobs);
+      $scope.Search.BookingNo = '';
+    };
+    $scope.openCam = function() {
+      $cordovaBarcodeScanner.scan().then(function(imageData) {
+        $scope.Search.BookingNo = imageData.text;
+        showCsbk($scope.Search.BookingNo);
+      }, function(error) {
+        $cordovaToast.showShortBottom(error);
+      }, {
+        "formats": "CODE_39",
+      });
+    };
+    $scope.clearInput = function() {
+      if (is.not.empty($scope.Search.BookingNo)) {
+        $scope.Search.BookingNo = '';
+        $('#txt-bookingno').select();
+      }
+    };
+    $('#txt-bookingno').on('keydown', function(e) {
+      if (e.which === 9 || e.which === 13) {
+        if (window.cordova) {
           $cordovaKeyboard.close();
         }
-        if ( alertPopup === null ) {
-          showTobk( $scope.Search.BookingNo );
+        if (alertPopup === null) {
+          showCsbk($scope.Search.BookingNo);
         } else {
           alertPopup.close();
           alertPopup = null;
         }
       }
-    } );
+    });
     showList();
- }] );
+  }
+]);

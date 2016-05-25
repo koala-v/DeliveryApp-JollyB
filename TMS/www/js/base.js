@@ -63,36 +63,66 @@ function dbError(tx, error) {
 var dbTms = window.openDatabase(dbInfo.dbName, dbInfo.dbVersion, dbInfo.dbDisplayName, dbInfo.dbEstimatedSize);
 if (dbTms) {
   dbTms.transaction(function(tx) {
-    dbSql = 'DROP TABLE if exists Tobk1_Accept';
+    dbSql = 'DROP TABLE if exists Csbk1_Accept';
     tx.executeSql(dbSql, [], null, dbError);
-    dbSql = "CREATE TABLE Tobk1_Accept (BookingNo TEXT, JobNo TEXT, JobType TEXT,CustomerCode TEXT,CustomerName TEXT,CustomerRefNo TEXT,CompletedFlag TEXT,DeliveryEndDateTime TEXT,TotalPcs int,ToAddress1 TEXT,ToAddress2 TEXT,ToAddress3 TEXT,ToAddress4 TEXT,UomCode TEXT)";
+    dbSql = "CREATE TABLE Csbk1_Accept (TrxNo INT,BookingNo TEXT, JobNo TEXT, StatusCode TEXT,BookingCustomerCode TEXT,Pcs INT,CollectionTimeStart TEXT,CollectionTimeEnd TEXT,PostalCode TEXT,BusinessPartyCode TEXT,BusinessPartyName TEXT,Address1 TEXT,Address2 TEXT,Address3 TEXT,Address4 TEXT,CompletedFlag TEXT,TimeFrom TEXT,TimeTo TEXT)";
+    tx.executeSql(dbSql, [], null, dbError);
+  });
+  dbTms.transaction(function(tx) {
+    dbSql = 'DROP TABLE if exists Csbk2_Accept';
+    tx.executeSql(dbSql, [], null, dbError);
+    dbSql = "CREATE TABLE Csbk2_Accept (TrxNo INT,LineItemNo INT, BoxCode TEXT, Status TEXT,Pcs INT,UnitRate TEXT,Volume TEXT,GrossWeight TEXT,CollectedPcs int,CollectedAmt TEXT,DepositAmt TEXT,DiscountAmt TEXT,AttachmentFlag TEXT,ItemNo INT)";
     tx.executeSql(dbSql, [], null, dbError);
   });
 }
-var db_del_Tobk1_Accept = function() {
+var db_del_Csbk1_Accept = function() {
   if (dbTms) {
     dbTms.transaction(function(tx) {
-      dbSql = 'Delete from Tobk1_Accept';
+      dbSql = 'Delete from Csbk1_Accept';
       tx.executeSql(dbsql, [], null, dbError)
     });
   }
 }
-var db_add_Tobk1_Accept = function(Tobk1) {
+var db_add_Csbk1_Accept = function(Csbk1) {
   if (dbTms) {
     dbTms.transaction(function(tx) {
-      Tobk1 = repalceObj(Tobk1);
-      dbSql = 'INSERT INTO Tobk1_Accept(BookingNo,JobNo,JobType,CustomerCode,CustomerName,CustomerRefNo,CompletedFlag,DeliveryEndDateTime,TotalPcs,ToAddress1,ToAddress2,ToAddress3,ToAddress4,UomCode) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
-      tx.executeSql(dbSql, [Tobk1.BookingNo, Tobk1.JobNo, Tobk1.JobType, Tobk1.CustomerCode, Tobk1.CustomerName, Tobk1.CustomerRefNo, Tobk1.CompletedFlag, Tobk1.DeliveryEndDateTime, Tobk1.TotalPcs, Tobk1.ToAddress1, Tobk1.ToAddress2, Tobk1.ToAddress3, Tobk1.ToAddress4, Tobk1.UomCode], null, dbError);
+      Csbk1 = repalceObj(Csbk1);
+      dbSql = 'INSERT INTO Csbk1_Accept(TrxNo,BookingNo,JobNo,StatusCode,BookingCustomerCode,Pcs,CollectionTimeStart,CollectionTimeEnd,PostalCode,BusinessPartyCode,BusinessPartyName,Address1,Address2,Address3,Address4,CompletedFlag,TimeFrom,TimeTo) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+      tx.executeSql(dbSql, [Csbk1.TrxNo,Csbk1.BookingNo, Csbk1.JobNo, Csbk1.StatusCode, Csbk1.BookingCustomerCode, Csbk1.Pcs, Csbk1.CollectionTimeStart, Csbk1.CollectionTimeEnd, Csbk1.PostalCode, Csbk1.BusinessPartyCode,Csbk1.BusinessPartyName, Csbk1.Address1, Csbk1.Address2, Csbk1.Address3, Csbk1.Address4,Csbk1.CompletedFlag,Csbk1.TimeFrom,Csbk1.TimeTo], null, dbError);
+  });
+  }
+}
+var db_add_Csbk2_Accept = function(Csbk2) {
+  if (dbTms) {
+    dbTms.transaction(function(tx) {
+      Csbk2 = repalceObj(Csbk2);
+      dbSql = 'INSERT INTO Csbk2_Accept(TrxNo,LineItemNo, BoxCode, Status,Pcs,UnitRate,Volume,GrossWeight,CollectedPcs,CollectedAmt,DepositAmt,DiscountAmt,AttachmentFlag,ItemNo) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+      tx.executeSql(dbSql, [Csbk2.TrxNo,Csbk2.LineItemNo, Csbk2.BoxCode, Csbk2.Status,Csbk2.Pcs,Csbk2.UnitRate,Csbk2.Volume,Csbk2.GrossWeight,Csbk2.CollectedPcs,Csbk2.CollectedAmt,Csbk2.DepositAmt,Csbk2.DiscountAmt,Csbk2.AttachmentFlag,Csbk2.ItemNo], null, dbError);
+  });
+  }
+}
 
+var onStrToURL = function(strURL) {
+    if (strURL.length > 0 && strURL.indexOf('http://') < 0 && strURL.indexOf('HTTP://') < 0) {
+        strURL = "http://" + strURL;
+    }
+    return strURL;
+};
+
+var db_update_Csbk1_Accept = function(Csbk1) {
+  if (dbTms) {
+    dbTms.transaction(function(tx) {
+      dbSql = 'Update Csbk1_Accept set CompletedFlag=? where BookingNo=?';
+      tx.executeSql(dbSql, [Csbk1.CompletedFlag, Csbk1.BookingNo], null, dbError);
     });
   }
 }
 
-var db_update_Tobk1_Accept = function(Tobk1) {
+var db_update_Csbk2_Accept = function(Csbk2) {
   if (dbTms) {
     dbTms.transaction(function(tx) {
-      dbSql = 'Update Tobk1_Accept set CompletedFlag=? where BookingNo=?';
-      tx.executeSql(dbSql, [Tobk1.CompletedFlag, Tobk1.BookingNo], null, dbError);
+      dbSql = 'Update Csbk2_Accept set CollectedPcs=?,CollectedAmt=? where TrxNo=? and LineItemNo=?';
+      tx.executeSql(dbSql, [Csbk2.CollectedPcs, Csbk2.CollectedAmt,Csbk2.TrxNo,Csbk2.LineItemNo], null, dbError);
     });
   }
 }

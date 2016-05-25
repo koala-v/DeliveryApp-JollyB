@@ -16,7 +16,8 @@
                         <h2>Amount</h2>
                     </div>
                     <div class="col">
-                        <h2>0</h2>
+                        <!-- <h2><span ng-model="Amount"></span></h2> -->
+                            <h2><span ng-bind="Amount"></span></h2>
                     </div>
                 </div>
                 <div class="row">
@@ -24,7 +25,7 @@
                         <h2>Packages</h2>
                     </div>
                     <div class="col">
-                        <h2>0</h2>
+                        <h2><span ng-bind="Packages"></span></h2>
                     </div>
                 </div>
             </div>
@@ -40,7 +41,7 @@
 
                 </div>
             </div>
-              <div class="item item-divider">
+              <!-- <div class="item item-divider">
                  Service Rating
               </div>
               <div class="button-bar">
@@ -54,12 +55,12 @@
                   </button>
                   <button class="button icon ion-android-star-outline">
                   </button>
-              </div>
+              </div> -->
         </div>
     </ion-pane>
-    <ion-footer-bar class="bar-positive hide-on-keyboard-open">
+    <ion-footer-bar class="bar-positive ">
         <div class="button-bar">
-            <button class="button icon ion-android-done" ng-click="returnList()">
+            <button class="button icon ion-android-done" ng-click="confirm()">
                 &nbsp;OK
             </button>
             <button class="button icon ion-arrow-return-right" ng-click="returnDetail()">
