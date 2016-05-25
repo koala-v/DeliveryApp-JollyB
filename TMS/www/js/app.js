@@ -171,6 +171,15 @@ app.config(['ENV', '$stateProvider', '$urlRouterProvider', '$ionicConfigProvider
           }
         }
       })
+      .state( 'index.setting', {
+              url: '/setting/setting',
+              views: {
+                  'menuContent': {
+                      templateUrl: 'view/setting/setting.html',
+                      controller: 'SettingCtrl'
+                  }
+              }
+          } )
       .state('acceptJob', {
         url: '/acceptjob/search',
         cache: 'false',
@@ -190,7 +199,7 @@ app.config(['ENV', '$stateProvider', '$urlRouterProvider', '$ionicConfigProvider
         controller: 'JoblistingListCtrl'
       })
       .state('jobListingDetail', {
-        url: '/joblisting/detail',
+        url: '/joblisting/detail/:BookingNo/:JobNo/:CollectedAmt/:Collected',
         cache: 'false',
         templateUrl: 'view/joblisting/detail.html',
         controller: 'JoblistingDetailCtrl'
@@ -212,7 +221,7 @@ app.config(['ENV', '$stateProvider', '$urlRouterProvider', '$ionicConfigProvider
         controller: 'driverCodeCtrl'
       })
       .state('jobListingConfirm', {
-        url: '/joblisting/confirm',
+        url: '/joblisting/confirm/:BookingNo/:JobNo/:CollectedAmt/:Collected',
         cache: 'false',
         templateUrl: 'view/joblisting/confirm.html',
         controller: 'JoblistingConfirmCtrl'

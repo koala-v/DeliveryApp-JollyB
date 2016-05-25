@@ -36,8 +36,8 @@ namespace WebApi.ServiceInterface
 												return ecr;
 								}
 
-        public ServiceModel.TMS.Tobk_Logic tms_Tobk_Logic { get; set; }
-        public object Any(ServiceModel.TMS.Tobk request)
+        public ServiceModel.TMS.Csbk_Logic tms_Tobk_Logic { get; set; }
+        public object Any(ServiceModel.TMS.Csbk request)
         {
             CommonResponse ecr = new CommonResponse();
             ecr.initial();
@@ -50,6 +50,38 @@ namespace WebApi.ServiceInterface
             return ecr;
         }
 
+        public ServiceModel.TMS.UploadImg_Logic uploadImg_Logic { get; set; }
+        public object Any(ServiceModel.TMS.UploadImg request)
+        {
+            CommonResponse ecr = new CommonResponse();
+            ecr.initial();
+            try
+            {
+                ServiceInterface.TMS.UploadImgService ps = new ServiceInterface.TMS.UploadImgService();
+                if (this.Request.Files.Length > 0)
+                {
+                    request.RequestStream = this.Request.Files[0].InputStream;
+                    request.FileName = this.Request.Files[0].FileName;
+                }
+                ps.PS_Upload(auth, request, uploadImg_Logic, ecr, this.Request.Headers.GetValues("Signature"), this.Request.RawUrl);
+            }
+            catch (Exception ex) { cr(ecr, ex); }
+            return ecr;
+        }
+
+        public ServiceModel.TMS.DownLoadImg_Logic DownLoadImg_Logic { get; set; }
+        public object Any(ServiceModel.TMS.DownLoadImg request)
+        {
+            CommonResponse ecr = new CommonResponse();
+            ecr.initial();
+            try
+            {
+                ServiceInterface.TMS.TableService ts = new ServiceInterface.TMS.TableService();
+                ts.DownLoadImg(auth, request, DownLoadImg_Logic, ecr, this.Request.Headers.GetValues("Signature"), this.Request.RawUrl);
+            }
+            catch (Exception ex) { cr(ecr, ex); }
+            return ecr;
+        }
         #endregion
 
         #region Common

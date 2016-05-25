@@ -5,14 +5,14 @@ var appFactory = angular.module('TMS.factories', [
 appFactory.factory('ACCEPTJOB_ORM', function() {
     var ACCEPTJOB_ORM = {
         LIST: {
-            Tobk1s: {},
-            _setTobk: function(value) {
-                this.Tobk1s = value;
+            Csbk1s: {},
+            _setCsbk: function(value) {
+                this.Csbk1s = value;
             }
         }
     };
     ACCEPTJOB_ORM.init = function() {
-        this.LIST.Tobk1s = {};
+        this.LIST.Csbk1s = {};
     };
     return ACCEPTJOB_ORM;
 });
