@@ -260,7 +260,11 @@ app.controller( 'JoblistingDetailCtrl', [ 'ENV', '$scope', '$state', '$ionicActi
         dbTms.transaction( function( tx ) {
           dbSql = 'select * from Csbk2_Accept';
           tx.executeSql( dbSql, [], function( tx, results ) {
+
             if ( results.rows.length > 0 ) {
+              console.log(results.rows.item(0).BookingNo);
+            // if (is.equal(results.rows.item(0).BookingNo,  $scope.BookingNo))
+            //
               for ( var i = 0; i < results.rows.length; i++ ) {
                 var Csbk2_acc = results.rows.item( i );
                 $scope.StatusCode = Csbk2_acc.StatusCode;
@@ -280,6 +284,7 @@ app.controller( 'JoblistingDetailCtrl', [ 'ENV', '$scope', '$state', '$ionicActi
                 $scope.Csbk2s = dataResults;
               }
             } else {
+
               if ( is.not.empty( $scope.BookingNo ) ) {
                 var strUri = '/api/tms/csbk2?BookingNo=' + $scope.BookingNo;
                 ApiService.GetParam( strUri, true ).then( function success( result ) {
@@ -479,7 +484,8 @@ app.controller( 'JoblistingConfirmCtrl', [ '$scope', '$state', '$stateParams', '
       var strUri = '/api/tms/csbk1/attach?BookingNo=' + $stateParams.BookingNo;
       console.log( strUri );
       ApiService.GetParam( strUri, true ).then( function success( result ) {
-        if ( is.not.empty(result.data.results) ) {
+        if ( is.not.undefined(result.data.results) ) {
+
           $scope.signature = 'data:image/png;base64,' + result.data.results;
         }
       } );
@@ -503,6 +509,7 @@ app.controller( 'JoblistingConfirmCtrl', [ '$scope', '$state', '$stateParams', '
       $scope.signature = sigImg;
     }
     $scope.confirm = function() {
+
         var strUri = '/api/tms/csbk1/confirm?BookingNo=' + $stateParams.BookingNo;
         ApiService.GetParam( strUri, true ).then( function success( result ) {
           var Csbk1 = {
@@ -510,6 +517,8 @@ app.controller( 'JoblistingConfirmCtrl', [ '$scope', '$state', '$stateParams', '
             BookingNo: $scope.Detail.BookingNo
           }
           db_update_Csbk1_Accept( Csbk1 );
+
+
           var jsonData = {
             'Base64': $scope.signature,
             'FileName': 'signature.Png'
@@ -520,9 +529,16 @@ app.controller( 'JoblistingConfirmCtrl', [ '$scope', '$state', '$stateParams', '
               $scope.returnList();
             } );
           } );
+          var jsonData1 = {
+            'CollectedAmt': $stateParams.CollectedAmt,
+          };
+           strUri ='/api/tms/csbk1/update?BookingNo='+ $scope.Detail.BookingNo +'&Amount='+$stateParams.CollectedAmt+'&Package='+$stateParams.Collected;
+           ApiService.GetParam( strUri, true ).then( function success( result ) {
+  }   );
+
         } );
     };
     resizeCanvas();
-    getSignature();
+   getSignature();
   }
 ] );
