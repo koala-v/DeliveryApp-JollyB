@@ -18,6 +18,10 @@ namespace WebApi.ServiceInterface.TMS
                 {
                     ecr.data.results = tobk_Logic.Get_csbk1_SpsList(request);
                 }
+                else if (uri.IndexOf("tms/csbk1/UpdateCollected") > 0)
+                {
+                    ecr.data.results = tobk_Logic.Update_Csbk1Collected(request);
+                }
                 else if (uri.IndexOf("/tms/csbk1/update") > 0)
                 {
                     ecr.data.results = tobk_Logic.update_csbk1(request);

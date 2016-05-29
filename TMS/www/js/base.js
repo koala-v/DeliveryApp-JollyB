@@ -71,7 +71,7 @@ if (dbTms) {
   dbTms.transaction(function(tx) {
     dbSql = 'DROP TABLE if exists Csbk2_Accept';
     tx.executeSql(dbSql, [], null, dbError);
-    dbSql = "CREATE TABLE Csbk2_Accept (TrxNo INT,LineItemNo INT, BoxCode TEXT, Status TEXT,Pcs INT,UnitRate TEXT,Volume TEXT,GrossWeight TEXT,CollectedPcs int,CollectedAmt TEXT,DepositAmt TEXT,DiscountAmt TEXT,AttachmentFlag TEXT,ItemNo INT)";
+    dbSql = "CREATE TABLE Csbk2_Accept (TrxNo INT,LineItemNo INT, BoxCode TEXT, StatusCode TEXT,Pcs INT,UnitRate TEXT,Volume TEXT,GrossWeight TEXT,CollectedPcs int,CollectedAmt TEXT,DepositAmt TEXT,DiscountAmt TEXT,AttachmentFlag TEXT,ItemNo INT,BookingNo TEXT)";
     tx.executeSql(dbSql, [], null, dbError);
   });
 }
@@ -96,8 +96,8 @@ var db_add_Csbk2_Accept = function(Csbk2) {
   if (dbTms) {
     dbTms.transaction(function(tx) {
       Csbk2 = repalceObj(Csbk2);
-      dbSql = 'INSERT INTO Csbk2_Accept(TrxNo,LineItemNo, BoxCode, Status,Pcs,UnitRate,Volume,GrossWeight,CollectedPcs,CollectedAmt,DepositAmt,DiscountAmt,AttachmentFlag,ItemNo) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
-      tx.executeSql(dbSql, [Csbk2.TrxNo,Csbk2.LineItemNo, Csbk2.BoxCode, Csbk2.Status,Csbk2.Pcs,Csbk2.UnitRate,Csbk2.Volume,Csbk2.GrossWeight,Csbk2.CollectedPcs,Csbk2.CollectedAmt,Csbk2.DepositAmt,Csbk2.DiscountAmt,Csbk2.AttachmentFlag,Csbk2.ItemNo], null, dbError);
+      dbSql = 'INSERT INTO Csbk2_Accept(TrxNo,LineItemNo, BoxCode, StatusCode,Pcs,UnitRate,Volume,GrossWeight,CollectedPcs,CollectedAmt,DepositAmt,DiscountAmt,AttachmentFlag,ItemNo,BookingNo) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+      tx.executeSql(dbSql, [Csbk2.TrxNo,Csbk2.LineItemNo, Csbk2.BoxCode, Csbk2.StatusCode,Csbk2.Pcs,Csbk2.UnitRate,Csbk2.Volume,Csbk2.GrossWeight,Csbk2.CollectedPcs,Csbk2.CollectedAmt,Csbk2.DepositAmt,Csbk2.DiscountAmt,Csbk2.AttachmentFlag,Csbk2.ItemNo,Csbk2.BookingNo], null, dbError);
   });
   }
 }
@@ -114,6 +114,14 @@ var db_update_Csbk1_Accept = function(Csbk1) {
     dbTms.transaction(function(tx) {
       dbSql = 'Update Csbk1_Accept set CompletedFlag=? where BookingNo=?';
       tx.executeSql(dbSql, [Csbk1.CompletedFlag, Csbk1.BookingNo], null, dbError);
+    });
+  }
+}
+var db_update_Csbk2_Amount=function(Csbk2){
+  if (dbTms) {
+    dbTms.transaction(function(tx) {
+      dbSql = 'Update Csbk2_Accept set CollectedAmt=? where  BookingNo=?';
+      tx.executeSql(dbSql, [Csbk2.CollectedAmt,Csbk2.BookingNo], null, dbError);
     });
   }
 }

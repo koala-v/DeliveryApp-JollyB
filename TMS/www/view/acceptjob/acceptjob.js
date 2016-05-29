@@ -104,6 +104,9 @@ app.controller('AcceptJobCtrl', ['$scope', '$state', '$ionicPopup', '$cordovaKey
             $scope.jobs = dataResults;
             ACCEPTJOB_ORM.LIST._setCsbk($scope.jobs);
           }
+          else{
+              showPopup('Wrong Booking No', 'assertive');
+          }
           $scope.Search.BookingNo = '';
           $('#div-list').focus();
         });

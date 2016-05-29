@@ -10,18 +10,22 @@ using WebApi.ServiceModel.Tables;
 namespace WebApi.ServiceModel.TMS
 {
     [Route("/tms/csbk1/sps", "Get")]  // sps?RecordCount=
-    [Route("/tms/csbk1/update", "Get")] //update?CompletedFlag=
+    [Route("/tms/csbk1/update", "Get")] //update?CompletedFlag=,Amount=,Package=
     [Route("/tms/csbk1/confirm", "Get")] //update?BookingNo=
     [Route("/tms/csbk1", "Get")]      //csbk1?BookingNo=
     [Route("/tms/csbk2", "Get")]      //Csbk2?BookingNo=
+    [Route("/tms/csbk1/UpdateCollected", "Post")]  //UpdateCollected?BookinNo=
     public class Csbk : IReturn<CommonResponse>
     {
         public string RecordCount { get; set; }
         public string BookingNo { get; set; }
         public string CompletedFlag { get; set; }
         public string DriverCode { get; set; }
+        public string Amount { get; set; }
+        public string Package { get; set; }
+        public List<Csbk1> csbk1s {get; set;}
 
-    }
+}
     public class Csbk_Logic
     {
         public IDbConnectionFactory DbConnectionFactory { get; set; }
@@ -145,21 +149,67 @@ namespace WebApi.ServiceModel.TMS
             return Result;
 
         }
-        public int update_csbk1(Csbk request)
+
+        public int Update_Csbk1Collected(Csbk request)
         {
             int Result = -1;
             try
             {
                 using (var db = DbConnectionFactory.OpenDbConnection())
                 {
+                    foreach (Csbk1 p1 in request.csbk1s)
+                    {
+                        db.Update<Csbk1>(
+                                        new
+                                        {
+                                            CollectedAmt = p1.CollectedAmt
+                                        },
+                                        p => p.BookingNo == p1.BookingNo
+                        );
+                    }
+                    Result = 1;
+                }
+            }
+            catch { throw; }
+            return Result;
+        }
+
+        public int update_csbk1(Csbk request)
+        {
+            int Result = -1;
+            int TrxNo = 0; 
+            try
+            {
+                using (var db = DbConnectionFactory.OpenDbConnection())
+                {
+                 
+        
+                    var strSQL = "select TrxNo from csbk1 where bookingno ='" + request.BookingNo + "' ";
+                    TrxNo= db.Scalar<int>(strSQL);
                     Result = db.Update<Csbk1>(
                                     new
                                     {
-                                        CompletedFlag = request.CompletedFlag
+                                       // CompletedFlag = request.CompletedFlag,
+                                        CollectedAmt=request.Amount
 
                                     },
                                     p => p.BookingNo == request.BookingNo
                     );
+                    if(Result > 0)
+                        {
+                        Result = db.Update<Csbk2>(
+                              new
+                              {
+                                  // CompletedFlag = request.CompletedFlag,
+                                  CollectedPcs = request.Package
+
+                              },
+                         
+                             
+                        p => p.TrxNo == TrxNo
+              );
+
+                    }
                 }
             }
             catch { throw; }
