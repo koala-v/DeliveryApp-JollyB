@@ -43,7 +43,8 @@
     "cordova-plugin-vibration",
     "cordova-sms-plugin",
     "cordova-plugin-crosswalk-webview",
-    "https://github.com/phonegap/phonegap-plugin-barcodescanner.git"
+    "https://github.com/phonegap/phonegap-plugin-barcodescanner.git",
+    "cordova-sqlite-storage"
   ],
   "cordovaPlatforms": [
     "android"

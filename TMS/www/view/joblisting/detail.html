@@ -5,9 +5,9 @@
     </div>
     <h1 class="title" ng-bind="title">Collection <Booking No></h1>
   </ion-header-bar>
-  <ion-pane>
+  <ion-content id="iPane">
     <div style="height: 43px;"></div>
-    <div class="card">
+    <div class="card" id="iCard" style="overflow-y:auto">
       <div class="button-bar">
         <a class="button" ng-href="tel:08605925888865">
                     CALL
@@ -57,7 +57,7 @@
             <div class="col-20"  style="height:1px;">
               <!-- 22 -->
        <!--<p><span ng-bind="Csbk2s.CollectedPcs"></span></p> -->
-              <input type="text" style="height:30px;"  ng-model="Csbk2.CollectedPcs" >
+              <input type="text" id="iCollectedPcs" style="height:30px;"  ng-model="Csbk2.CollectedPcs" >
                     </div>
           </div>
         </ion-item>
@@ -116,12 +116,12 @@
           </div>
           <div class="col">
             <!-- <p><span ng-bind="csbk2.Collected"></span></p> -->
-            <input class="col" style="height:22px;" type="text" ng-model="csbk2.CollectedAmt">
+            <input class="col" id="iCollectedAmt"  style="height:22px;"  type="text" ng-model="csbk2.CollectedAmt">
           </div>
         </div>
       </div>
     </div>
-  </ion-pane>
+  </ion-content>
   <ion-footer-bar class="bar-positive">
     <div class="button-bar">
       <button class="button icon ion-android-done" ng-click="gotoConfirm()">
