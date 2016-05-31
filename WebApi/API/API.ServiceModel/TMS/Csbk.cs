@@ -23,9 +23,9 @@ namespace WebApi.ServiceModel.TMS
         public string DriverCode { get; set; }
         public string Amount { get; set; }
         public string Package { get; set; }
-        public List<Csbk1> csbk1s {get; set;}
+        public List<Csbk1> csbk1s { get; set; }
 
-}
+    }
     public class Csbk_Logic
     {
         public IDbConnectionFactory DbConnectionFactory { get; set; }
@@ -75,10 +75,34 @@ namespace WebApi.ServiceModel.TMS
          "  when DatePart(W, csbk1.DeliveryDate) = 7 then 'SAT'" +
 
         " end )),'') AS TimeTo," +
+       "  isnull((Select top 1 TimeFrom From Todr2 Where District like '%' + Rcbp1.DistrictCode + '%' and  day in ( case when DatePart(W, csbk1.PickupDateTime) = 1 then 'SUN'" +
+          " when DatePart(W, csbk1.PickupDateTime) = 2 then 'MON'" +
+         " when DatePart(W, csbk1.PickupDateTime) = 3 then 'TUE'" +
+         "  when DatePart(W, csbk1.PickupDateTime) = 4 then 'WED'" +
+         "  when DatePart(W, csbk1.PickupDateTime) = 5 then 'THU'" +
+        "  when DatePart(W, csbk1.PickupDateTime) = 6 then 'FRI'" +
+        "  when DatePart(W, csbk1.PickupDateTime) = 7 then 'SAT'" +
+        "  end)),'') AS ColTimeFrom," +
+       " isnull((Select top 1 TimeTo From Todr2 Where District like '%' + Rcbp1.DistrictCode + '%' and  day in ( case when DatePart(W, csbk1.PickupDateTime) = 1 then 'SUN'" +
+
+      "   when DatePart(W, csbk1.PickupDateTime) = 2 then 'MON'" +
+
+       "  when DatePart(W, csbk1.PickupDateTime) = 3 then 'TUE'" +
+
+       "  when DatePart(W, csbk1.PickupDateTime) = 4 then 'WED'" +
+
+       " when DatePart(W, csbk1.PickupDateTime) = 5 then 'THU'" +
+
+       "  when DatePart(W, csbk1.PickupDateTime) = 6 then 'FRI'" +
+
+        " when DatePart(W, csbk1.PickupDateTime) = 7 then 'SAT'" +
+
+       " end )),'') AS ColTimeTo," +
+
          "Csbk1.BookingNo,Csbk1.StatusCode,isnull(Csbk1.JobNo, '') as JobNo,isnull(Csbk1.BookingCustomerCode, '') as BookingCustomerCode,isnull(Csbk1.CollectionTimeStart, '') as CollectionTimeStart,isnull(Csbk1.CollectionTimeEnd, '') as CollectionTimeEnd ,sum(Csbk2.Pcs) as Pcs,isnull(rcbp1.BusinessPartyCode, '') as BusinessPartyCode,isnull(Rcbp1.PostalCode, '') as PostalCode,isnull(Rcbp1.BusinessPartyName, '') as BusinessPartyName,isnull(Rcbp1.Address1, '') as Address1,isnull(Rcbp1.Address2, '') as Address2,isnull(Rcbp1.Address3, '') as Address3,isnull(Rcbp1.Address4, '') as Address4 ,isnull(Csbk1.CompletedFlag, '') AS CompletedFlag" +
                        "  from Csbk1 left join Csbk2 on Csbk1.TrxNo = Csbk2.TrxNo  left" +
-                       "  join rcbp1 on Csbk1.BookingCustomerCode = rcbp1.BusinessPartyCode    "+ strWhere + 
-                       "  group  by Csbk1.jobno,rcbp1.BusinessPartyCode,Csbk1.BookingNo,Csbk1.StatusCode,Rcbp1.PostalCode,Rcbp1.BusinessPartyName,Rcbp1.Address1,Rcbp1.Address2,Rcbp1.Address3,Rcbp1.Address4,Csbk1.BookingCustomerCode,Csbk1.CollectionTimeStart,Csbk1.CollectionTimeEnd,Csbk1.CompletedFlag,Csbk1.TrxNo ,Rcbp1.DistrictCode ,csbk1.DeliveryDate";
+                       "  join rcbp1 on Csbk1.BookingCustomerCode = rcbp1.BusinessPartyCode    " + strWhere +
+                       "  group  by Csbk1.jobno,rcbp1.BusinessPartyCode,Csbk1.BookingNo,Csbk1.StatusCode,Rcbp1.PostalCode,Rcbp1.BusinessPartyName,Rcbp1.Address1,Rcbp1.Address2,Rcbp1.Address3,Rcbp1.Address4,Csbk1.BookingCustomerCode,Csbk1.CollectionTimeStart,Csbk1.CollectionTimeEnd,Csbk1.CompletedFlag,Csbk1.TrxNo ,Rcbp1.DistrictCode ,csbk1.DeliveryDate,csbk1.PickupDateTime";
                         Result = db.Select<Csbk1>(strSQL);
 
 
@@ -177,26 +201,26 @@ namespace WebApi.ServiceModel.TMS
         public int update_csbk1(Csbk request)
         {
             int Result = -1;
-            int TrxNo = 0; 
+            int TrxNo = 0;
             try
             {
                 using (var db = DbConnectionFactory.OpenDbConnection())
                 {
-                 
-        
+
+
                     var strSQL = "select TrxNo from csbk1 where bookingno ='" + request.BookingNo + "' ";
-                    TrxNo= db.Scalar<int>(strSQL);
+                    TrxNo = db.Scalar<int>(strSQL);
                     Result = db.Update<Csbk1>(
                                     new
                                     {
-                                       // CompletedFlag = request.CompletedFlag,
-                                        CollectedAmt=request.Amount
+                                        // CompletedFlag = request.CompletedFlag,
+                                        CollectedAmt = request.Amount
 
                                     },
                                     p => p.BookingNo == request.BookingNo
                     );
-                    if(Result > 0)
-                        {
+                    if (Result > 0)
+                    {
                         Result = db.Update<Csbk2>(
                               new
                               {
@@ -204,8 +228,8 @@ namespace WebApi.ServiceModel.TMS
                                   CollectedPcs = request.Package
 
                               },
-                         
-                             
+
+
                         p => p.TrxNo == TrxNo
               );
 

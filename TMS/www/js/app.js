@@ -1,6 +1,7 @@
 'use strict';
 var app = angular.module('TMS', [
   'ionic',
+  'ngCordova',
   'ionic-datepicker',
   'jett.ionic.filter.bar',
   'ionic.ion.headerShrink',
@@ -24,8 +25,19 @@ var app = angular.module('TMS', [
   'TMS.factories'
 ]);
 app.run(['ENV', '$ionicPlatform', '$rootScope', '$state', '$location', '$timeout', '$ionicHistory', '$ionicLoading', '$cordovaToast', '$cordovaKeyboard', '$cordovaFile',
-  function(ENV, $ionicPlatform, $rootScope, $state, $location, $timeout, $ionicHistory, $ionicLoading, $cordovaToast, $cordovaKeyboard, $cordovaFile) {
+  function(ENV, $ionicPlatform, $rootScope, $state, $location, $timeout, $ionicHistory, $ionicLoading, $cordovaToast, $cordovaKeyboard, $cordovaFile,$cordovaSQLite) {
     $ionicPlatform.ready(function() {
+      if ( !ENV.fromWeb ) {
+    $cordovaKeyboard.hideAccessoryBar(true);
+    $cordovaKeyboard.disableScroll(true);
+    try {
+        db = $cordovaSQLite.openDB({name:'jollyb.db',location:'default'});
+    } catch (error) {
+        console.error(error);
+    }
+        $cordovaSQLite.execute(db, 'CREATE TABLE IF NOT EXISTS sql_Csbk1(TrxNo INTEGER PRIMARY KEY AUTOINCREMENT,BookingNo TEXT, JobNo TEXT, StatusCode TEXT,BookingCustomerCode TEXT,Pcs INTEGER,CollectionTimeStart TEXT,CollectionTimeEnd TEXT,PostalCode TEXT,BusinessPartyCode TEXT,BusinessPartyName TEXT,Address1 TEXT,Address2 TEXT,Address3 TEXT,Address4 TEXT,CompletedFlag TEXT,TimeFrom TEXT,TimeTo TEXT,ColTimeFrom TEXT,ColTimeTo TEXT)');
+}
+
       if (window.cordova) {
         ENV.fromWeb = false;
         $cordovaKeyboard.hideAccessoryBar(true);
@@ -99,6 +111,8 @@ app.run(['ENV', '$ionicPlatform', '$rootScope', '$state', '$location', '$timeout
         StatusBar.styleDefault();
       }
     });
+
+
     $ionicPlatform.registerBackButtonAction(function(e) {
       e.preventDefault();
       // Is there a page to go back to?  $state.include ??

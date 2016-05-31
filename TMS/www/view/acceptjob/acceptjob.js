@@ -1,6 +1,6 @@
 'use strict';
-app.controller('AcceptJobCtrl', ['$scope', '$state', '$ionicPopup', '$cordovaKeyboard', '$cordovaBarcodeScanner', 'ACCEPTJOB_ORM', 'ApiService',
-  function($scope, $state, $ionicPopup, $cordovaKeyboard, $cordovaBarcodeScanner, ACCEPTJOB_ORM, ApiService) {
+app.controller('AcceptJobCtrl', ['ENV','$scope', '$state', '$ionicPopup', '$cordovaKeyboard', '$cordovaBarcodeScanner', 'ACCEPTJOB_ORM', 'ApiService','$cordovaSQLite',
+  function( ENV,$scope, $state, $ionicPopup, $cordovaKeyboard, $cordovaBarcodeScanner, ACCEPTJOB_ORM, ApiService, $cordovaSQLite) {
     var alertPopup = null,
       dataResults = new Array();
     $scope.Search = {
@@ -75,7 +75,7 @@ app.controller('AcceptJobCtrl', ['$scope', '$state', '$ionicPopup', '$cordovaKey
           if (is.not.empty(results)) {
             var reuturnTime = '';
             if (is.equal(results[0].CollectionTimeStart, '') && is.equal(results[0].CollectionTimeEnd, '')) {
-              reuturnTime = '';
+              reuturnTime = results[0].ColTimeFrom + '-' + results[0].ColTimeTo;
             } else {
               reuturnTime = results[0].CollectionTimeStart + '-' + results[0].CollectionTimeEnd;
             }
@@ -97,9 +97,17 @@ app.controller('AcceptJobCtrl', ['$scope', '$state', '$ionicPopup', '$cordovaKey
                 address: results[0].Address1 + results[0].Address2 + results[0].Address3 + results[0].Address4
               }
             };
+            // if(!ENV.fromWeb){
+            //   $cordovaSQLite.execute(db,'INSERT INTO sql_Csbk1(BookingNo,JobNo,StatusCode,BookingCustomerCode,Pcs,CollectionTimeStart,CollectionTimeEnd,PostalCode,BusinessPartyCode,BusinessPartyName,Address1,Address2,Address3,Address4,CompletedFlag,TimeFrom,TimeTo,ColTimeFrom,ColTimeTo) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19 ] )
+            //                                 .then( function( result ) {
+            //                                 }, function( error ) {
+            //
+            //                                 } )
+            // }else{
             for (var i = 0; i < results.length; i++) {
               db_add_Csbk1_Accept(results[i]);
             }
+            // }
             dataResults = dataResults.concat(Csbk1);
             $scope.jobs = dataResults;
             ACCEPTJOB_ORM.LIST._setCsbk($scope.jobs);

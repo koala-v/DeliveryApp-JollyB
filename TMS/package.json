@@ -44,7 +44,8 @@
     "cordova-sms-plugin",
     "cordova-plugin-crosswalk-webview",
     "https://github.com/phonegap/phonegap-plugin-barcodescanner.git",
-    "cordova-sqlite-storage"
+    "cordova-sqlite-storage",
+    "https://github.com/litehelpers/Cordova-sqlite-storage"
   ],
   "cordovaPlatforms": [
     "android"
