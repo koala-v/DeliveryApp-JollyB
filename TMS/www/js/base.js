@@ -1,3 +1,6 @@
+// Database instance.
+var db;
+
 var appendProtocol = function(url, blnSSL, portNo) {
   if (url.length > 0 && url.toUpperCase().indexOf('HTTPS://') < 0 && url.toUpperCase().indexOf('HTTP://') < 0) {
     if (blnSSL) {
@@ -16,13 +19,20 @@ var appendProtocol = function(url, blnSSL, portNo) {
   }
   return url;
 };
-var rmProtocol = function(url) {
-  if (url.length > 0) {
-    var regex = /(https?:\/\/)?/gi;
-    url = url.replace(regex, '');
-  }
-  return url;
+var rmProtocol = function(url, portNo) {
+    if (is.not.empty(url)) {
+        var regex = /(https?:\/\/)?/gi;
+        url = url.replace(regex, '');
+        regex = /(http?:\/\/)?/gi;
+        url = url.replace(regex, '');
+    }
+    if (is.not.empty(portNo)) {
+        var regex = /\:(\d)+/;
+        url = url.replace(regex, '');
+    }
+    return url;
 };
+
 var checkDatetime = function(datetime) {
   if (is.equal(moment(datetime).format('DD-MMM-YYYY'), '01-Jan-0001')) {
     datetime = '';
