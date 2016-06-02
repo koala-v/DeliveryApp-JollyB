@@ -71,3 +71,60 @@ appServices.service('ApiService', ['$q', 'ENV', '$http', '$ionicLoading', '$ioni
     };
   }
 ]);
+
+// appServices.service( 'SqlService', [ 'ENV', '$q', '$cordovaSQLite', '$ionicPlatform', '$cordovaDevice',
+//     function( ENV, $q, $cordovaSQLite, $ionicPlatform, $cordovaDevice ){
+//         var dbName = 'jollyb.db', dbLocation = 'default', db = null, dbSql = '';
+//         var dbInfo = {
+//             dbName: 'jollyb.db',
+//             dbVersion: '1.0',
+//             dbDisplayName: 'jollyb Database',
+//             dbEstimatedSize: 1024 * 1024 * 100
+//         };
+//         this.init = function(){
+//             $ionicPlatform.ready(function () {
+//                 if(ENV.fromWeb){
+//                     //db = window.openDatabase(dbInfo.dbName, dbInfo.dbVersion, dbInfo.dbDisplayName, dbInfo.dbEstimatedSize);
+//                 }else{
+//                     db = $cordovaSQLite.openDB({name: dbName, location: 'default', androidLockWorkaround: 1})
+//                 }
+//                 if(db){
+//                     db.transaction(function(tx) {
+//                         $cordovaSQLite.execute(db, 'CREATE TABLE IF NOT EXISTS sql_Csbk1(TrxNo INTEGER,BookingNo TEXT, JobNo TEXT, StatusCode TEXT,BookingCustomerCode TEXT,Pcs INTEGER,CollectionTimeStart TEXT,CollectionTimeEnd TEXT,PostalCode TEXT,BusinessPartyCode TEXT,BusinessPartyName TEXT,Address1 TEXT,Address2 TEXT,Address3 TEXT,Address4 TEXT,CompletedFlag TEXT,TimeFrom TEXT,TimeTo TEXT,ColTimeFrom TEXT,ColTimeTo TEXT)');
+//                     }, function(err) {
+//                         console.error(err);
+//                     });
+//                 }
+//             });
+//         };
+//         this.select = function(){
+//             // if(db){
+//             //     var query2 = 'SELECT top 1 id, password FROM User';
+//     		    // $cordovaSQLite.execute(db, query2, []).then(function(res) {
+//     		    //     if(res.rows.length > 0) {
+// 		        //     	console.error(res.rows.item(0).id + ' # ' + res.rows.item(0).password);
+//             //             var objUser = {
+//             //                 id: res.rows.item(0).id,
+//             //                 password: res.rows.item(0).password
+//             //             };
+//             //             return objUser;
+//     		    //     }
+//     		    // }, function (err) {
+//     		    //     console.error(err);
+//     		    // });
+//             // }else{
+//             //     return null;
+//             // }
+//         };
+//         this.insert = function(){
+//             // if(db){
+//             //     var query = 'INSERT INTO User (id, password) VALUES (?,?)';
+//     	      //   $cordovaSQLite.execute(db, query, ['s', 'sysh20']).then(function(res) {
+//     	      //       console.error(res.insertId);
+//     	      //   }, function (err) {
+//     	      //       console.error(err);
+//     	      //   });
+//             // }
+//         };
+//     }
+// ] );

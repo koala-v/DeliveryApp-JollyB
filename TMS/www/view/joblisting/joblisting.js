@@ -1,6 +1,6 @@
 'use strict';
-app.controller('JoblistingListCtrl', ['$scope', '$state', '$ionicLoading', '$ionicPopup', '$ionicFilterBar', '$ionicActionSheet', 'ApiService',
-  function($scope, $state, $ionicLoading, $ionicPopup, $ionicFilterBar, $ionicActionSheet, ApiService) {
+app.controller('JoblistingListCtrl', ['ENV', '$scope', '$state', '$ionicLoading', '$ionicPopup', '$ionicFilterBar', '$ionicActionSheet', 'ApiService', '$ionicPlatform', '$cordovaSQLite',
+  function(ENV, $scope, $state, $ionicLoading, $ionicPopup, $ionicFilterBar, $ionicActionSheet, ApiService, $ionicPlatform, $cordovaSQLite) {
     var filterBarInstance,
       dataResults = new Array();
     // $scope.Search = {
@@ -12,6 +12,60 @@ app.controller('JoblistingListCtrl', ['$scope', '$state', '$ionicLoading', '$ion
       });
     };
     var getBookingNo = function() {
+
+      $ionicPlatform.ready(function() {
+        if (!ENV.fromWeb) {
+          $cordovaSQLite.execute(db, 'SELECT * FROM Csbk1 ORDER BY TrxNo DESC')
+            .then(
+              function(results) {
+                if (results.rows.length > 0) {
+                  for (var i = 0; i < results.rows.length; i++) {
+                    var Csbk1_acc = results.rows.item(i);
+                    var reuturnTime = '';
+                    if (is.equal(Csbk1_acc.CollectionTimeStart, '') && is.equal(Csbk1_acc.CollectionTimeEnd, '')) {
+                      reuturnTime = Csbk1_acc.ColTimeFrom + '-' + Csbk1_acc.ColTimeTo;
+                    } else {
+                      reuturnTime = Csbk1_acc.CollectionTimeStart + '-' + Csbk1_acc.CollectionTimeEnd;
+                    }
+                    var DLVReturntime = '';
+                    if (is.equal(Csbk1_acc.TimeFrom, '') && is.equal(Csbk1_acc.TimeFrom, '')) {
+                      DLVReturntime = '';
+                    } else {
+                      DLVReturntime = Csbk1_acc.TimeFrom + '-' + Csbk1_acc.TimeTo;
+                    }
+                    var jobs = [{
+                      bookingno: Csbk1_acc.BookingNo,
+                      JobNo: Csbk1_acc.JobNo,
+                      action: is.equal(Csbk1_acc.StatusCode, 'DLV') ? 'Deliver' : 'Collect',
+                      amt: Csbk1_acc.Pcs + ' PKG',
+                      time: is.equal(Csbk1_acc.StatusCode, 'DLV') ? DLVReturntime : reuturnTime,
+                      code: Csbk1_acc.PostalCode,
+                      customer: {
+                        name: Csbk1_acc.BusinessPartyName,
+                        address: Csbk1_acc.Address1 + Csbk1_acc.Address2 + Csbk1_acc.Address3 + Csbk1_acc.Address4
+                      },
+                      status: {
+                        inprocess: is.equal(Csbk1_acc.CompletedFlag, 'Y') ? false : true,
+                        success: is.equal(Csbk1_acc.CompletedFlag, 'Y') ? true : false,
+                        failed: false
+                      }
+                    }];
+                    dataResults = dataResults.concat(jobs);
+                    $scope.jobs = dataResults;
+                  }
+
+                } else {
+                  //  gotoLogin(false);
+                }
+              },
+              function(error) {
+                //  gotoLogin(false);
+              }
+            );
+        } else {
+          //gotoLogin(false);
+        }
+      });
       if (dbTms) {
         dbTms.transaction(function(tx) {
           dbSql = 'select * from Csbk1_Accept';
@@ -21,7 +75,7 @@ app.controller('JoblistingListCtrl', ['$scope', '$state', '$ionicLoading', '$ion
                 var Csbk1_acc = results.rows.item(i);
                 var reuturnTime = '';
                 if (is.equal(Csbk1_acc.CollectionTimeStart, '') && is.equal(Csbk1_acc.CollectionTimeEnd, '')) {
-                  reuturnTime = '';
+                  reuturnTime = Csbk1_acc.ColTimeFrom + '-' + Csbk1_acc.ColTimeTo;
                 } else {
                   reuturnTime = Csbk1_acc.CollectionTimeStart + '-' + Csbk1_acc.CollectionTimeEnd;
                 }
@@ -236,10 +290,10 @@ app.controller('JoblistingCtrl', ['$scope', '$state', '$stateParams',
   }
 ]);
 
-app.controller('JoblistingDetailCtrl', ['ENV', '$scope', '$state', '$ionicActionSheet', '$cordovaSms', '$stateParams', 'ApiService',
-  function(ENV, $scope, $state, $ionicActionSheet, $cordovaSms, $stateParams, ApiService) {
+app.controller('JoblistingDetailCtrl', ['ENV', '$scope', '$state', '$ionicActionSheet', '$cordovaSms', '$stateParams', 'ApiService','$cordovaSQLite',
+  function(ENV, $scope, $state, $ionicActionSheet, $cordovaSms, $stateParams, ApiService,$cordovaSQLite) {
     $scope.BookingNo = $stateParams.BookingNo;
-    $scope.StatusCode='';
+    $scope.StatusCode = '';
     $scope.csbk2 = {
       AllBalance: 0,
       Deposit: 0,
@@ -248,17 +302,24 @@ app.controller('JoblistingDetailCtrl', ['ENV', '$scope', '$state', '$ionicAction
       BoxNo: 0,
       CollectedPcs: 0
     };
-    //
-    // $('#iCollectedAmt').focus(function(e){
-    // $('#iCard').css("margin-top","-200px");
-    // });
+
+    $('#iCollectedPcs').focus(function(e) {
+      //$('#iCard').css("margin-top","-200px");
+      console.log('====focus');
+    });
 
 
+    $('#iCollectedAmt').on('keydown', function(e) {
+      if (e.which === 9 || e.which === 13) {
+        $scope.gotoConfirm();
+      }
+    });
 
     // $scope.CompletedFlagDetail = $stateParams.CompletedFlagDetail;
     // console.log($stateParams.BookingNo + 'aaaa' + $scope.CompletedFlagDetail);
     var dataResults = new Array();
     var showTobk = function() {
+
       if (dbTms) {
         dbTms.transaction(function(tx) {
           console.log('dddddd select');
@@ -286,7 +347,7 @@ app.controller('JoblistingDetailCtrl', ['ENV', '$scope', '$state', '$ionicAction
                 dataResults = dataResults.concat(csbk2);
                 $scope.Csbk2s = dataResults;
               }
-                  checkStatusCode($scope.StatusCode);
+              checkStatusCode($scope.StatusCode);
             } else {
               console.log('bbbbb--out');
               if (is.not.empty($scope.BookingNo)) {
@@ -314,15 +375,38 @@ app.controller('JoblistingDetailCtrl', ['ENV', '$scope', '$state', '$ionicAction
                       $scope.Csbk2s = dataResults;
                     }
                   }
-                  for (var i = 0; i < results.length; i++) {
-                    db_add_Csbk2_Accept(results[i]);
-                  }
-                  var csbk2_amt= {
-                    CollectedAmt: $scope.csbk2.CollectedAmt,
-                    BookingNo: $scope.BookingNo
-                  }
-                  db_update_Csbk2_Amount(csbk2_amt);
-
+//                   if (!ENV.fromWeb) {
+//                     var sql = 'INSERT INTO Csbk2(TrxNo,LineItemNo, BoxCode, StatusCode,Pcs,UnitRate,Volume,GrossWeight,CollectedPcs,CollectedAmt,DepositAmt,DiscountAmt,AttachmentFlag,ItemNo,BookingNo) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+//                     $cordovaSQLite.execute(db, sql, [
+//                         results[0].TrxNo,
+//                         results[0].LineItemNo,
+//                         results[0].BoxCode,
+//                         results[0].StatusCode,
+//                         results[0].Pcs,
+//                         results[0].UnitRate,
+//                         results[0].Volume,
+//                         results[0].GrossWeight,
+//                         results[0].CollectedPcs,
+//                         results[0].CollectedAmt,
+//                         results[0].DepositAmt,
+//                         results[0].DiscountAmt,
+//                         results[0].AttachmentFlag,
+//                         results[0].ItemNo,
+//                         results[0].BookingNo,
+//                       ])
+//                       .then(function(result) {}, function(error) {});
+// //var sqlUpdateCsbk2Amt="update Csbk2 set CollectedAmt= '" +  $scope.csbk2.CollectedAmt + "',BookingNo=";
+//                   }
+// else {
+                    for (var i = 0; i < results.length; i++) {
+                      db_add_Csbk2_Accept(results[i]);
+                    }
+                    var csbk2_amt = {
+                      CollectedAmt: $scope.csbk2.CollectedAmt,
+                      BookingNo: $scope.BookingNo
+                    };
+                    db_update_Csbk2_Amount(csbk2_amt);
+                  //}
                   checkStatusCode($scope.StatusCode);
                 });
               }
@@ -332,18 +416,18 @@ app.controller('JoblistingDetailCtrl', ['ENV', '$scope', '$state', '$ionicAction
       }
     };
 
- var checkStatusCode=function(StatusCode){
-   if (is.equal(StatusCode, 'DLV')) {
-     $scope.title = 'Deliver : ' + $scope.BookingNo;
-   } else {
-     $scope.title = 'Collect : ' + $scope.BookingNo;
-   }
- }
-    // if (is.equal($scope.StatusCode, 'DLV')) {
-    //   $scope.title = 'Deliver : ' + $scope.BookingNo;
-    // } else {
-    //   $scope.title = 'Collect : ' + $scope.BookingNo;
-    // }
+    var checkStatusCode = function(StatusCode) {
+        if (is.equal(StatusCode, 'DLV')) {
+          $scope.title = 'Deliver : ' + $scope.BookingNo;
+        } else {
+          $scope.title = 'Collect : ' + $scope.BookingNo;
+        }
+      }
+      // if (is.equal($scope.StatusCode, 'DLV')) {
+      //   $scope.title = 'Deliver : ' + $scope.BookingNo;
+      // } else {
+      //   $scope.title = 'Collect : ' + $scope.BookingNo;
+      // }
     showTobk();
 
     $scope.showActionSheet = function() {
@@ -371,53 +455,26 @@ app.controller('JoblistingDetailCtrl', ['ENV', '$scope', '$state', '$ionicAction
       });
     };
     $scope.gotoConfirm = function() {
-      // $('#iCollectedAmt').on('keydown', function(e) {
-      //     console.log('====keydown');
-      //       if (e.which === 9 || e.which === 13) {
-      //       console.log('====keydown');
-      //       }
-      //   });
+      // $('#iCollectedPcs').focus(function(e){
+      // //$('#iCard').css("margin-top","-200px");
+      //     console.log('====focus');
+      //  });
       if (window.cordova && window.cordova.plugins.Keyboard) {
-          cordova.plugins.Keyboard.close();
-            }
-        if (is.equal($scope.StatusCode, 'DLV')) {
-          var strUri = '/api/tms/csbk1/confirm?BookingNo=' + $stateParams.BookingNo;
-          ApiService.GetParam(strUri, true).then(function success(result) {
-            var Csbk1 = {
-              CompletedFlag: 'Y',
-              BookingNo: $stateParams.BookingNo
-            }
-            db_update_Csbk1_Accept(Csbk1);
-            // var csbk2_amt= {
-            //   CollectedAmt: $scope.csbk2.CollectedAmt,
-            //   BookingNo: $scope.BookingNo
-            // }
-            // db_update_Csbk2_Amount(csbk2_amt);
-            if (dbTms) {
-              dbTms.transaction(function(tx) {
-                dbSql = "select * from Csbk2_Accept where BookingNo='" + $scope.BookingNo + "'";
-                //dbSql = 'select * from Csbk2_Accept where';
-                tx.executeSql(dbSql, [], function(tx, results) {
-                  if (results.rows.length > 0) {
-                    for (var i = 0; i < results.rows.length; i++) {
-                      var Csbk1_acc = results.rows.item(i);
-                      var jobs = {
-                        CollectedPcs: $scope.Csbk2s[i].CollectedPcs,
-                        CollectedAmt: $scope.csbk2.CollectedAmt,
-                        TrxNo: Csbk1_acc.TrxNo,
-                        LineItemNo: Csbk1_acc.LineItemNo,
-
-                      };
-                      db_update_Csbk2_Accept(jobs);
-                    }
-                  }
-                });
-              }, dbError);
-            }
-
-            $state.go('jobListingList', {}, {});
-          });
-        } else {
+        cordova.plugins.Keyboard.close();
+      }
+      if (is.equal($scope.StatusCode, 'DLV')) {
+        var strUri = '/api/tms/csbk1/confirm?BookingNo=' + $stateParams.BookingNo;
+        ApiService.GetParam(strUri, true).then(function success(result) {
+          var Csbk1 = {
+            CompletedFlag: 'Y',
+            BookingNo: $stateParams.BookingNo
+          }
+          db_update_Csbk1_Accept(Csbk1);
+          // var csbk2_amt= {
+          //   CollectedAmt: $scope.csbk2.CollectedAmt,
+          //   BookingNo: $scope.BookingNo
+          // }
+          // db_update_Csbk2_Amount(csbk2_amt);
           if (dbTms) {
             dbTms.transaction(function(tx) {
               dbSql = "select * from Csbk2_Accept where BookingNo='" + $scope.BookingNo + "'";
@@ -425,9 +482,6 @@ app.controller('JoblistingDetailCtrl', ['ENV', '$scope', '$state', '$ionicAction
               tx.executeSql(dbSql, [], function(tx, results) {
                 if (results.rows.length > 0) {
                   for (var i = 0; i < results.rows.length; i++) {
-                    $scope.csbk2.CollectedPcs = $scope.csbk2.CollectedPcs + parseInt($scope.Csbk2s[i].CollectedPcs);
-                    console.log($scope.csbk2.CollectedPcs);
-                    console.log('aaaaaaaaaaaaaaaaa');
                     var Csbk1_acc = results.rows.item(i);
                     var jobs = {
                       CollectedPcs: $scope.Csbk2s[i].CollectedPcs,
@@ -438,19 +492,47 @@ app.controller('JoblistingDetailCtrl', ['ENV', '$scope', '$state', '$ionicAction
                     };
                     db_update_Csbk2_Accept(jobs);
                   }
-                  $state.go('jobListingConfirm', {
-                    'BookingNo': $scope.BookingNo,
-                    'JobNo': $stateParams.JobNo,
-                    'CollectedAmt': $scope.csbk2.CollectedAmt,
-                    'Collected': $scope.csbk2.CollectedPcs
-                  }, {
-                    reload: true
-                  });
                 }
               });
             }, dbError);
           }
+
+          $state.go('jobListingList', {}, {});
+        });
+      } else {
+        if (dbTms) {
+          dbTms.transaction(function(tx) {
+            dbSql = "select * from Csbk2_Accept where BookingNo='" + $scope.BookingNo + "'";
+            //dbSql = 'select * from Csbk2_Accept where';
+            tx.executeSql(dbSql, [], function(tx, results) {
+              if (results.rows.length > 0) {
+                for (var i = 0; i < results.rows.length; i++) {
+                  $scope.csbk2.CollectedPcs = $scope.csbk2.CollectedPcs + parseInt($scope.Csbk2s[i].CollectedPcs);
+                  console.log($scope.csbk2.CollectedPcs);
+                  console.log('aaaaaaaaaaaaaaaaa');
+                  var Csbk1_acc = results.rows.item(i);
+                  var jobs = {
+                    CollectedPcs: $scope.Csbk2s[i].CollectedPcs,
+                    CollectedAmt: $scope.csbk2.CollectedAmt,
+                    TrxNo: Csbk1_acc.TrxNo,
+                    LineItemNo: Csbk1_acc.LineItemNo,
+
+                  };
+                  db_update_Csbk2_Accept(jobs);
+                }
+                $state.go('jobListingConfirm', {
+                  'BookingNo': $scope.BookingNo,
+                  'JobNo': $stateParams.JobNo,
+                  'CollectedAmt': $scope.csbk2.CollectedAmt,
+                  'Collected': $scope.csbk2.CollectedPcs
+                }, {
+                  reload: true
+                });
+              }
+            });
+          }, dbError);
         }
+      }
 
 
 
@@ -499,9 +581,7 @@ app.controller('JoblistingConfirmCtrl', ['$scope', '$state', '$stateParams', 'Ap
     function resizeCanvas() {
       var ratio = window.devicePixelRatio || 1;
       canvas.width = window.innerWidth - 50;
-    //  canvas.height = window.innerHeight / 4 - 50;
-//canvas.height = window.outerHeight / 4 - 50;
-canvas.height =140;
+      canvas.height = screen.height / 4 - 50;
     };
     var showPopup = function(title, type, callback) {
       if (alertPopup !== null) {

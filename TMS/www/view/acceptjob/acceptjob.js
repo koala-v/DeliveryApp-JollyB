@@ -1,6 +1,6 @@
 'use strict';
-app.controller('AcceptJobCtrl', ['$scope', '$state', '$ionicPopup', '$cordovaKeyboard', '$cordovaBarcodeScanner', 'ACCEPTJOB_ORM', 'ApiService',
-  function($scope, $state, $ionicPopup, $cordovaKeyboard, $cordovaBarcodeScanner, ACCEPTJOB_ORM, ApiService) {
+app.controller('AcceptJobCtrl', ['ENV','$scope', '$state', '$ionicPopup', '$cordovaKeyboard', '$cordovaBarcodeScanner', 'ACCEPTJOB_ORM', 'ApiService','$cordovaSQLite',
+  function( ENV,$scope, $state, $ionicPopup, $cordovaKeyboard, $cordovaBarcodeScanner, ACCEPTJOB_ORM, ApiService, $cordovaSQLite) {
     var alertPopup = null,
       dataResults = new Array();
     $scope.Search = {
@@ -72,10 +72,13 @@ app.controller('AcceptJobCtrl', ['$scope', '$state', '$ionicPopup', '$cordovaKey
         var strUri = '/api/tms/csbk1?BookingNo=' + bookingNo;
         ApiService.GetParam(strUri, true).then(function success(result) {
           var results = result.data.results;
+          console.log(results);
+          console.log(results[0].index);
+          console.log('haha');
           if (is.not.empty(results)) {
             var reuturnTime = '';
             if (is.equal(results[0].CollectionTimeStart, '') && is.equal(results[0].CollectionTimeEnd, '')) {
-              reuturnTime = '';
+              reuturnTime = results[0].ColTimeFrom + '-' + results[0].ColTimeTo;
             } else {
               reuturnTime = results[0].CollectionTimeStart + '-' + results[0].CollectionTimeEnd;
             }
@@ -97,8 +100,39 @@ app.controller('AcceptJobCtrl', ['$scope', '$state', '$ionicPopup', '$cordovaKey
                 address: results[0].Address1 + results[0].Address2 + results[0].Address3 + results[0].Address4
               }
             };
+        //    1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19
+
+
+              if ( !ENV.fromWeb ) {
+                var sql='INSERT INTO Csbk1(TrxNo,BookingNo,JobNo,StatusCode,BookingCustomerCode,Pcs,CollectionTimeStart,CollectionTimeEnd,PostalCode,BusinessPartyCode,BusinessPartyName,Address1,Address2,Address3,Address4,CompletedFlag,TimeFrom,TimeTo,ColTimeFrom,ColTimeTo) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+                  $cordovaSQLite.execute(db,sql, [
+                  results[0].TrxNo,
+                  results[0].BookingNo,
+                  results[0].JobNo,
+                  results[0].StatusCode,
+                    results[0].BookingCustomerCode,
+                    results[0].Pcs,
+                    results[0].CollectionTimeStart,
+                    results[0].CollectionTimeEnd,
+                    results[0].PostalCode,
+                    results[0].BusinessPartyCode,
+                    results[0].BusinessPartyName,
+                    results[0].Address1,
+                    results[0].Address2,
+                   results[0].Address3,
+                    results[0].Address4,
+                    results[0].CompletedFlag,
+                    results[0].TimeFrom,
+                    results[0].TimeTo,
+                    results[0].ColTimeFrom,
+                    results[0].ColTimeTo] )
+                                                .then( function( result ) {
+                                                }, function( error ) {
+                                                } );
+            }else{
             for (var i = 0; i < results.length; i++) {
               db_add_Csbk1_Accept(results[i]);
+            }
             }
             dataResults = dataResults.concat(Csbk1);
             $scope.jobs = dataResults;
