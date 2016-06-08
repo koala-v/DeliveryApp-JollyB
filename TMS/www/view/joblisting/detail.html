@@ -27,7 +27,7 @@
         <label class="item-input-wrapper">
           <!-- style="font-weight:bold;" -->
           <label>Box No: </label>
-          <input type="text" placeholder="Box No" ng-model="csbk2.BoxNo" ng-readonly="true">
+          <input type="text" placeholder="Box No" ng-model="Detail.csbk1.ItemNo" ng-readonly="true">
         </label>
         <button class="button icon ion-android-refresh">
         </button>
@@ -44,7 +44,7 @@
         </div>
       </div>
       <div class="item item-text-wrap">
-        <ion-item class="item" ng-repeat="Csbk2 in Csbk2s">
+        <ion-item class="item" ng-repeat="Csbk2 in Detail.csbk2s">
           <div class="row" style="height:1px;">
             <div class="col" style="height:1px;">
               <!-- JU MBO -->
@@ -95,13 +95,13 @@
             Deposit
           </div>
           <div class="col">
-            <p><span ng-bind="csbk2.Deposit"></span></p>
+            <p><span ng-bind="Detail.csbk1.DepositAmt"></span></p>
           </div>
           <div class="col">
             Balance
           </div>
           <div class="col">
-            <p><span ng-bind="csbk2.AllBalance"></span></p>
+            <p><span ng-bind="Detail.AllBalance"></span></p>
           </div>
         </div>
         <div class="row">
@@ -109,14 +109,14 @@
             Discount
           </div>
           <div class="col">
-            <p><span ng-bind="csbk2.Discount"></span></p>
+            <p><span ng-bind="Detail.csbk1.DiscountAmt"></span></p>
           </div>
           <div class="col">
             Collected
           </div>
           <div class="col">
             <!-- <p><span ng-bind="csbk2.Collected"></span></p> -->
-            <input class="col" id="iCollectedAmt"  style="height:22px;"  type="text" ng-model="csbk2.CollectedAmt">
+            <input class="col" id="iCollectedAmt"  style="height:22px;"  type="text" ng-model="Detail.csbk1.CollectedAmt">
           </div>
         </div>
       </div>

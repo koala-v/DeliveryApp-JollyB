@@ -68,6 +68,7 @@ namespace WebApi
             //TMS
             container.RegisterAutoWired<WebApi.ServiceModel.TMS.Tms_Login_Logic>();
             container.RegisterAutoWired<WebApi.ServiceModel.TMS.Csbk_Logic>();
+            container.RegisterAutoWired<WebApi.ServiceModel.TMS.Slcr_Logic>();
             container.RegisterAutoWired<WebApi.ServiceModel.TMS.UploadImg_Logic>();
             container.RegisterAutoWired<WebApi.ServiceModel.TMS.DownLoadImg_Logic>();
 

@@ -28,7 +28,8 @@ app.controller('MainCtrl',
             $state.go('jobListingList', {}, {});
         };
         $scope.func_DC = function() {
-            showPopup('Stay Tuned','calm');
+          
+            $state.go('dailycompleted', {}, {});
         };
         $scope.func_Reports = function() {
             showPopup('Stay Tuned','calm');
