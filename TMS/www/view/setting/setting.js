@@ -52,7 +52,7 @@ app.controller( 'SettingCtrl', [ 'ENV', '$rootScope', '$scope', '$state', '$ioni
             }
         };
         $scope.reset = function() {
-            $scope.Setting.WebApiURL = 'www.sysfreight.net/WebApi-JollyB';
+            $scope.Setting.WebApiURL = 'www.sysfreight.net/apis/tms/jollyb';
             $scope.Setting.WebSiteUrl = 'www.sysfreight.net/mobileapp-JollyB';
             $scope.Setting.SSL = { checked: false };
             if ( !ENV.fromWeb ) {

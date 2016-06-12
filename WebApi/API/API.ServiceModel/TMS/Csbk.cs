@@ -15,6 +15,7 @@ namespace WebApi.ServiceModel.TMS
     [Route("/tms/csbk1", "Get")]      //csbk1?BookingNo=
     [Route("/tms/csbk2", "Get")]      //Csbk2?BookingNo=
     [Route("/tms/csbk1/UpdateCollected", "Post")]  //UpdateCollected?BookinNo=
+    [Route("/tms/csbk2/update", "Get")]      //Csbk2?TrxNo=,LineItemNo=,CollectedPcs=
     public class Csbk : IReturn<CommonResponse>
     {
         public string RecordCount { get; set; }
@@ -23,6 +24,9 @@ namespace WebApi.ServiceModel.TMS
         public string DriverCode { get; set; }
         public string Amount { get; set; }
         public string Package { get; set; }
+        public int TrxNo { get; set; }
+        public int LineItemNo { get; set; }
+        public string CollectedPcs { get; set; }
         public List<Csbk1> csbk1s { get; set; }
 
     }
@@ -152,26 +156,52 @@ namespace WebApi.ServiceModel.TMS
 
         }
 
-        public List<Csbk2> Get_Csbk2_List(Csbk request)
+        public Csbk1_with_Csbk2 Get_Csbk2_List(Csbk request)
         {
-            List<Csbk2> Result = null;
+            Csbk1_with_Csbk2 Result = new Csbk1_with_Csbk2();
+            Result.csbk1 = new Csbk1();
+            Result.csbk2s = new List<Csbk2>();
             try
             {
                 using (var db = DbConnectionFactory.OpenDbConnection("TMS"))
                 {
                     if (!string.IsNullOrEmpty(request.BookingNo))
                     {
-
-                        var strSQL = "select Csbk1.BookingNo, Csbk1.JobNo,Csbk1.TrxNo,Csbk1.StatusCode as StatusCode,Csbk1.ItemNo,Csbk2.LineItemNo,Csbk2.BoxCode,Csbk2.Pcs,Csbk1.DepositAmt,Csbk1.DiscountAmt,Csbk2.UnitRate,'' as CollectedPcs  ,Csbk1.CollectedAmt      from Csbk2 left join Csbk1 on Csbk2.trxno = Csbk1.trxno where BookingNo ='" + request.BookingNo + "'";
-                        Result = db.Select<Csbk2>(strSQL);
-
-
+                        var strSQL = "select Csbk1.BookingNo, Csbk1.JobNo,Csbk1.TrxNo,Csbk1.StatusCode as StatusCode,Csbk1.ItemNo,Csbk1.DepositAmt,Csbk1.DiscountAmt ,Csbk1.CollectedAmt      from  Csbk1  where BookingNo ='" + request.BookingNo + "'";
+                        Result.csbk1 = db.Select<Csbk1>(strSQL)[0];
+                        strSQL = "select Csbk2.TrxNo,Csbk2.LineItemNo,Csbk2.BoxCode,Csbk2.Pcs,Csbk2.UnitRate,Csbk2.CollectedPcs      from Csbk2 left join Csbk1 on Csbk2.trxno = Csbk1.trxno where BookingNo ='" + request.BookingNo + "'";
+                        Result.csbk2s = db.Select<Csbk2>(strSQL);
+                       
                     }
                 }
             }
             catch { throw; }
             return Result;
 
+        }
+
+        public int Update_Csbk2(Csbk request)
+        {
+            int Result = -1;
+            try
+            {
+                using (var db = DbConnectionFactory.OpenDbConnection())
+                {
+                    Result = db.Update<Csbk2>(
+                        new {
+                            CollectedPcs = int.Parse(request.CollectedPcs)
+
+                        },
+               	p => p.TrxNo == request.TrxNo && p.LineItemNo == request.LineItemNo
+
+
+                        );
+
+
+                }
+            }
+            catch { throw; }
+            return Result;
         }
 
         public int Update_Csbk1Collected(Csbk request)
@@ -214,7 +244,7 @@ namespace WebApi.ServiceModel.TMS
                                     new
                                     {
                                         // CompletedFlag = request.CompletedFlag,
-                                        CollectedAmt = request.Amount
+                                        CollectedAmt =Convert.ToDecimal( request.Amount)
 
                                     },
                                     p => p.BookingNo == request.BookingNo

@@ -28,7 +28,10 @@ namespace WebApi.ServiceModel.Tables
         public string TimeTo { get; set; }
         public string ColTimeFrom { get; set; }
         public string ColTimeTo { get; set; }
-        public int CollectedAmt { get; set; }
+        public decimal CollectedAmt { get; set; }
+        public decimal DepositAmt { get; set; }
+        public decimal DiscountAmt { get; set; }
+        public int ItemNo { get; set; }
 
 
 

@@ -35,12 +35,33 @@ namespace WebApi.ServiceInterface.TMS
                     ecr.data.results = tobk_Logic.Get_csbk1_List(request);
 
                 }
+                else if (uri.IndexOf("/tms/csbk2/update") > 0)
+                {
+                    ecr.data.results = tobk_Logic.Update_Csbk2(request);
+                }
                 else if (uri.IndexOf("/tms/csbk2") > 0)
                 {
                     ecr.data.results = tobk_Logic.Get_Csbk2_List(request);
                 }
-                else
-                    ecr.meta.code = 200;
+                ecr.meta.code = 200;
+                ecr.meta.message = "OK";
+            }
+            else
+            {
+                ecr.meta.code = 401;
+                ecr.meta.message = "Unauthorized";
+            }
+        }
+
+        public void TS_Slcr(Auth auth, Slcr request, Slcr_Logic slcr_logic, CommonResponse ecr, string[] token, string uri)
+        {
+            if (auth.AuthResult(token, uri))
+            {
+                if (uri.IndexOf("/tms/slcr1/complete") > 0)
+                {
+                    ecr.data.results = slcr_logic.Complete_Slcr1(request);
+                }
+                ecr.meta.code = 200;
                 ecr.meta.message = "OK";
             }
             else
