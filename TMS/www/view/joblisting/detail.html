@@ -43,46 +43,22 @@
           Collected
         </div>
       </div>
-      <div class="item item-text-wrap">
-        <ion-item class="item" ng-repeat="Csbk2 in Detail.csbk2s">
-          <div class="row" style="height:1px;">
+      <div class="item item-text-wrap" id="idivCsbk2" style="margin-top: 0px">
+        <ion-item class="item" ng-repeat="Csbk2 in Detail.csbk2s" style="margin-top: 0px">
+          <div class="row" style="height:1px;style="margin-top: 0px"">
+  <!-- <div class="row" style="height:0px;"> -->
             <div class="col" style="height:1px;">
-              <!-- JU MBO -->
               <p><span ng-bind="Csbk2.BoxCode"></span></p>
             </div>
             <div class="col" style="height:1px;">
-              <!-- 11 -->
               <p><span ng-bind="Csbk2.Pcs"></span></p>
             </div>
-            <div class="col-20"  style="height:1px;">
-              <!-- 22 -->
-       <!--<p><span ng-bind="Csbk2s.CollectedPcs"></span></p> -->
-              <input type="text" id="iCollectedPcs" style="height:30px;"  ng-model="Csbk2.CollectedPcs" >
-                    </div>
+            <div class="col-20" style="height:1px;">
+              <input type="text" id="iCollectedPcs" style="height:30px;" ng-model="Csbk2.CollectedPcs">
+            </div>
           </div>
         </ion-item>
-        <!-- <div class="row">
-          <div class="col">
-            XXL
-          </div>
-          <div class="col">
-            2
-          </div>
-          <div class="col">
-            1
-          </div>
-        </div> -->
-        <!-- <div class="row">
-          <div class="col">
-            &nbsp;
-          </div>
-          <div class="col">
-            &nbsp;
-          </div>
-          <div class="col">
-            &nbsp;
-          </div>
-        </div> -->
+
       </div>
       <div>
         <button class="button button-block button-calm">
@@ -116,7 +92,7 @@
           </div>
           <div class="col">
             <!-- <p><span ng-bind="csbk2.Collected"></span></p> -->
-            <input class="col" id="iCollectedAmt"  style="height:22px;"  type="text" ng-model="Detail.csbk1.CollectedAmt">
+            <input class="col" id="iCollectedAmt" style="height:22px;" type="text" ng-model="Detail.csbk1.CollectedAmt">
           </div>
         </div>
       </div>

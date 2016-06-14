@@ -67,7 +67,9 @@ app.controller('AcceptJobCtrl', ['ENV', '$scope', '$state', '$ionicPopup', '$cor
         $scope.jobs = dataResults;
       }
     };
+
     var showCsbk = function(bookingNo) {
+
       if (is.not.empty(bookingNo)) {
         var strUri = '/api/tms/csbk1?BookingNo=' + bookingNo;
         ApiService.GetParam(strUri, true).then(function success(result) {

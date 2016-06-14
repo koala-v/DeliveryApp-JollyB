@@ -53,7 +53,7 @@ app.controller( 'SettingCtrl', [ 'ENV', '$rootScope', '$scope', '$state', '$ioni
         };
         $scope.reset = function() {
             $scope.Setting.WebApiURL = 'www.sysfreight.net/apis/tms/jollyb';
-            $scope.Setting.WebSiteUrl = 'www.sysfreight.net/mobileapp-JollyB';
+            $scope.Setting.WebSiteUrl = 'www.sysfreight.net/app/tms/jollybcsbk';
             $scope.Setting.SSL = { checked: false };
             if ( !ENV.fromWeb ) {
                 var path = cordova.file.externalRootDirectory;
