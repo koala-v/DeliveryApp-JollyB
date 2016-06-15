@@ -4,9 +4,18 @@ app.controller('dailycompletedCtrl', ['ENV', '$scope', '$state', '$ionicPopup', 
     var alertPopup = null,
       dataResults = new Array();
     $scope.Search = {
-      CompletedDate:''
+      CompletedDate:'',
+      allCompletedDates:[]
+
     };
-$scope.Search.CompletedDate=moment( new Date() ).format( 'YYYYMMDD' );
+  for(var i=0;i<7;i++){
+    var CompletedDates={
+     CompletedDate : moment(moment().subtract(i, 'day')).format( 'YYYYMMDD' )
+    };
+    $scope.Search.allCompletedDates.push(CompletedDates);
+  }
+      console.log($scope.Search.allCompletedDates);
+    $scope.Search.CompletedDate=moment( new Date() ).format( 'YYYYMMDD' );
     var showPopup = function(title, type) {
       if (alertPopup === null) {
         alertPopup = $ionicPopup.alert({
@@ -19,9 +28,7 @@ $scope.Search.CompletedDate=moment( new Date() ).format( 'YYYYMMDD' );
       }
     };
     var showList = function() {
-
     };
-
       $ionicPlatform.ready(function() {
         console.log(sessionStorage.getItem("strDriverId"));
         if (!ENV.fromWeb) {
@@ -31,9 +38,7 @@ $scope.Search.CompletedDate=moment( new Date() ).format( 'YYYYMMDD' );
                 if (results.rows.length > 0) {
                   for (var i = 0; i < results.rows.length; i++) {
                     var Csbk1_acc = results.rows.item(i);
-                    console.log(Csbk1_acc.BookingNo);
-                      console.log('Csbk1_acc.BookingNo');
-                    var jobs = [{
+                        var jobs = [{
                       bookingno: Csbk1_acc.BookingNo,
                       JobNo: Csbk1_acc.JobNo,
                       CollectedAmt:Csbk1_acc.CollectedAmt

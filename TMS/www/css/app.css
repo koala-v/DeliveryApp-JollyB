@@ -327,6 +327,15 @@ ion-content {
     z-index: 1;
 }
 */
+.item{
+    margin-top: 0px;
+      margin-bottom: 0px;
+    /*//  padding: 0px;*/
+}
+#idivCsbk2{
+  margin-top: 0px;
+    margin-bottom: 0px;
+}
 .nav-info {
 	background-color: #387ef5;
 	height: 12em;

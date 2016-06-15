@@ -20,8 +20,6 @@ app.controller('JoblistingListCtrl', ['ENV', '$scope', '$state', '$ionicLoading'
                 if (results.rows.length > 0) {
                   for (var i = 0; i < results.rows.length; i++) {
                     var Csbk1_acc = results.rows.item(i);
-                    console.log(Csbk1_acc.CompletedFlag);
-                        console.log('Csbk1_acc.CompletedFlag');
                     var reuturnTime = '';
                     if (is.equal(Csbk1_acc.CollectionTimeStart, '') && is.equal(Csbk1_acc.CollectionTimeEnd, '')) {
                       reuturnTime = Csbk1_acc.ColTimeFrom + '-' + Csbk1_acc.ColTimeTo;
@@ -54,13 +52,10 @@ app.controller('JoblistingListCtrl', ['ENV', '$scope', '$state', '$ionicLoading'
                     dataResults = dataResults.concat(jobs);
                     $scope.jobs = dataResults;
                   }
-
                 } else {
-                  //  gotoLogin(false);
                 }
               },
               function(error) {
-                //  gotoLogin(false);
               }
             );
         } else {
@@ -232,8 +227,6 @@ app.controller('JoblistingDetailCtrl', ['ENV', '$scope', '$state', '$ionicAction
             .then(
               function(results) {
                 if (results.rows.length > 0) {
-                  console.log(results.rows.length);
-                  console.log('11');
                   for (var i = 0; i < results.rows.length; i++) {
                     var csbk2s = {
                       TrxNo: results.rows.item(i).TrxNo,

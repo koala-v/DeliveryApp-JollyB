@@ -1,9 +1,9 @@
 'use strict';
 var appConfig = angular.module('TMS.config', []);
 appConfig.constant('ENV', {
-  'website': 'www.sysfreight.net/mobileapp-JollyB',
+  'website': 'www.sysfreight.net/app/tms/jollybcsbk',
   'api': 'www.sysfreight.net/apis/tms/jollyb',
-//  'api':          'http://localhost:9679',
+  // 'api':          'http://localhost:9679',
   'port': '8081', // http port no
   'ssl': '0', // 0 : false, 1 : true
   'debug': true,

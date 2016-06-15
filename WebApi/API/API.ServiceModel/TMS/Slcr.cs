@@ -88,20 +88,68 @@ namespace WebApi.ServiceModel.TMS
 " end as 'NextNo' ";
                         intMonth = db.Scalar<int>(strSQL);
 
+                        if (intMonth == 1)
+                        {
+
+                            db.Update("sanm2", " Mth01NextNo = '" + NextNo + "'", "trxno =(Select TrxNo From Sanm1 Where NumberType = 'Slcr') and YEAR = (select year(getdate()))");
+
+                        }
+                        else if (intMonth == 2)
+                        {
+                            db.Update("sanm2", " Mth02NextNo = '" + NextNo + "'", "trxno =(Select TrxNo From Sanm1 Where NumberType = 'Slcr') and YEAR = (select year(getdate()))");
+
+                        }
+                        else if (intMonth == 3)
+                        {
+                            db.Update("sanm2", " Mth03NextNo = '" + NextNo + "'", "trxno =(Select TrxNo From Sanm1 Where NumberType = 'Slcr') and YEAR = (select year(getdate()))");
+
+                        }
+                       else if (intMonth == 4)
+                        {
+
+                            db.Update("sanm2", " Mth04NextNo = '" + NextNo + "'", "trxno =(Select TrxNo From Sanm1 Where NumberType = 'Slcr') and YEAR = (select year(getdate()))");
+
+                        }
+                        else if (intMonth == 5)
+                        {
+                            db.Update("sanm2", " Mth05NextNo = '" + NextNo + "'", "trxno =(Select TrxNo From Sanm1 Where NumberType = 'Slcr') and YEAR = (select year(getdate()))");
+
+                        }
                         if (intMonth == 6)
                         {
 
                             db.Update("sanm2", " Mth06NextNo = '" + NextNo + "'", "trxno =(Select TrxNo From Sanm1 Where NumberType = 'Slcr') and YEAR = (select year(getdate()))");
 
                         }
-                        else if (intMonth == 8)
+                        else if (intMonth == 7)
                         {
                             db.Update("sanm2", " Mth07NextNo = '" + NextNo + "'", "trxno =(Select TrxNo From Sanm1 Where NumberType = 'Slcr') and YEAR = (select year(getdate()))");
 
                         }
-                        else if (intMonth == 9)
+                        else if (intMonth == 8)
                         {
                             db.Update("sanm2", " Mth08NextNo = '" + NextNo + "'", "trxno =(Select TrxNo From Sanm1 Where NumberType = 'Slcr') and YEAR = (select year(getdate()))");
+
+                        }
+                        if (intMonth == 9)
+                        {
+
+                            db.Update("sanm2", " Mth09NextNo = '" + NextNo + "'", "trxno =(Select TrxNo From Sanm1 Where NumberType = 'Slcr') and YEAR = (select year(getdate()))");
+
+                        }
+                        else if (intMonth == 10)
+                        {
+                            db.Update("sanm2", " Mth10NextNo = '" + NextNo + "'", "trxno =(Select TrxNo From Sanm1 Where NumberType = 'Slcr') and YEAR = (select year(getdate()))");
+
+                        }
+                        else if (intMonth == 11)
+                        {
+                            db.Update("sanm2", " Mth11NextNo = '" + NextNo + "'", "trxno =(Select TrxNo From Sanm1 Where NumberType = 'Slcr') and YEAR = (select year(getdate()))");
+
+                        }
+                        else if (intMonth == 12)
+                        {
+                            db.Update("sanm2", " Mth12NextNo = '" + NextNo + "'", "trxno =(Select TrxNo From Sanm1 Where NumberType = 'Slcr') and YEAR = (select year(getdate()))");
 
                         }
 
