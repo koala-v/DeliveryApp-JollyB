@@ -96,7 +96,15 @@ var db_del_Csbk1_Accept = function() {
   if (dbTms) {
     dbTms.transaction(function(tx) {
       dbSql = 'Delete from Csbk1_Accept';
-      tx.executeSql(dbsql, [], null, dbError)
+      tx.executeSql(dbSql, [], null, dbError)
+    });
+  }
+}
+var db_del_Csbk1_Accept_detail = function(bookingNo) {
+  if (dbTms) {
+    dbTms.transaction(function(tx) {
+      dbSql = "Delete from Csbk1_Accept where BookingNo='"+bookingNo+"'";
+      tx.executeSql(dbSql, [], null, dbError)
     });
   }
 }
