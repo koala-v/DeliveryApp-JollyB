@@ -215,10 +215,39 @@ app.controller('JoblistingDetailCtrl', ['ENV', '$scope', '$state', '$ionicAction
       CollectedAmt: 0,
       CollectedPcs: 0,
       SumPcs: 0,
+      PhoneNumber: "",
+      ScanDate:"",
       csbk2s: [],
       csbk2: {}
     };
 
+$scope.capturePhoto=function(){
+  navigator.camera.getPicture(onSuccess, onFail, { quality: 25,
+       destinationType: Camera.DestinationType.FILE_URI,
+       sourceType: Camera.PictureSourceType.PHOTOLIBRARY,
+  });
+
+  function onSuccess(imageData) {
+      var image = document.getElementById('myImage');
+      image.src = "data:image/jpeg;base64," + imageData;
+  }
+
+  function onFail(message) {
+      // alert('Failed because: ' + message);
+  }
+
+};
+
+    var strUri = '/api/tms/rcbp1?BookingNo=' + $scope.Detail.csbk1.BookingNo;
+    ApiService.GetParam(strUri, true).then(function success(result) {
+      var results = result.data.results;
+      if (is.not.empty(results)) {
+        $scope.Detail.PhoneNumber = "tel:" + results[0].Handphone1;
+        if (is.equal(results[0].Handphone1, '')) {
+          $scope.Detail.PhoneNumber = "tel:" + results[0].Telephone;
+        }
+      }
+    });
     $('#iCollectedPcs').focus(function(e) {
       console.log('====focus');
     });
@@ -391,7 +420,7 @@ app.controller('JoblistingDetailCtrl', ['ENV', '$scope', '$state', '$ionicAction
       var actionSheet = $ionicActionSheet.show({
         buttons: [{
 
-          text: '<a ng-hef="tel:08605925888865>CALL  </a>'
+          text: '<a ng-hef="tel:08605925888865">CALL  </a>'
         }, {
           text: 'SMS'
         }],
@@ -420,15 +449,6 @@ app.controller('JoblistingDetailCtrl', ['ENV', '$scope', '$state', '$ionicAction
         ApiService.GetParam(strUri, true).then(function success(result) {
           $ionicPlatform.ready(function() {
             if (!ENV.fromWeb) {
-              // var sqlupdateCompletedFlag = "update Csbk1 set CompletedFlag=?,CollectedAmt=? where BookingNo='" + $scope.Detail.csbk1.BookingNo + "' ";
-              // $cordovaSQLite.execute(db, sqlupdateCompletedFlag, ["Y", $scope.Detail.csbk1.CollectedAmt])
-              //   .then(function(result) {}, function(error) {
-              //   });
-
-              // var sqlupdateCompletedFlag = "update Csbk1 set CompletedFlag=?  where BookingNo='" + $scope.Detail.csbk1.BookingNo + "' ";
-              // $cordovaSQLite.execute(db, sqlupdateCompletedFlag, ["Y"])
-              //   .then(function(result) {}, function(error) {});
-              //
               var currentDate = moment(new Date()).format('YYYYMMDD');
               console.log($scope.Detail.csbk1.CollectedAmt);
               console.log('$scope.Detail.csbk1.CollectedAmt');
@@ -487,8 +507,19 @@ app.controller('JoblistingDetailCtrl', ['ENV', '$scope', '$state', '$ionicAction
                         };
                         db_update_Csbk2_Accept(jobs);
                       }
+                      dbTms.transaction(function(tx) {
+                        dbSql = "select * from Csbk1_Accept where BookingNo='" + $scope.Detail.csbk1.BookingNo + "'";
+                        tx.executeSql(dbSql, [], function(tx, results) {
+                          if (results.rows.length > 0) {
+                            for (var i = 0; i < results.rows.length; i++) {
+                              var Csbk1_acc = results.rows.item(i);
+                           $scope.Detail.ScanDate = Csbk1_acc.ScanDate;
+                           console.log($scope.Detail.ScanDate );
+                            }
+                          }
+                        });});
 
-                      strUri = '/api/tms/csbk1/update?BookingNo=' + $scope.Detail.csbk1.BookingNo + '&Amount=' + $scope.Detail.csbk1.CollectedAmt;
+                      strUri = '/api/tms/csbk1/update?BookingNo=' + $scope.Detail.csbk1.BookingNo + '&Amount=' + $scope.Detail.csbk1.CollectedAmt+'&ActualDeliveryDate='+$scope.Detail.ScanDate ;
                       ApiService.GetParam(strUri, true).then(function success(result) {
                         for (var intI = 0; intI < results.rows.length; intI++) {
                           strUri = '/api/tms/csbk2/update?CollectedPcs=' + $scope.Detail.csbk2s[intI].CollectedPcs + '&TrxNo=' + Csbk2_acc.TrxNo + '&LineItemNo=' + Csbk2_acc.LineItemNo;

@@ -104,77 +104,7 @@ app.controller('AcceptJobCtrl', ['ENV', '$scope', '$state', '$ionicPopup', '$cor
           showPopup('Wrong Booking No', 'assertive');
         }
       }
-      // if (is.not.empty(bookingNo)) {
-      //   var strUri = '/api/tms/csbk1?BookingNo=' + bookingNo;
-      //   ApiService.GetParam(strUri, true).then(function success(result) {
-      //     var results = result.data.results;
-      //     if (is.not.empty(results)) {
-      //       var reuturnTime = '';
-      //       if (is.equal(results[0].CollectionTimeStart, '') && is.equal(results[0].CollectionTimeEnd, '')) {
-      //         reuturnTime = results[0].ColTimeFrom + '-' + results[0].ColTimeTo;
-      //       } else {
-      //         reuturnTime = results[0].CollectionTimeStart + '-' + results[0].CollectionTimeEnd;
-      //       }
-      //       var DLVReturntime = '';
-      //       if (is.equal(results[0].CollectionTimeStart, '') && is.equal(results[0].CollectionTimeEnd, '')) {
-      //         DLVReturntime = '';
-      //       } else {
-      //         DLVReturntime = results[0].TimeFrom + '-' + results[0].TimeTo;
-      //       }
-      //       // console.log(reuturnTime);
-      //       var Csbk1 = {
-      //         action: is.equal(results[0].StatusCode, 'DLV') ? 'Deliver' : 'Collect',
-      //         amt: results[0].Pcs + ' PKG',
-      //         //  time: is.equal(results[ 0 ].Pcs.JobType, 'DLV') ? '11:00 - 18:00' : checkDatetime(results[ 0 ].CollectionTimeStart)-checkDatetime(results[ 0 ].CollectionTimeEnd),
-      //         time: is.equal(results[0].StatusCode, 'DLV') ? DLVReturntime : reuturnTime,
-      //         code: results[0].PostalCode,
-      //         customer: {
-      //           name: results[0].BusinessPartyName,
-      //           address: results[0].Address1 + results[0].Address2 + results[0].Address3 + results[0].Address4
-      //         }
-      //       };
-      //       if (!ENV.fromWeb) {
-      //         var sql = 'INSERT INTO Csbk1(TrxNo,BookingNo,JobNo,StatusCode,BookingCustomerCode,Pcs,CollectionTimeStart,CollectionTimeEnd,PostalCode,BusinessPartyCode,BusinessPartyName,Address1,Address2,Address3,Address4,CompletedFlag,TimeFrom,TimeTo,ColTimeFrom,ColTimeTo) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
-      //         $cordovaSQLite.execute(db, sql, [
-      //             results[0].TrxNo,
-      //             results[0].BookingNo,
-      //             results[0].JobNo,
-      //             results[0].StatusCode,
-      //             results[0].BookingCustomerCode,
-      //             results[0].Pcs,
-      //             results[0].CollectionTimeStart,
-      //             results[0].CollectionTimeEnd,
-      //             results[0].PostalCode,
-      //             results[0].BusinessPartyCode,
-      //             results[0].BusinessPartyName,
-      //             results[0].Address1,
-      //             results[0].Address2,
-      //             results[0].Address3,
-      //             results[0].Address4,
-      //             results[0].CompletedFlag,
-      //             results[0].TimeFrom,
-      //             results[0].TimeTo,
-      //             results[0].ColTimeFrom,
-      //             results[0].ColTimeTo
-      //           ])
-      //           .then(function(result) {}, function(error) {});
-      //       } else {
-      //         for (var i = 0; i < results.length; i++) {
-      //           db_add_Csbk1_Accept(results[i]);
-      //         }
-      //       }
-      //       dataResults = dataResults.concat(Csbk1);
-      //       $scope.jobs = dataResults;
-      //       ACCEPTJOB_ORM.LIST._setCsbk($scope.jobs);
-      //     } else {
-      //       showPopup('Wrong Booking No', 'assertive');
-      //     }
-      //     $scope.Search.BookingNo = '';
-      //     $('#div-list').focus();
-      //   });
-      // } else {
-      //   showPopup('Wrong Booking No', 'assertive');
-      // }
+
     };
     $scope.deleteCsbk1 = function(index,job) {
       if (!ENV.fromWeb) {

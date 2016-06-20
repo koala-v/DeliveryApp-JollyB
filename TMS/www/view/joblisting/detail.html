@@ -9,7 +9,7 @@
     <div style="height: 43px;"></div>
     <div class="card" id="iCard" style="overflow-y:auto">
       <div class="button-bar">
-        <a class="button" ng-href="tel:08605925888865">
+        <a class="button" ng-href="{{Detail.PhoneNumber}}">
                     CALL
                 </a>
         <!-- <button class="button" ng-click="showActionSheet()">
@@ -18,7 +18,7 @@
         <button class="button">
           MAP
         </button>
-        <button class="button">
+        <button class="button"  ng-click="capturePhoto()">
           CAMERA
         </button>
       </div>
