@@ -81,14 +81,14 @@ if (dbTms) {
   dbTms.transaction(function(tx) {
     dbSql = 'DROP TABLE if exists Csbk2_Accept';
     tx.executeSql(dbSql, [], null, dbError);
-    dbSql = "CREATE TABLE Csbk2_Accept (TrxNo INT,LineItemNo INT, BoxCode TEXT,Pcs INT,UnitRate TEXT,CollectedPcs INT)";
+    dbSql = "CREATE TABLE Csbk2_Accept (TrxNo INT,LineItemNo INT, BoxCode TEXT,Pcs INT,UnitRate TEXT,CollectedPcs INT,AddQty INT)";
     tx.executeSql(dbSql, [], null, dbError);
   });
 
   dbTms.transaction(function(tx) {
     dbSql = 'DROP TABLE if exists Csbk1Detail_Accept';
     tx.executeSql(dbSql, [], null, dbError);
-    dbSql = "CREATE TABLE Csbk1Detail_Accept (BookingNo TEXT, JobNo TEXT,TrxNo INT,StatusCode TEXT,ItemNo INT,DepositAmt INT,DiscountAmt  INT,CollectedAmt  INT,CompletedFlag TEXT)";
+    dbSql = "CREATE TABLE Csbk1Detail_Accept (BookingNo TEXT, JobNo TEXT,TrxNo INT,StatusCode TEXT,ItemNo INT,DepositAmt INT,DiscountAmt  INT,CollectedAmt  INT,CompletedFlag TEXT,PaidAmt INT)";
     tx.executeSql(dbSql, [], null, dbError);
   });
 }
@@ -121,8 +121,8 @@ var db_add_Csbk2_Accept = function(Csbk2) {
   if (dbTms) {
     dbTms.transaction(function(tx) {
       Csbk2 = repalceObj(Csbk2);
-      dbSql = 'INSERT INTO Csbk2_Accept(TrxNo,LineItemNo, BoxCode,Pcs,UnitRate,CollectedPcs) values(?,?,?,?,?,?)';
-      tx.executeSql(dbSql, [Csbk2.TrxNo,Csbk2.LineItemNo, Csbk2.BoxCode,Csbk2.Pcs,Csbk2.UnitRate,Csbk2.CollectedPcs], null, dbError);
+      dbSql = 'INSERT INTO Csbk2_Accept(TrxNo,LineItemNo, BoxCode,Pcs,UnitRate,CollectedPcs,AddQty) values(?,?,?,?,?,?,?)';
+      tx.executeSql(dbSql, [Csbk2.TrxNo,Csbk2.LineItemNo, Csbk2.BoxCode,Csbk2.Pcs,Csbk2.UnitRate,Csbk2.CollectedPcs,Csbk2.AddQty], null, dbError);
   });
   }
 }
@@ -131,8 +131,8 @@ var db_add_Csbk1Detail_Accept = function(Csbk1Detail) {
   if (dbTms) {
     dbTms.transaction(function(tx) {
       Csbk1Detail = repalceObj(Csbk1Detail);
-      dbSql = 'INSERT INTO Csbk1Detail_Accept(BookingNo,JobNo,TrxNo,StatusCode,ItemNo,DepositAmt,DiscountAmt,CollectedAmt,CompletedFlag) values(?,?,?,?,?,?,?,?,?)';
-      tx.executeSql(dbSql, [Csbk1Detail.BookingNo,Csbk1Detail.JobNo,Csbk1Detail.TrxNo,Csbk1Detail.StatusCode,Csbk1Detail.ItemNo,Csbk1Detail.DepositAmt,Csbk1Detail.DiscountAmt,Csbk1Detail.CollectedAmt,Csbk1Detail.CompletedFlag], null, dbError);
+      dbSql = 'INSERT INTO Csbk1Detail_Accept(BookingNo,JobNo,TrxNo,StatusCode,ItemNo,DepositAmt,DiscountAmt,CollectedAmt,CompletedFlag,PaidAmt) values(?,?,?,?,?,?,?,?,?,?)';
+      tx.executeSql(dbSql, [Csbk1Detail.BookingNo,Csbk1Detail.JobNo,Csbk1Detail.TrxNo,Csbk1Detail.StatusCode,Csbk1Detail.ItemNo,Csbk1Detail.DepositAmt,Csbk1Detail.DiscountAmt,Csbk1Detail.CollectedAmt,Csbk1Detail.CompletedFlag,Csbk1Detail.PaidAmt], null, dbError);
   });
   }
 }
@@ -188,8 +188,8 @@ var db_update_Csbk2_Accept = function(Csbk2) {
   if (dbTms) {
     dbTms.transaction(function(tx) {
         Csbk2 = repalceObj(Csbk2);
-      dbSql = 'Update Csbk2_Accept set CollectedPcs=? where TrxNo=? and LineItemNo=?';
-      tx.executeSql(dbSql, [Csbk2.CollectedPcs,Csbk2.TrxNo,Csbk2.LineItemNo], null, dbError);
+      dbSql = 'Update Csbk2_Accept set CollectedPcs=?,AddQty=? where TrxNo=? and LineItemNo=?';
+      tx.executeSql(dbSql, [Csbk2.CollectedPcs,Csbk2.AddQty,Csbk2.TrxNo,Csbk2.LineItemNo], null, dbError);
     });
   }
 }

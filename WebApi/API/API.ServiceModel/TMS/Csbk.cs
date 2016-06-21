@@ -28,9 +28,9 @@ namespace WebApi.ServiceModel.TMS
         public int LineItemNo { get; set; }
         public string CollectedPcs { get; set; }
         public List<Csbk1> csbk1s { get; set; }
-      public string   ActualDeliveryDate { get; set; }
+        public string   ActualDeliveryDate { get; set; }
         public string ActualCollectionDate { get; set; }
-
+        public string AddQty { get; set; }
 
     }
     public class Csbk_Logic
@@ -173,9 +173,9 @@ namespace WebApi.ServiceModel.TMS
                 {
                     if (!string.IsNullOrEmpty(request.BookingNo))
                     {
-                        var strSQL = "select Csbk1.BookingNo, Csbk1.JobNo,Csbk1.TrxNo,Csbk1.StatusCode as StatusCode,Csbk1.ItemNo,Csbk1.DepositAmt,Csbk1.DiscountAmt ,Csbk1.CollectedAmt      from  Csbk1  where BookingNo ='" + request.BookingNo + "'";
+                        var strSQL = "select Csbk1.BookingNo, Csbk1.JobNo,Csbk1.TrxNo,Csbk1.StatusCode as StatusCode,Csbk1.ItemNo,Csbk1.DepositAmt,Csbk1.DiscountAmt ,Csbk1.CollectedAmt,csbk1.PaidAmt      from  Csbk1  where BookingNo ='" + request.BookingNo + "'";
                         Result.csbk1 = db.Select<Csbk1>(strSQL)[0];
-                        strSQL = "select Csbk2.TrxNo,Csbk2.LineItemNo,Csbk2.BoxCode,Csbk2.Pcs,Csbk2.UnitRate,Csbk2.CollectedPcs      from Csbk2 left join Csbk1 on Csbk2.trxno = Csbk1.trxno where BookingNo ='" + request.BookingNo + "'";
+                        strSQL = " select Csbk2.TrxNo,Csbk2.LineItemNo,Csbk2.Pcs,Csbk2.UnitRate,Csbk2.CollectedPcs ,rcbx1.Description as BoxCode,Csbk2.AddQty   from Csbk2 left join Csbk1 on Csbk2.trxno = Csbk1.trxno left join rcbx1 on csbk2.BoxCode=rcbx1.BoxCode  where BookingNo='" + request.BookingNo + "'";
                         Result.csbk2s = db.Select<Csbk2>(strSQL);
                        
                     }
@@ -195,7 +195,8 @@ namespace WebApi.ServiceModel.TMS
                 {
                     Result = db.Update<Csbk2>(
                         new {
-                            CollectedPcs = int.Parse(request.CollectedPcs)
+                            CollectedPcs = int.Parse(request.CollectedPcs),
+                            AddQty= int.Parse(request.AddQty)
 
                         },
                	p => p.TrxNo == request.TrxNo && p.LineItemNo == request.LineItemNo
@@ -251,6 +252,7 @@ namespace WebApi.ServiceModel.TMS
                                     {
                                         // CompletedFlag = request.CompletedFlag,
                                         ActualDeliveryDate= request.ActualDeliveryDate,
+                                        ActualCollectionDate=request.ActualCollectionDate,
                                         CollectedAmt =Convert.ToDecimal( request.Amount)
 
                                     },

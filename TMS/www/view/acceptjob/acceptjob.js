@@ -62,7 +62,7 @@ app.controller('AcceptJobCtrl', ['ENV', '$scope', '$state', '$ionicPopup', '$cor
                 }
               };
               if (!ENV.fromWeb) {
-                var sql = 'INSERT INTO Csbk1(TrxNo,BookingNo,JobNo,StatusCode,BookingCustomerCode,Pcs,CollectionTimeStart,CollectionTimeEnd,PostalCode,BusinessPartyCode,BusinessPartyName,Address1,Address2,Address3,Address4,CompletedFlag,TimeFrom,TimeTo,ColTimeFrom,ColTimeTo) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+                var sql = 'INSERT INTO Csbk1(TrxNo,BookingNo,JobNo,StatusCode,BookingCustomerCode,Pcs,CollectionTimeStart,CollectionTimeEnd,PostalCode,BusinessPartyCode,BusinessPartyName,Address1,Address2,Address3,Address4,CompletedFlag,TimeFrom,TimeTo,ColTimeFrom,ColTimeTo,ScanDate) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
                 $cordovaSQLite.execute(db, sql, [
                     results[0].TrxNo,
                     results[0].BookingNo,
@@ -83,7 +83,8 @@ app.controller('AcceptJobCtrl', ['ENV', '$scope', '$state', '$ionicPopup', '$cor
                     results[0].TimeFrom,
                     results[0].TimeTo,
                     results[0].ColTimeFrom,
-                    results[0].ColTimeTo
+                    results[0].ColTimeTo,
+                    results[0].ScanDate
                   ])
                   .then(function(result) {}, function(error) {});
               } else {

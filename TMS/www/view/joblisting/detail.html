@@ -33,35 +33,34 @@
         </button>
       </div>
       <div class="row item item-divider">
-        <div class="col col-40">
-          Box Description
+        <div class="col col-25">
+          Box Size
         </div>
-        <div class="col col-20">
-      &nbsp  QTY
+        <div class="col col-25">
+        &nbsp&nbsp   Qty
         </div>
         <div class="col col-25">
           Collected
         </div>
-        <div class="col col-15">
-          ADD
+        <div class="col col-25">
+        &nbsp &nbsp   Add
         </div>
       </div>
       <div class="item item-text-wrap" id="idivCsbk2" style="padding: 2px">
         <ion-item class="item" ng-repeat="Csbk2 in Detail.csbk2s" style="padding: 2px">
           <div class="row" >
   <!-- <div class="row" style="height:0px;"> -->
-            <div class="col col-40" >
-              <p>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<span ng-bind="Csbk2.BoxCode"></span></p>
-            </div>
-            <div class="col col-20" >
-             <p>  &nbsp <span ng-bind="Csbk2.Pcs"></span></p>
+            <div class="col col-25" >
+              <p><span ng-bind="Csbk2.BoxCode"></span></p>
             </div>
             <div class="col col-25" >
-            <input type="text" id="iCollectedPcs" style="height:20px;"   ng-model="Csbk2.CollectedPcs">
+             <p> <span ng-bind="Csbk2.Pcs"></span></p>
             </div>
-            <div class="col col-15" >
-                <!-- <p><span ng-bind=""></span></p>
-              <input type="text" id="iCollectedPcs"  ng-model="Csbk2.CollectedPcs"> -->
+            <div class="col col-25" >
+          <input type="text" id="iCollectedPcs" style="height:20px;"   ng-model="Csbk2.CollectedPcs">
+            </div>
+            <div class="col col-25" >
+              <input type="text" id="AddQty" style="height:20px;"   ng-model="Csbk2.AddQty">
             </div>
           </div>
         </ion-item>

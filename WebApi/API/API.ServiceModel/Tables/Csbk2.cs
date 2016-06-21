@@ -20,6 +20,7 @@ namespace WebApi.ServiceModel.Tables
         public int CollectedPcs { get; set; }    
       //  public decimal CollectedAmt { get; set; }
         public string AttachmentFlag { get; set; }
+        public int AddQty { get; set; }
 
 
 
