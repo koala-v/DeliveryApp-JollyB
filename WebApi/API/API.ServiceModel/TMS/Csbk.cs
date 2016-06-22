@@ -28,6 +28,9 @@ namespace WebApi.ServiceModel.TMS
         public int LineItemNo { get; set; }
         public string CollectedPcs { get; set; }
         public List<Csbk1> csbk1s { get; set; }
+        public string   ActualDeliveryDate { get; set; }
+        public string ActualCollectionDate { get; set; }
+        public string AddQty { get; set; }
 
     }
     public class Csbk_Logic
@@ -50,63 +53,66 @@ namespace WebApi.ServiceModel.TMS
                     if (!string.IsNullOrEmpty(request.BookingNo))
                     {
 
-                        strWhere = "Where BookingNo like '%" + request.BookingNo + "'";
+
+
                         //var strSQL = "select Csbk1.TrxNo,Csbk1.BookingNo,Csbk1.StatusCode,isnull(Csbk1.JobNo, '') as JobNo,isnull(Csbk1.BookingCustomerCode, '') as BookingCustomerCode,isnull(Csbk1.CollectionTimeStart, '') as CollectionTimeStart,isnull(Csbk1.CollectionTimeEnd, '') as CollectionTimeEnd ,sum(Csbk2.Pcs) as Pcs,isnull(rcbp1.BusinessPartyCode, '') as BusinessPartyCode,isnull(Rcbp1.PostalCode, '') as PostalCode,isnull(Rcbp1.BusinessPartyName, '') as BusinessPartyName,isnull(Rcbp1.Address1, '') as Address1,isnull(Rcbp1.Address2, '') as Address2,isnull(Rcbp1.Address3, '') as Address3,isnull(Rcbp1.Address4, '') as Address4 ,isnull(Csbk1.CompletedFlag,'') AS CompletedFlag" +
                         //  " from Csbk1 left join Csbk2 on Csbk1.TrxNo = Csbk2.TrxNo  left" +
                         //  " join rcbp1 on Csbk1.BookingCustomerCode = rcbp1.BusinessPartyCode " + strWhere +
                         //  " group  by Csbk1.jobno,rcbp1.BusinessPartyCode,Csbk1.BookingNo,Csbk1.StatusCode,Rcbp1.PostalCode,Rcbp1.BusinessPartyName,Rcbp1.Address1,Rcbp1.Address2,Rcbp1.Address3,Rcbp1.Address4,Csbk1.BookingCustomerCode,Csbk1.CollectionTimeStart,Csbk1.CollectionTimeEnd,Csbk1.CompletedFlag,Csbk1.TrxNo";
+
+                        strWhere = "Where BookingNo like'%" +request.BookingNo + "' and isnull(Csbk1.CompletedFlag,'')<>'Y'";
                         var strSQL = "select Csbk1.TrxNo," +
-          "isnull((Select top 1 TimeFrom From Todr2 Where District like '%' + Rcbp1.DistrictCode + '%' and  day in ( case when DatePart(W, csbk1.DeliveryDate) = 1 then 'SUN'" +
-           " when DatePart(W, csbk1.DeliveryDate) = 2 then 'MON'" +
-          "  when DatePart(W, csbk1.DeliveryDate) = 3 then 'TUE'" +
-           " when DatePart(W, csbk1.DeliveryDate) = 4 then 'WED'" +
-          "  when DatePart(W, csbk1.DeliveryDate) = 5 then 'THU'" +
-          "  when DatePart(W, csbk1.DeliveryDate) = 6 then 'FRI'" +
-          "  when DatePart(W, csbk1.DeliveryDate) = 7 then 'SAT'" +
+          "isnull((Select top 1 TimeFrom From Todr2 Where District like '%' + Rcbp1.DistrictCode + '%' and  day in ( case when DatePart(W, GETDATE()) = 1 then 'SUN'" +
+           " when DatePart(W, GETDATE()) = 2 then 'MON'" +
+          "  when DatePart(W, GETDATE()) = 3 then 'TUE'" +
+           " when DatePart(W, GETDATE()) = 4 then 'WED'" +
+          "  when DatePart(W, GETDATE()) = 5 then 'THU'" +
+          "  when DatePart(W, GETDATE()) = 6 then 'FRI'" +
+          "  when DatePart(W, GETDATE()) = 7 then 'SAT'" +
          " end)),'') AS TimeFrom," +
-         "isnull((Select top 1 TimeTo From Todr2 Where District like '%' + Rcbp1.DistrictCode + '%' and  day in ( case when DatePart(W, csbk1.DeliveryDate) = 1 then 'SUN'" +
+         "isnull((Select top 1 TimeTo From Todr2 Where District like '%' + Rcbp1.DistrictCode + '%' and  day in ( case when DatePart(W, GETDATE()) = 1 then 'SUN'" +
 
-         "  when DatePart(W, csbk1.DeliveryDate) = 2 then 'MON'" +
+         "  when DatePart(W, GETDATE()) = 2 then 'MON'" +
 
-         "  when DatePart(W, csbk1.DeliveryDate) = 3 then 'TUE'" +
+         "  when DatePart(W, GETDATE()) = 3 then 'TUE'" +
 
-         "  when DatePart(W, csbk1.DeliveryDate) = 4 then 'WED'" +
+         "  when DatePart(W, GETDATE()) = 4 then 'WED'" +
 
-        "   when DatePart(W, csbk1.DeliveryDate) = 5 then 'THU'" +
+        "   when DatePart(W, GETDATE()) = 5 then 'THU'" +
 
-         "  when DatePart(W, csbk1.DeliveryDate) = 6 then 'FRI'" +
+         "  when DatePart(W, GETDATE()) = 6 then 'FRI'" +
 
-         "  when DatePart(W, csbk1.DeliveryDate) = 7 then 'SAT'" +
+         "  when DatePart(W, GETDATE()) = 7 then 'SAT'" +
 
         " end )),'') AS TimeTo," +
-       "  isnull((Select top 1 TimeFrom From Todr2 Where District like '%' + Rcbp1.DistrictCode + '%' and  day in ( case when DatePart(W, csbk1.PickupDateTime) = 1 then 'SUN'" +
-          " when DatePart(W, csbk1.PickupDateTime) = 2 then 'MON'" +
-         " when DatePart(W, csbk1.PickupDateTime) = 3 then 'TUE'" +
-         "  when DatePart(W, csbk1.PickupDateTime) = 4 then 'WED'" +
-         "  when DatePart(W, csbk1.PickupDateTime) = 5 then 'THU'" +
-        "  when DatePart(W, csbk1.PickupDateTime) = 6 then 'FRI'" +
-        "  when DatePart(W, csbk1.PickupDateTime) = 7 then 'SAT'" +
+       "  isnull((Select top 1 TimeFrom From Todr2 Where District like '%' + Rcbp1.DistrictCode + '%' and  day in ( case when DatePart(W, GETDATE()) = 1 then 'SUN'" +
+          " when DatePart(W, GETDATE()) = 2 then 'MON'" +
+         " when DatePart(W, GETDATE()) = 3 then 'TUE'" +
+         "  when DatePart(W, GETDATE()) = 4 then 'WED'" +
+         "  when DatePart(W, GETDATE()) = 5 then 'THU'" +
+        "  when DatePart(W, GETDATE()) = 6 then 'FRI'" +
+        "  when DatePart(W, GETDATE()) = 7 then 'SAT'" +
         "  end)),'') AS ColTimeFrom," +
-       " isnull((Select top 1 TimeTo From Todr2 Where District like '%' + Rcbp1.DistrictCode + '%' and  day in ( case when DatePart(W, csbk1.PickupDateTime) = 1 then 'SUN'" +
+       " isnull((Select top 1 TimeTo From Todr2 Where District like '%' + Rcbp1.DistrictCode + '%' and  day in ( case when DatePart(W, GETDATE()) = 1 then 'SUN'" +
 
-      "   when DatePart(W, csbk1.PickupDateTime) = 2 then 'MON'" +
+      "   when DatePart(W, GETDATE()) = 2 then 'MON'" +
 
-       "  when DatePart(W, csbk1.PickupDateTime) = 3 then 'TUE'" +
+       "  when DatePart(W, GETDATE()) = 3 then 'TUE'" +
 
-       "  when DatePart(W, csbk1.PickupDateTime) = 4 then 'WED'" +
+       "  when DatePart(W, GETDATE()) = 4 then 'WED'" +
 
-       " when DatePart(W, csbk1.PickupDateTime) = 5 then 'THU'" +
+       " when DatePart(W, GETDATE()) = 5 then 'THU'" +
 
-       "  when DatePart(W, csbk1.PickupDateTime) = 6 then 'FRI'" +
+       "  when DatePart(W, GETDATE()) = 6 then 'FRI'" +
 
-        " when DatePart(W, csbk1.PickupDateTime) = 7 then 'SAT'" +
+        " when DatePart(W, GETDATE()) = 7 then 'SAT'" +
 
        " end )),'') AS ColTimeTo," +
 
-         "Csbk1.BookingNo,Csbk1.StatusCode,isnull(Csbk1.JobNo, '') as JobNo,isnull(Csbk1.BookingCustomerCode, '') as BookingCustomerCode,isnull(Csbk1.CollectionTimeStart, '') as CollectionTimeStart,isnull(Csbk1.CollectionTimeEnd, '') as CollectionTimeEnd ,sum(Csbk2.Pcs) as Pcs,isnull(rcbp1.BusinessPartyCode, '') as BusinessPartyCode,isnull(Rcbp1.PostalCode, '') as PostalCode,isnull(Rcbp1.BusinessPartyName, '') as BusinessPartyName,isnull(Rcbp1.Address1, '') as Address1,isnull(Rcbp1.Address2, '') as Address2,isnull(Rcbp1.Address3, '') as Address3,isnull(Rcbp1.Address4, '') as Address4 ,isnull(Csbk1.CompletedFlag, '') AS CompletedFlag" +
+         "Csbk1.BookingNo,Csbk1.StatusCode,isnull(Csbk1.JobNo, '') as JobNo,isnull(Csbk1.BookingCustomerCode, '') as BookingCustomerCode,isnull(Csbk1.CollectionTimeStart, '') as CollectionTimeStart,isnull(Csbk1.CollectionTimeEnd, '') as CollectionTimeEnd ,sum(Csbk2.Pcs) as Pcs,isnull(rcbp1.BusinessPartyCode, '') as BusinessPartyCode,isnull(Rcbp1.PostalCode, '') as PostalCode,isnull(Rcbp1.BusinessPartyName, '') as BusinessPartyName,isnull(Rcbp1.Address1, '') as Address1,isnull(Rcbp1.Address2, '') as Address2,isnull(Rcbp1.Address3, '') as Address3,isnull(Rcbp1.Address4, '') as Address4 ,isnull(Csbk1.CompletedFlag, '') AS CompletedFlag, (Select CONVERT(varchar(100), GETDATE(), 121)) as ScanDate " +
                        "  from Csbk1 left join Csbk2 on Csbk1.TrxNo = Csbk2.TrxNo  left" +
                        "  join rcbp1 on Csbk1.BookingCustomerCode = rcbp1.BusinessPartyCode    " + strWhere +
-                       "  group  by Csbk1.jobno,rcbp1.BusinessPartyCode,Csbk1.BookingNo,Csbk1.StatusCode,Rcbp1.PostalCode,Rcbp1.BusinessPartyName,Rcbp1.Address1,Rcbp1.Address2,Rcbp1.Address3,Rcbp1.Address4,Csbk1.BookingCustomerCode,Csbk1.CollectionTimeStart,Csbk1.CollectionTimeEnd,Csbk1.CompletedFlag,Csbk1.TrxNo ,Rcbp1.DistrictCode ,csbk1.DeliveryDate,csbk1.PickupDateTime";
+                       "  group  by Csbk1.jobno,rcbp1.BusinessPartyCode,Csbk1.BookingNo,Csbk1.StatusCode,Rcbp1.PostalCode,Rcbp1.BusinessPartyName,Rcbp1.Address1,Rcbp1.Address2,Rcbp1.Address3,Rcbp1.Address4,Csbk1.BookingCustomerCode,Csbk1.CollectionTimeStart,Csbk1.CollectionTimeEnd,Csbk1.CompletedFlag,Csbk1.TrxNo ,Rcbp1.DistrictCode";
                         Result = db.Select<Csbk1>(strSQL);
 
 
@@ -167,9 +173,9 @@ namespace WebApi.ServiceModel.TMS
                 {
                     if (!string.IsNullOrEmpty(request.BookingNo))
                     {
-                        var strSQL = "select Csbk1.BookingNo, Csbk1.JobNo,Csbk1.TrxNo,Csbk1.StatusCode as StatusCode,Csbk1.ItemNo,Csbk1.DepositAmt,Csbk1.DiscountAmt ,Csbk1.CollectedAmt      from  Csbk1  where BookingNo ='" + request.BookingNo + "'";
+                        var strSQL = "select Csbk1.BookingNo, Csbk1.JobNo,Csbk1.TrxNo,Csbk1.StatusCode as StatusCode,Csbk1.ItemNo,Csbk1.DepositAmt,Csbk1.DiscountAmt ,Csbk1.CollectedAmt,csbk1.PaidAmt      from  Csbk1  where BookingNo ='" + request.BookingNo + "'";
                         Result.csbk1 = db.Select<Csbk1>(strSQL)[0];
-                        strSQL = "select Csbk2.TrxNo,Csbk2.LineItemNo,Csbk2.BoxCode,Csbk2.Pcs,Csbk2.UnitRate,Csbk2.CollectedPcs      from Csbk2 left join Csbk1 on Csbk2.trxno = Csbk1.trxno where BookingNo ='" + request.BookingNo + "'";
+                        strSQL = " select Csbk2.TrxNo,Csbk2.LineItemNo,Csbk2.Pcs,Csbk2.UnitRate,Csbk2.CollectedPcs ,rcbx1.Description as BoxCode,Csbk2.AddQty   from Csbk2 left join Csbk1 on Csbk2.trxno = Csbk1.trxno left join rcbx1 on csbk2.BoxCode=rcbx1.BoxCode  where BookingNo='" + request.BookingNo + "'";
                         Result.csbk2s = db.Select<Csbk2>(strSQL);
                        
                     }
@@ -189,7 +195,8 @@ namespace WebApi.ServiceModel.TMS
                 {
                     Result = db.Update<Csbk2>(
                         new {
-                            CollectedPcs = int.Parse(request.CollectedPcs)
+                            CollectedPcs = int.Parse(request.CollectedPcs),
+                            AddQty= int.Parse(request.AddQty)
 
                         },
                	p => p.TrxNo == request.TrxNo && p.LineItemNo == request.LineItemNo
@@ -244,6 +251,8 @@ namespace WebApi.ServiceModel.TMS
                                     new
                                     {
                                         // CompletedFlag = request.CompletedFlag,
+                                        ActualDeliveryDate= request.ActualDeliveryDate,
+                                        ActualCollectionDate=request.ActualCollectionDate,
                                         CollectedAmt =Convert.ToDecimal( request.Amount)
 
                                     },
