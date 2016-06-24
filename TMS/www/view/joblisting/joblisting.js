@@ -20,11 +20,11 @@ app.controller('JoblistingListCtrl', ['ENV', '$scope', '$state', '$ionicLoading'
                 if (results.rows.length > 0) {
                   for (var i = 0; i < results.rows.length; i++) {
                     var Csbk1_acc = results.rows.item(i);
-                    var reuturnTime = '';
+                    var COLRuturnTime = '';
                     if (is.equal(Csbk1_acc.CollectionTimeStart, '') && is.equal(Csbk1_acc.CollectionTimeEnd, '')) {
-                      reuturnTime = Csbk1_acc.ColTimeFrom + '-' + Csbk1_acc.ColTimeTo;
+                      COLRuturnTime = Csbk1_acc.ColTimeFrom + '-' + Csbk1_acc.ColTimeTo;
                     } else {
-                      reuturnTime = Csbk1_acc.CollectionTimeStart + '-' + Csbk1_acc.CollectionTimeEnd;
+                      COLRuturnTime = Csbk1_acc.CollectionTimeStart + '-' + Csbk1_acc.CollectionTimeEnd;
                     }
                     var DLVReturntime = '';
                     if (is.equal(Csbk1_acc.TimeFrom, '') && is.equal(Csbk1_acc.TimeFrom, '')) {
@@ -37,7 +37,7 @@ app.controller('JoblistingListCtrl', ['ENV', '$scope', '$state', '$ionicLoading'
                       JobNo: Csbk1_acc.JobNo,
                       action: is.equal(Csbk1_acc.StatusCode, 'DLV') ? 'Deliver' : 'Collect',
                       amt: Csbk1_acc.Pcs + ' PKG',
-                      time: is.equal(Csbk1_acc.StatusCode, 'DLV') ? DLVReturntime : reuturnTime,
+                      time: is.equal(Csbk1_acc.StatusCode, 'DLV') ? DLVReturntime : COLRuturnTime,
                       code: Csbk1_acc.PostalCode,
                       customer: {
                         name: Csbk1_acc.BusinessPartyName,
@@ -64,11 +64,11 @@ app.controller('JoblistingListCtrl', ['ENV', '$scope', '$state', '$ionicLoading'
                 if (results.rows.length > 0) {
                   for (var i = 0; i < results.rows.length; i++) {
                     var Csbk1_acc = results.rows.item(i);
-                    var reuturnTime = '';
+                    var COLRuturnTime = '';
                     if (is.equal(Csbk1_acc.CollectionTimeStart, '') && is.equal(Csbk1_acc.CollectionTimeEnd, '')) {
-                      reuturnTime = Csbk1_acc.ColTimeFrom + '-' + Csbk1_acc.ColTimeTo;
+                      COLRuturnTime = Csbk1_acc.ColTimeFrom + '-' + Csbk1_acc.ColTimeTo;
                     } else {
-                      reuturnTime = Csbk1_acc.CollectionTimeStart + '-' + Csbk1_acc.CollectionTimeEnd;
+                      COLRuturnTime = Csbk1_acc.CollectionTimeStart + '-' + Csbk1_acc.CollectionTimeEnd;
                     }
                     var DLVReturntime = '';
                     if (is.equal(Csbk1_acc.TimeFrom, '') && is.equal(Csbk1_acc.TimeFrom, '')) {
@@ -81,7 +81,7 @@ app.controller('JoblistingListCtrl', ['ENV', '$scope', '$state', '$ionicLoading'
                       JobNo: Csbk1_acc.JobNo,
                       action: is.equal(Csbk1_acc.StatusCode, 'DLV') ? 'Deliver' : 'Collect',
                       amt: Csbk1_acc.Pcs + ' PKG',
-                      time: is.equal(Csbk1_acc.StatusCode, 'DLV') ? DLVReturntime : reuturnTime,
+                      time: is.equal(Csbk1_acc.StatusCode, 'DLV') ? DLVReturntime : COLRuturnTime,
                       code: Csbk1_acc.PostalCode,
                       customer: {
                         name: Csbk1_acc.BusinessPartyName,
@@ -107,7 +107,6 @@ app.controller('JoblistingListCtrl', ['ENV', '$scope', '$state', '$ionicLoading'
     };
     getBookingNo();
     $scope.deleteCsbk1 = function(index, job) {
-      console.log(job.bookingno);
       if (!ENV.fromWeb) {
         var sql = "delete from Csbk1 where BookingNo='" + job.bookingno + "'";
         $cordovaSQLite.execute(db, sql, [])
@@ -522,8 +521,6 @@ app.controller('JoblistingDetailCtrl', ['ENV', '$scope', '$state', '$ionicAction
                           },
                           function(error) {}
                         );
-
-
                     } else {}
                   },
                   function(error) {}
@@ -570,9 +567,6 @@ app.controller('JoblistingDetailCtrl', ['ENV', '$scope', '$state', '$ionicAction
                           }
                         });
                       });
-
-
-
                     }
                   });
                 }, dbError);
@@ -613,13 +607,10 @@ app.controller('JoblistingDetailCtrl', ['ENV', '$scope', '$state', '$ionicAction
                     }, {
                       reload: true
                     });
-
                   } else {
-
                   }
                 },
                 function(error) {
-
                 }
               );
           } else {
@@ -682,7 +673,6 @@ app.controller('JoblistingDetailCtrl', ['ENV', '$scope', '$state', '$ionicAction
     }
     showTobk();
 
-
     $scope.$watchGroup(["Detail.csbk2s[0].CollectedPcs",
       "Detail.csbk2s[1].CollectedPcs",
       "Detail.csbk2s[2].CollectedPcs",
@@ -692,17 +682,14 @@ app.controller('JoblistingDetailCtrl', ['ENV', '$scope', '$state', '$ionicAction
       "Detail.csbk2s[6].CollectedPcs",
       "Detail.csbk2s[7].CollectedPcs",
     ], function(newValue, oldValue) {
-      console.log(newValue[0]);
-      // console.log(oldValue);
       for (var i = 0; i < $scope.Detail.csbk2s.length; i++) {
-        if (newValue[i] > $scope.Detail.csbk2s[i].Pcs) {
+        if (newValue[i]> $scope.Detail.csbk2s[i].Pcs) {
           showPopup('Collected < Qty', 'calm', function(res) {});
           $scope.Detail.csbk2s[i].CollectedPcs = 0;
         }
       }
     }, true);
   }
-
 ]);
 
 app.controller('JoblistingConfirmCtrl', ['ENV', '$scope', '$state', '$stateParams', 'ApiService', '$ionicPopup', '$ionicPlatform', '$cordovaSQLite',
@@ -772,9 +759,6 @@ app.controller('JoblistingConfirmCtrl', ['ENV', '$scope', '$state', '$stateParam
         }
       }
     });
-
-
-
 
     function resizeCanvas() {
       var ratio = window.devicePixelRatio || 1;

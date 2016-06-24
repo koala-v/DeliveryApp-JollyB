@@ -110,6 +110,7 @@ var db_del_Csbk1_Accept_detail = function(bookingNo) {
 }
 var db_add_Csbk1_Accept = function(Csbk1) {
   if (dbTms) {
+    console.log(Csbk1);
     dbTms.transaction(function(tx) {
       Csbk1 = repalceObj(Csbk1);
       dbSql = 'INSERT INTO Csbk1_Accept(TrxNo,BookingNo,JobNo,StatusCode,BookingCustomerCode,Pcs,CollectionTimeStart,CollectionTimeEnd,PostalCode,BusinessPartyCode,BusinessPartyName,Address1,Address2,Address3,Address4,CompletedFlag,TimeFrom,TimeTo,ColTimeFrom,ColTimeTo,ScanDate) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
