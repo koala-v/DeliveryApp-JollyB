@@ -64,6 +64,10 @@ app.controller('LoginCtrl', ['ENV', '$scope', '$http', '$state', '$stateParams',
                 $cordovaSQLite.execute(db, 'INSERT INTO Users (uid) VALUES (?)', [$scope.logininfo.strDriverId])
                   .then(function(result) {}, function(error) {})
               }
+
+
+
+
               $state.go('index.main', {}, {
                 reload: true
               });

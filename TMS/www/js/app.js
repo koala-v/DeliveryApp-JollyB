@@ -14,6 +14,76 @@ var app = angular.module('TMS', [
 ]);
 app.run(['ENV', '$ionicPlatform', '$rootScope', '$state', '$location', '$timeout', '$ionicHistory', '$ionicLoading', '$cordovaToast', '$cordovaKeyboard', '$cordovaFile', '$cordovaSQLite',
   function(ENV, $ionicPlatform, $rootScope, $state, $location, $timeout, $ionicHistory, $ionicLoading, $cordovaToast, $cordovaKeyboard, $cordovaFile, $cordovaSQLite) {
+
+      $ionicPlatform.ready(function() {
+    if (window.cordova) {
+       ENV.fromWeb = false;
+       $cordovaKeyboard.hideAccessoryBar(true);
+         $cordovaKeyboard.disableScroll(true);
+      var data = 'website=' + ENV.website + '##api=' + ENV.api + '##ssl=' + ENV.ssl;
+      var path = cordova.file.externalRootDirectory;
+      var directory = ENV.rootPath;
+      var file = directory + '/' + ENV.configFile;
+      $cordovaFile.createDir(path, directory, false)
+        .then(function(success) {
+          $cordovaFile.writeFile(path, file, data, true)
+            .then(function(success) {
+              var blnSSL = ENV.ssl === 0 ? false : true;
+              ENV.website = appendProtocol(ENV.website, blnSSL, ENV.port);
+              ENV.api = appendProtocol(ENV.api, blnSSL, ENV.port);
+            }, function(error) {
+              $cordovaToast.showShortBottom(error);
+            });
+        }, function(error) { // If an existing directory exists
+          $cordovaFile.checkFile(path, file)
+            .then(function(success) {
+              $cordovaFile.readAsText(path, file)
+                .then(function(success) {
+                  var arConf = success.split('##');
+                  if (is.not.empty(arConf[0])) {
+                    var arWebServiceURL = arConf[0].split('=');
+                    if (is.not.empty(arWebServiceURL[1])) {
+                      ENV.website = arWebServiceURL[1];
+                    }
+                  }
+                  if (is.not.empty(arConf[1])) {
+                    var arWebSiteURL = arConf[1].split('=');
+                    if (is.not.empty(arWebSiteURL[1])) {
+                      ENV.api = arWebSiteURL[1];
+                    }
+                  }
+                  if (is.not.empty(arConf[2])) {
+                    var arSSL = arConf[2].split('=');
+                    if (is.not.empty(arSSL[1])) {
+                      ENV.ssl = arSSL[1];
+                    }
+                  }
+                  var blnSSL = ENV.ssl === 0 ? false : true;
+                  ENV.website = appendProtocol(ENV.website, blnSSL, ENV.port);
+                  ENV.api = appendProtocol(ENV.api, blnSSL, ENV.port);
+                  //
+                }, function(error) {
+                  $cordovaToast.showShortBottom(error);
+                });
+            }, function(error) {
+              // If file not exists
+              $cordovaFile.writeFile(path, file, data, true)
+                .then(function(success) {
+                  var blnSSL = ENV.ssl === 0 ? false : true;
+                  ENV.website = appendProtocol(ENV.website, blnSSL, ENV.port);
+                  ENV.api = appendProtocol(ENV.api, blnSSL, ENV.port);
+                }, function(error) {
+                  $cordovaToast.showShortBottom(error);
+                });
+            });
+        });
+    } else {
+      var blnSSL = 'https:' === document.location.protocol ? true : false;
+      ENV.ssl = blnSSL ? '1' : '0';
+      ENV.website = appendProtocol(ENV.website, blnSSL, ENV.port);
+      ENV.api = appendProtocol(ENV.api, blnSSL, ENV.port);
+    }});
+
     if (window.cordova) {
       ENV.fromWeb = false;
     } else {
@@ -29,19 +99,32 @@ app.run(['ENV', '$ionicPlatform', '$rootScope', '$state', '$location', '$timeout
             location: 'default'
           });
         } catch (error) {
-          console.error(error);
         }
         $cordovaSQLite.execute(db, 'CREATE TABLE IF NOT EXISTS Users (id INTEGER PRIMARY KEY AUTOINCREMENT, uid TEXT)');
         $cordovaSQLite.execute(db, 'CREATE TABLE IF NOT EXISTS Csbk1(TrxNo INTEGER,BookingNo TEXT, JobNo TEXT, StatusCode TEXT,BookingCustomerCode TEXT,Pcs INTEGER,CollectionTimeStart TEXT,CollectionTimeEnd TEXT,PostalCode TEXT,BusinessPartyCode TEXT,BusinessPartyName TEXT,Address1 TEXT,Address2 TEXT,Address3 TEXT,Address4 TEXT,CompletedFlag TEXT,TimeFrom TEXT,TimeTo TEXT,ColTimeFrom TEXT,ColTimeTo TEXT,CompletedDate TEXT,DriverId TEXT,CollectedAmt INTEGER,ScanDate TEXT)');
         $cordovaSQLite.execute(db, 'CREATE TABLE IF NOT EXISTS Csbk2 (TrxNo INTEGER,LineItemNo INTEGER, BoxCode TEXT,Pcs INTEGER,UnitRate TEXT,CollectedPcs INTEGER,AddQty INTEGER)');
         $cordovaSQLite.execute(db, 'CREATE TABLE IF NOT EXISTS CsbkDetail (BookingNo TEXT, JobNo TEXT,TrxNo INTEGER,StatusCode TEXT,ItemNo INTEGER,DepositAmt INTEGER,DiscountAmt  INTEGER,CollectedAmt  INTEGER,CompletedFlag TEXT,PaidAmt INTEGER)');
 
+        // sqlLite for mobile APP
+
+        $rootScope.sqlLite_add_Csbk1=function(Csbk1){
+        if(db){
+        var sql = 'INSERT INTO Csbk1(TrxNo,BookingNo,JobNo,StatusCode,BookingCustomerCode,Pcs,CollectionTimeStart,CollectionTimeEnd,PostalCode,BusinessPartyCode,BusinessPartyName,Address1,Address2,Address3,Address4,CompletedFlag,TimeFrom,TimeTo,ColTimeFrom,ColTimeTo,ScanDate) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+        $cordovaSQLite.execute(db, sql, [
+          Csbk1.TrxNo,Csbk1.BookingNo, Csbk1.JobNo, Csbk1.StatusCode, Csbk1.BookingCustomerCode, Csbk1.Pcs, Csbk1.CollectionTimeStart, Csbk1.CollectionTimeEnd, Csbk1.PostalCode, Csbk1.BusinessPartyCode,Csbk1.BusinessPartyName, Csbk1.Address1, Csbk1.Address2, Csbk1.Address3, Csbk1.Address4,Csbk1.CompletedFlag,Csbk1.TimeFrom,Csbk1.TimeTo,Csbk1.ColTimeFrom,Csbk1.ColTimeTo,Csbk1.ScanDate
+        ])
+        .then(function(result) {}, function(error) {});
+        }
+        };
+        // sqlLite for mobile APP
       }
       if (window.StatusBar) {
         // org.apache.cordova.statusbar required
         StatusBar.styleDefault();
       }
     });
+
+
     $ionicPlatform.registerBackButtonAction(function(e) {
       e.preventDefault();
       // Is there a page to go back to?  $state.include ??

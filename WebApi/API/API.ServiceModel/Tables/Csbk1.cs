@@ -36,6 +36,8 @@ namespace WebApi.ServiceModel.Tables
         public string ScanDate  { get; set; }
         public string ActualCollectionDate { get; set; }
         public string ActualDeliveryDate { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
 
 
 

@@ -17,6 +17,7 @@ namespace WebApi.ServiceModel.TMS
         public string BookingNo { get; set; }
         public decimal CashAmt { get; set; }
        public string UpdateBy { get; set; }
+        public decimal ChequeAmt { get; set; }
     }
     public class Slcr_Logic
     {
@@ -26,6 +27,7 @@ namespace WebApi.ServiceModel.TMS
             int Result = -1;
             string NextNo = "";
             int intMonth = 0;
+            request.ChequeAmt = 0;
             try
             {
                 using (var db = DbConnectionFactory.OpenDbConnection())
@@ -62,8 +64,8 @@ namespace WebApi.ServiceModel.TMS
                                 Remark = null,
                                 ReceiptType = "Payment",
                                 CashAmt = request.CashAmt,
-                                ChequeAmt = 0,
-                                ReceiptAmt = request.CashAmt,
+                                ChequeAmt = request.ChequeAmt,
+                                ReceiptAmt = request.CashAmt+ request.ChequeAmt,
                                 ReceiptDate = DateTime.Now,
                                 ChequeDate = null,
                                 UpdateBy = request.UpdateBy,
@@ -158,7 +160,7 @@ namespace WebApi.ServiceModel.TMS
                                     {
                                    
                                         DepositAmt = Convert.ToDecimal(0),
-                                        PaidAmt= Convert.ToDecimal(request.CashAmt)
+                                        PaidAmt= Convert.ToDecimal(request.CashAmt+ request.ChequeAmt)
 
                                     },
                                     p => p.BookingNo == request.BookingNo

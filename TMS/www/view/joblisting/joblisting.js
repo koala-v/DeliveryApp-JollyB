@@ -20,11 +20,11 @@ app.controller('JoblistingListCtrl', ['ENV', '$scope', '$state', '$ionicLoading'
                 if (results.rows.length > 0) {
                   for (var i = 0; i < results.rows.length; i++) {
                     var Csbk1_acc = results.rows.item(i);
-                    var reuturnTime = '';
+                    var COLRuturnTime = '';
                     if (is.equal(Csbk1_acc.CollectionTimeStart, '') && is.equal(Csbk1_acc.CollectionTimeEnd, '')) {
-                      reuturnTime = Csbk1_acc.ColTimeFrom + '-' + Csbk1_acc.ColTimeTo;
+                      COLRuturnTime = Csbk1_acc.ColTimeFrom + '-' + Csbk1_acc.ColTimeTo;
                     } else {
-                      reuturnTime = Csbk1_acc.CollectionTimeStart + '-' + Csbk1_acc.CollectionTimeEnd;
+                      COLRuturnTime = Csbk1_acc.CollectionTimeStart + '-' + Csbk1_acc.CollectionTimeEnd;
                     }
                     var DLVReturntime = '';
                     if (is.equal(Csbk1_acc.TimeFrom, '') && is.equal(Csbk1_acc.TimeFrom, '')) {
@@ -37,7 +37,7 @@ app.controller('JoblistingListCtrl', ['ENV', '$scope', '$state', '$ionicLoading'
                       JobNo: Csbk1_acc.JobNo,
                       action: is.equal(Csbk1_acc.StatusCode, 'DLV') ? 'Deliver' : 'Collect',
                       amt: Csbk1_acc.Pcs + ' PKG',
-                      time: is.equal(Csbk1_acc.StatusCode, 'DLV') ? DLVReturntime : reuturnTime,
+                      time: is.equal(Csbk1_acc.StatusCode, 'DLV') ? DLVReturntime : COLRuturnTime,
                       code: Csbk1_acc.PostalCode,
                       customer: {
                         name: Csbk1_acc.BusinessPartyName,
@@ -64,11 +64,11 @@ app.controller('JoblistingListCtrl', ['ENV', '$scope', '$state', '$ionicLoading'
                 if (results.rows.length > 0) {
                   for (var i = 0; i < results.rows.length; i++) {
                     var Csbk1_acc = results.rows.item(i);
-                    var reuturnTime = '';
+                    var COLRuturnTime = '';
                     if (is.equal(Csbk1_acc.CollectionTimeStart, '') && is.equal(Csbk1_acc.CollectionTimeEnd, '')) {
-                      reuturnTime = Csbk1_acc.ColTimeFrom + '-' + Csbk1_acc.ColTimeTo;
+                      COLRuturnTime = Csbk1_acc.ColTimeFrom + '-' + Csbk1_acc.ColTimeTo;
                     } else {
-                      reuturnTime = Csbk1_acc.CollectionTimeStart + '-' + Csbk1_acc.CollectionTimeEnd;
+                      COLRuturnTime = Csbk1_acc.CollectionTimeStart + '-' + Csbk1_acc.CollectionTimeEnd;
                     }
                     var DLVReturntime = '';
                     if (is.equal(Csbk1_acc.TimeFrom, '') && is.equal(Csbk1_acc.TimeFrom, '')) {
@@ -81,7 +81,7 @@ app.controller('JoblistingListCtrl', ['ENV', '$scope', '$state', '$ionicLoading'
                       JobNo: Csbk1_acc.JobNo,
                       action: is.equal(Csbk1_acc.StatusCode, 'DLV') ? 'Deliver' : 'Collect',
                       amt: Csbk1_acc.Pcs + ' PKG',
-                      time: is.equal(Csbk1_acc.StatusCode, 'DLV') ? DLVReturntime : reuturnTime,
+                      time: is.equal(Csbk1_acc.StatusCode, 'DLV') ? DLVReturntime : COLRuturnTime,
                       code: Csbk1_acc.PostalCode,
                       customer: {
                         name: Csbk1_acc.BusinessPartyName,
@@ -107,7 +107,6 @@ app.controller('JoblistingListCtrl', ['ENV', '$scope', '$state', '$ionicLoading'
     };
     getBookingNo();
     $scope.deleteCsbk1 = function(index, job) {
-      console.log(job.bookingno);
       if (!ENV.fromWeb) {
         var sql = "delete from Csbk1 where BookingNo='" + job.bookingno + "'";
         $cordovaSQLite.execute(db, sql, [])
@@ -204,8 +203,8 @@ app.controller('JoblistingCtrl', ['$scope', '$state', '$stateParams',
   }
 ]);
 
-app.controller('JoblistingDetailCtrl', ['ENV', '$scope', '$state', '$ionicActionSheet', '$cordovaSms', '$stateParams', 'ApiService', '$cordovaSQLite', '$ionicPlatform',
-  function(ENV, $scope, $state, $ionicActionSheet, $cordovaSms, $stateParams, ApiService, $cordovaSQLite, $ionicPlatform) {
+app.controller('JoblistingDetailCtrl', ['ENV', '$scope', '$state', '$ionicActionSheet', '$cordovaSms', '$stateParams', 'ApiService', '$cordovaSQLite', '$ionicPlatform', '$ionicPopup',
+  function(ENV, $scope, $state, $ionicActionSheet, $cordovaSms, $stateParams, ApiService, $cordovaSQLite, $ionicPlatform, $ionicPopup) {
     var dataResults = new Array();
     $scope.Detail = {
       csbk1: {
@@ -217,6 +216,7 @@ app.controller('JoblistingDetailCtrl', ['ENV', '$scope', '$state', '$ionicAction
       SumPcs: 0,
       PhoneNumber: "",
       ScanDate: "",
+      CashAmt: 0,
       csbk2s: [],
       csbk2: {}
     };
@@ -256,15 +256,33 @@ app.controller('JoblistingDetailCtrl', ['ENV', '$scope', '$state', '$ionicAction
     $('#iCollectedAmt').on('keydown', function(e) {
       if (e.which === 9 || e.which === 13) {
         $scope.gotoConfirm();
-         console.log('gotoConfirm');
+        console.log('gotoConfirm');
       }
     });
 
-$(function (){
-    $('#iCollectedPcs').blur(function() {
-     console.log('jquery');
+    // for(var i;i<$scope.Detail.csbk2s.length;i++){
+    // }
+
+    var alertPopup = null,
+      showPopup = function(title, type, callback) {
+        if (alertPopup !== null) {
+          alertPopup.close();
+          alertPopup = null;
+        }
+        alertPopup = $ionicPopup.alert({
+          title: title,
+          okType: 'button-' + type
+        });
+        alertPopup.then(function(res) {
+          if (typeof(callback) == 'function') callback(res);
+        });
+      };
+
+    $(function() {
+      $('#iCollectedPcs').blur(function() {
+        console.log('jquery');
+      });
     });
-});
     var showTobk = function() {
       if (!ENV.fromWeb) {
         $ionicPlatform.ready(function() {
@@ -280,7 +298,7 @@ $(function (){
                       Pcs: results.rows.item(i).Pcs,
                       UnitRate: results.rows.item(i).UnitRate,
                       CollectedPcs: results.rows.item(i).CollectedPcs,
-                      AddQty:results.rows.item(i).AddQty
+                      AddQty: results.rows.item(i).AddQty
                     };
                     $scope.Detail.csbk2s.push(csbk2s);
                   }
@@ -292,7 +310,7 @@ $(function (){
                           for (var intI = 0; intI < $scope.Detail.csbk2s.length; intI++) {
                             $scope.Detail.AllBalance = $scope.Detail.AllBalance + $scope.Detail.csbk2s[intI].Pcs * $scope.Detail.csbk2s[intI].UnitRate;
                           }
-                          $scope.Detail.AllBalance = $scope.Detail.AllBalance - $scope.Detail.csbk1.DepositAmt - $scope.Detail.csbk1.DiscountAmt-$scope.Detail.csbk1.PaidAmt;
+                          $scope.Detail.AllBalance = $scope.Detail.AllBalance - $scope.Detail.csbk1.DepositAmt - $scope.Detail.csbk1.DiscountAmt - $scope.Detail.csbk1.PaidAmt;
                           checkStatusCode($scope.Detail.csbk1.StatusCode);
                         } else {}
                       },
@@ -311,7 +329,8 @@ $(function (){
                       for (var intI = 0; intI < $scope.Detail.csbk2s.length; intI++) {
                         $scope.Detail.AllBalance = $scope.Detail.AllBalance + $scope.Detail.csbk2s[intI].Pcs * $scope.Detail.csbk2s[intI].UnitRate;
                       }
-                      $scope.Detail.AllBalance = $scope.Detail.AllBalance - $scope.Detail.csbk1.DepositAmt - $scope.Detail.csbk1.DiscountAmt-$scope.Detail.csbk1.PaidAmt;
+                      $scope.Detail.CashAmt = $scope.Detail.AllBalance - $scope.Detail.csbk1.DiscountAmt - $scope.Detail.csbk1.PaidAmt;
+                      $scope.Detail.AllBalance = $scope.Detail.AllBalance - $scope.Detail.csbk1.DepositAmt - $scope.Detail.csbk1.DiscountAmt - $scope.Detail.csbk1.PaidAmt;
                       if ($scope.Detail.csbk1.CollectedAmt <= 0) {
                         $scope.Detail.csbk1.CollectedAmt = $scope.Detail.AllBalance;
                       }
@@ -342,7 +361,7 @@ $(function (){
                           $scope.Detail.csbk1.DiscountAmt,
                           $scope.Detail.csbk1.CollectedAmt,
                           $scope.Detail.csbk1.CompletedFlag,
-                            $scope.Detail.csbk1.PaidAmt
+                          $scope.Detail.csbk1.PaidAmt
                         ])
                         .then(function(result) {}, function(error) {});
                       //  }
@@ -368,7 +387,7 @@ $(function (){
                     Pcs: results.rows.item(i).Pcs,
                     UnitRate: results.rows.item(i).UnitRate,
                     CollectedPcs: results.rows.item(i).CollectedPcs,
-                    AddQty:results.rows.item(i).AddQty
+                    AddQty: results.rows.item(i).AddQty
                   };
                   $scope.Detail.csbk2s.push(csbk2s);
                 }
@@ -384,7 +403,7 @@ $(function (){
                       for (var intI = 0; intI < $scope.Detail.csbk2s.length; intI++) {
                         $scope.Detail.AllBalance = $scope.Detail.AllBalance + $scope.Detail.csbk2s[intI].Pcs * $scope.Detail.csbk2s[intI].UnitRate;
                       }
-                      $scope.Detail.AllBalance = $scope.Detail.AllBalance - $scope.Detail.csbk1.DepositAmt - $scope.Detail.csbk1.DiscountAmt-$scope.Detail.csbk1.PaidAmt;
+                      $scope.Detail.AllBalance = $scope.Detail.AllBalance - $scope.Detail.csbk1.DepositAmt - $scope.Detail.csbk1.DiscountAmt - $scope.Detail.csbk1.PaidAmt;
                       checkStatusCode($scope.Detail.csbk1.StatusCode);
                     }
                   });
@@ -401,7 +420,9 @@ $(function (){
                     for (var intI = 0; intI < $scope.Detail.csbk2s.length; intI++) {
                       $scope.Detail.AllBalance = $scope.Detail.AllBalance + $scope.Detail.csbk2s[intI].Pcs * $scope.Detail.csbk2s[intI].UnitRate;
                     }
-                    $scope.Detail.AllBalance = $scope.Detail.AllBalance - $scope.Detail.csbk1.DepositAmt - $scope.Detail.csbk1.DiscountAmt-$scope.Detail.csbk1.PaidAmt;
+                    $scope.Detail.CashAmt = $scope.Detail.AllBalance - $scope.Detail.csbk1.DiscountAmt - $scope.Detail.csbk1.PaidAmt;
+                    $scope.Detail.AllBalance = $scope.Detail.AllBalance - $scope.Detail.csbk1.DepositAmt - $scope.Detail.csbk1.DiscountAmt - $scope.Detail.csbk1.PaidAmt;
+
                     if ($scope.Detail.csbk1.CollectedAmt <= 0) {
                       $scope.Detail.csbk1.CollectedAmt = $scope.Detail.AllBalance;
                     }
@@ -471,6 +492,7 @@ $(function (){
                 .then(
                   function(results) {
                     if (results.rows.length > 0) {
+                      var Csbk2ResultsLength = results.rows.length;
                       for (var i = 0; i < results.rows.length; i++) {
                         var Csbk2_acc = results.rows.item(i);
                         var sqlupdateCollectedPcs = "update Csbk2 set CollectedPcs=?,AddQty=? where TrxNo=? and LineItemNo=?";
@@ -482,7 +504,6 @@ $(function (){
                           ])
                           .then(function(result) {}, function(error) {});
                       }
-
                       $cordovaSQLite.execute(db, "SELECT * FROM Csbk1  where BookingNo='" + $scope.Detail.csbk1.BookingNo + "'")
                         .then(
                           function(results) {
@@ -491,8 +512,8 @@ $(function (){
                               $scope.Detail.ScanDate = Csbk1_acc.ScanDate;
                               strUri = '/api/tms/csbk1/update?BookingNo=' + $scope.Detail.csbk1.BookingNo + '&Amount=' + $scope.Detail.csbk1.CollectedAmt + '&ActualDeliveryDate=' + $scope.Detail.ScanDate;
                               ApiService.GetParam(strUri, true).then(function success(result) {
-                                for (var intI = 0; intI < results.rows.length; intI++) {
-                                  strUri = '/api/tms/csbk2/update?CollectedPcs=' + $scope.Detail.csbk2s[intI].CollectedPcs + '&AddQty=' + $scope.Detail.csbk2s[intI].AddQty+ '&TrxNo=' + Csbk2_acc.TrxNo + '&LineItemNo=' + Csbk2_acc.LineItemNo;
+                                for (var intI = 0; intI < Csbk2ResultsLength; intI++) {
+                                  strUri = '/api/tms/csbk2/update?CollectedPcs=' + $scope.Detail.csbk2s[intI].CollectedPcs + '&AddQty=' + $scope.Detail.csbk2s[intI].AddQty + '&TrxNo=' + $scope.Detail.csbk2s[intI].TrxNo + '&LineItemNo=' + $scope.Detail.csbk2s[intI].LineItemNo;
                                   ApiService.GetParam(strUri, true).then(function success(result) {});
                                 }
                               });
@@ -500,8 +521,6 @@ $(function (){
                           },
                           function(error) {}
                         );
-
-
                     } else {}
                   },
                   function(error) {}
@@ -521,11 +540,12 @@ $(function (){
                   dbSql = "select * from Csbk2_Accept left join Csbk1Detail_Accept on Csbk2_Accept.TrxNo = Csbk1Detail_Accept.TrxNo  where BookingNo='" + $scope.Detail.csbk1.BookingNo + "'";
                   tx.executeSql(dbSql, [], function(tx, results) {
                     if (results.rows.length > 0) {
-                      var Csbk2_acc = results.rows.item(i);
+                      var Csbk2_AcceptResultsLength = results.rows.length;
                       for (var i = 0; i < results.rows.length; i++) {
+                        var Csbk2_acc = results.rows.item(i);
                         var jobs = {
                           CollectedPcs: $scope.Detail.csbk2s[i].CollectedPcs,
-                          AddQty:$scope.Detail.csbk2s[i].AddQty,
+                          AddQty: $scope.Detail.csbk2s[i].AddQty,
                           TrxNo: Csbk2_acc.TrxNo,
                           LineItemNo: Csbk2_acc.LineItemNo,
                         };
@@ -535,23 +555,18 @@ $(function (){
                         dbSql = "select * from Csbk1_Accept where BookingNo='" + $scope.Detail.csbk1.BookingNo + "'";
                         tx.executeSql(dbSql, [], function(tx, results) {
                           if (results.rows.length > 0) {
-                            for (var i = 0; i < results.rows.length; i++) {
-                              var Csbk1_acc = results.rows.item(i);
-                              $scope.Detail.ScanDate = Csbk1_acc.ScanDate;
-                              strUri = '/api/tms/csbk1/update?BookingNo=' + $scope.Detail.csbk1.BookingNo + '&Amount=' + $scope.Detail.csbk1.CollectedAmt + '&ActualDeliveryDate=' + $scope.Detail.ScanDate;
-                              ApiService.GetParam(strUri, true).then(function success(result) {
-                                for (var intI = 0; intI < results.rows.length; intI++) {
-                                  strUri = '/api/tms/csbk2/update?CollectedPcs=' + $scope.Detail.csbk2s[intI].CollectedPcs + '&AddQty=' + $scope.Detail.csbk2s[intI].AddQty+ '&TrxNo=' + Csbk2_acc.TrxNo + '&LineItemNo=' + Csbk2_acc.LineItemNo;
-                                  ApiService.GetParam(strUri, true).then(function success(result) {});
-                                }
-                              });
-                            }
+                            var Csbk1_acc = results.rows.item(0);
+                            $scope.Detail.ScanDate = Csbk1_acc.ScanDate;
+                            strUri = '/api/tms/csbk1/update?BookingNo=' + $scope.Detail.csbk1.BookingNo + '&Amount=' + $scope.Detail.csbk1.CollectedAmt + '&ActualDeliveryDate=' + $scope.Detail.ScanDate;
+                            ApiService.GetParam(strUri, true).then(function success(result) {
+                              for (var intI = 0; intI < Csbk2_AcceptResultsLength; intI++) {
+                                strUri = '/api/tms/csbk2/update?CollectedPcs=' + $scope.Detail.csbk2s[intI].CollectedPcs + '&AddQty=' + $scope.Detail.csbk2s[intI].AddQty + '&TrxNo=' + $scope.Detail.csbk2s[intI].TrxNo + '&LineItemNo=' + $scope.Detail.csbk2s[intI].LineItemNo;
+                                ApiService.GetParam(strUri, true).then(function success(result) {});
+                              }
+                            });
                           }
                         });
                       });
-
-
-
                     }
                   });
                 }, dbError);
@@ -588,17 +603,14 @@ $(function (){
                       'BookingNo': $scope.Detail.csbk1.BookingNo,
                       'JobNo': $stateParams.JobNo,
                       'CollectedAmt': $scope.Detail.csbk1.CollectedAmt,
-                      'Collected': ""
+                      'Collected': $scope.Detail.CashAmt
                     }, {
                       reload: true
                     });
-
                   } else {
-
                   }
                 },
                 function(error) {
-
                 }
               );
           } else {
@@ -616,7 +628,7 @@ $(function (){
                       var Csbk2_acc = results.rows.item(i);
                       var jobs = {
                         CollectedPcs: $scope.Detail.csbk2s[i].CollectedPcs,
-                        AddQty:$scope.Detail.csbk2s[i].AddQty,
+                        AddQty: $scope.Detail.csbk2s[i].AddQty,
                         TrxNo: Csbk2_acc.TrxNo,
                         LineItemNo: Csbk2_acc.LineItemNo,
                       };
@@ -626,7 +638,7 @@ $(function (){
                       'BookingNo': $scope.Detail.csbk1.BookingNo,
                       'JobNo': $stateParams.JobNo,
                       'CollectedAmt': $scope.Detail.csbk1.CollectedAmt,
-                      'Collected': ''
+                      'Collected': $scope.Detail.CashAmt,
                     }, {
                       reload: true
                     });
@@ -660,6 +672,23 @@ $(function (){
       $cordovaSms.send($scope.PhoneNumber, $scope.message, options, success, error);
     }
     showTobk();
+
+    $scope.$watchGroup(["Detail.csbk2s[0].CollectedPcs",
+      "Detail.csbk2s[1].CollectedPcs",
+      "Detail.csbk2s[2].CollectedPcs",
+      "Detail.csbk2s[3].CollectedPcs",
+      "Detail.csbk2s[4].CollectedPcs",
+      "Detail.csbk2s[5].CollectedPcs",
+      "Detail.csbk2s[6].CollectedPcs",
+      "Detail.csbk2s[7].CollectedPcs",
+    ], function(newValue, oldValue) {
+      for (var i = 0; i < $scope.Detail.csbk2s.length; i++) {
+        if (newValue[i]> $scope.Detail.csbk2s[i].Pcs) {
+          showPopup('Collected < Qty', 'calm', function(res) {});
+          $scope.Detail.csbk2s[i].CollectedPcs = 0;
+        }
+      }
+    }, true);
   }
 ]);
 
@@ -677,10 +706,13 @@ app.controller('JoblistingConfirmCtrl', ['ENV', '$scope', '$state', '$stateParam
       BookingNo: $stateParams.BookingNo,
       Amount: $stateParams.CollectedAmt,
       JobNo: $stateParams.JobNo,
+      CashAmt: $stateParams.Collected,
       Packages: 0,
       csbk2s: [],
       Csbk2ReusltLength: 0
     };
+    console.log($scope.Detail.CashAmt);
+    console.log('$scope.Detail.CashAmt');
     $ionicPlatform.ready(function() {
       if (!ENV.fromWeb) {
         $cordovaSQLite.execute(db, "SELECT * FROM Csbk2 left join CsbkDetail on Csbk2.TrxNo = CsbkDetail.TrxNo  where BookingNo='" + $scope.Detail.BookingNo + "' ")
@@ -694,7 +726,7 @@ app.controller('JoblistingConfirmCtrl', ['ENV', '$scope', '$state', '$stateParam
                     TrxNo: Csbk2_acc.TrxNo,
                     LineItemNo: Csbk2_acc.LineItemNo,
                     CollectedPcs: Csbk2_acc.CollectedPcs,
-                    AddQty:Csbk2_acc.AddQty,
+                    AddQty: Csbk2_acc.AddQty,
                   };
                   $scope.Detail.csbk2s.push(Csbk2s);
                   $scope.Detail.Packages = $scope.Detail.Packages + Csbk2_acc.CollectedPcs;
@@ -727,9 +759,6 @@ app.controller('JoblistingConfirmCtrl', ['ENV', '$scope', '$state', '$stateParam
         }
       }
     });
-
-
-
 
     function resizeCanvas() {
       var ratio = window.devicePixelRatio || 1;
@@ -814,52 +843,51 @@ app.controller('JoblistingConfirmCtrl', ['ENV', '$scope', '$state', '$stateParam
         });
 
 
-// updae ActualCollectionDate
-      if (!ENV.fromWeb) {
-        $cordovaSQLite.execute(db, "SELECT * FROM Csbk1  where BookingNo='" + $scope.Detail.BookingNo + "'")
-          .then(
-            function(results) {
+        // updae ActualCollectionDate
+        if (!ENV.fromWeb) {
+          $cordovaSQLite.execute(db, "SELECT * FROM Csbk1  where BookingNo='" + $scope.Detail.BookingNo + "'")
+            .then(
+              function(results) {
+                if (results.rows.length > 0) {
+                  var Csbk1_acc = results.rows.item(0);
+                  $scope.Detail.ScanDate = Csbk1_acc.ScanDate;
+                  strUri = '/api/tms/csbk1/update?BookingNo=' + $scope.Detail.BookingNo + '&Amount=' + $scope.Detail.Amount + '&ActualCollectionDate=' + $scope.Detail.ScanDate;
+                  ApiService.GetParam(strUri, true).then(function success(result) {
+                    for (var intI = 0; intI < $scope.Detail.Csbk2ReusltLength; intI++) {
+                      strUri = '/api/tms/csbk2/update?CollectedPcs=' + $scope.Detail.csbk2s[intI].CollectedPcs + '&AddQty=' + $scope.Detail.csbk2s[intI].AddQty + '&TrxNo=' + $scope.Detail.csbk2s[intI].TrxNo + '&LineItemNo=' + $scope.Detail.csbk2s[intI].LineItemNo;
+                      ApiService.GetParam(strUri, false).then(function success(result) {});
+                    }
+                  });
+                } else {}
+              },
+              function(error) {}
+            );
+        } else {
+          dbTms.transaction(function(tx) {
+            dbSql = "select * from Csbk1_Accept where BookingNo='" + $scope.Detail.BookingNo + "'";
+            tx.executeSql(dbSql, [], function(tx, results) {
               if (results.rows.length > 0) {
                 var Csbk1_acc = results.rows.item(0);
                 $scope.Detail.ScanDate = Csbk1_acc.ScanDate;
-               strUri = '/api/tms/csbk1/update?BookingNo=' + $scope.Detail.BookingNo + '&Amount=' + $scope.Detail.Amount+ '&ActualCollectionDate=' + $scope.Detail.ScanDate;
+                strUri = '/api/tms/csbk1/update?BookingNo=' + $scope.Detail.BookingNo + '&Amount=' + $scope.Detail.Amount + '&ActualCollectionDate=' + $scope.Detail.ScanDate;
                 ApiService.GetParam(strUri, true).then(function success(result) {
                   for (var intI = 0; intI < $scope.Detail.Csbk2ReusltLength; intI++) {
-                    strUri = '/api/tms/csbk2/update?CollectedPcs=' + $scope.Detail.csbk2s[intI].CollectedPcs + '&AddQty=' + $scope.Detail.csbk2s[intI].AddQty+ '&TrxNo=' + $scope.Detail.csbk2s[intI].TrxNo + '&LineItemNo=' + $scope.Detail.csbk2s[intI].LineItemNo;
-                    ApiService.GetParam(strUri, false).then(function success(result) {});
-                  }
-                });
-              } else {}
-            },
-            function(error) {}
-          );
-      }else{
-        dbTms.transaction(function(tx) {
-          dbSql = "select * from Csbk1_Accept where BookingNo='" + $scope.Detail.BookingNo + "'";
-          tx.executeSql(dbSql, [], function(tx, results) {
-            if (results.rows.length > 0) {
-                var Csbk1_acc = results.rows.item(0);
-                $scope.Detail.ScanDate = Csbk1_acc.ScanDate;
-                strUri = '/api/tms/csbk1/update?BookingNo=' + $scope.Detail.BookingNo + '&Amount=' + $scope.Detail.Amount+ '&ActualCollectionDate=' + $scope.Detail.ScanDate;
-                ApiService.GetParam(strUri, true).then(function success(result) {
-                  for (var intI = 0; intI < $scope.Detail.Csbk2ReusltLength; intI++) {
-                    strUri = '/api/tms/csbk2/update?CollectedPcs=' + $scope.Detail.csbk2s[intI].CollectedPcs + '&AddQty=' + $scope.Detail.csbk2s[intI].AddQty+ '&TrxNo=' + $scope.Detail.csbk2s[intI].TrxNo + '&LineItemNo=' + $scope.Detail.csbk2s[intI].LineItemNo;
+                    strUri = '/api/tms/csbk2/update?CollectedPcs=' + $scope.Detail.csbk2s[intI].CollectedPcs + '&AddQty=' + $scope.Detail.csbk2s[intI].AddQty + '&TrxNo=' + $scope.Detail.csbk2s[intI].TrxNo + '&LineItemNo=' + $scope.Detail.csbk2s[intI].LineItemNo;
                     ApiService.GetParam(strUri, false).then(function success(result) {});
                   }
                 });
 
-            }
+              }
+            });
           });
-        });
-      }
+        }
 
 
 
 
 
 
-
-        strUri = '/api/tms/slcr1/complete?BookingNo=' + $scope.Detail.BookingNo + '&JobNo=' + $scope.Detail.JobNo + '&CashAmt=' + $scope.Detail.Amount + '&UpdateBy=' + sessionStorage.getItem("strDriverId");
+        strUri = '/api/tms/slcr1/complete?BookingNo=' + $scope.Detail.BookingNo + '&JobNo=' + $scope.Detail.JobNo + '&CashAmt=' + $scope.Detail.CashAmt + '&UpdateBy=' + sessionStorage.getItem("strDriverId");
         ApiService.GetParam(strUri, true).then(function success(result) {});
 
 
