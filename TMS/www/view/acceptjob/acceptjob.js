@@ -23,6 +23,10 @@ app.controller('AcceptJobCtrl', ['ENV', '$scope', '$state', '$ionicPopup', '$cor
       if (is.not.empty(ACCEPTJOB_ORM.LIST.Csbk1s)) {
         dataResults = dataResults.concat(ACCEPTJOB_ORM.LIST.Csbk1s);
         $scope.jobs = dataResults;
+        for(var i=0;i<dataResults.length;i++){
+       hmcsbk1.set(dataResults[i].bookingNo,dataResults[i].bookingNo);
+        // hmcsbk1.get("bookingNo");
+       }
       }
     };
 
