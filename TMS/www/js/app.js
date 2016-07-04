@@ -2,12 +2,15 @@
 var app = angular.module('TMS', [
   'ionic',
   'ngCordova',
+  'ionicLazyLoad',
   'ionic-datepicker',
+  'angularFileUpload',
   'jett.ionic.filter.bar',
   'ionic.ion.headerShrink',
   'ionMdInput',
   'ngMessages',
   'TMS.config',
+  'TMS.directives',
   'TMS.services',
   'TMS.factories',
   'ui.select'
@@ -237,6 +240,12 @@ app.config(['ENV', '$stateProvider', '$urlRouterProvider', '$ionicConfigProvider
         templateUrl: 'view/joblisting/detail.html',
         controller: 'JoblistingDetailCtrl'
       })
+
+      .state( 'upload', {
+              url: '/Upload/:BookingNo/:JobNo',
+              templateUrl: 'view/joblisting/Upload.html',
+              controller: 'UploadCtrl'
+          } )
 
     .state('goDriverCodeCtrl', {
         url: '/login',

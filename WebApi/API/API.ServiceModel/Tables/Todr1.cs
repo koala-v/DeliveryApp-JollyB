@@ -10,6 +10,8 @@ namespace WebApi.ServiceModel.Tables
         public string DriverCode  { get; set; }
         public string DriverName { get; set; }
         public string ContactNo1 { get; set; }
+        public string VehicleNo { get; set; }
+
 
     }
 }

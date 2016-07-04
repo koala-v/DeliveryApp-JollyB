@@ -2,8 +2,8 @@
 var appConfig = angular.module('TMS.config', []);
 appConfig.constant('ENV', {
   'website': 'www.sysfreight.net/app/tms/jollybcsbk',
-   'api': 'www.sysfreight.net/apis/tms/jollyb',
-  //  'api':          'http://localhost:9679',
+    'api': 'www.sysfreight.net/apis/tms/jollyb',
+    //  'api':          'http://localhost:9679',
   'port': '8081', // http port no
   'ssl': '0', // 0 : false, 1 : true
   'debug': true,
@@ -14,5 +14,5 @@ appConfig.constant('ENV', {
   'updateFile': 'update.json',
   'rootPath': 'JollyB',
   'configFile': 'config.txt',
-  'version': '1.0.2'
+  'version': '1.0.2.27'
 });

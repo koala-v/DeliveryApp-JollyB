@@ -18,6 +18,8 @@ namespace WebApi.ServiceModel.TMS
         public decimal CashAmt { get; set; }
        public string UpdateBy { get; set; }
         public decimal ChequeAmt { get; set; }
+        public string CollectBy { get; set; }
+        
     }
     public class Slcr_Logic
     {
@@ -69,6 +71,7 @@ namespace WebApi.ServiceModel.TMS
                                 ReceiptDate = DateTime.Now,
                                 ChequeDate = null,
                                 UpdateBy = request.UpdateBy,
+                                CollectBy = request.CollectBy,
                             }
                             );
                         Result = 0;

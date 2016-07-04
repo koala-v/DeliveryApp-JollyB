@@ -60,6 +60,8 @@ app.controller('LoginCtrl', ['ENV', '$scope', '$http', '$state', '$stateParams',
               sessionStorage.setItem('strDriverId', $scope.logininfo.strDriverId);
               sessionStorage.setItem('strDriverCode', $scope.logininfo.strDriverId);
               sessionStorage.setItem('strDriverName', results[0].DriverName);
+              sessionStorage.setItem('strVehicleNo', results[0].VehicleNo);
+
               if (!ENV.fromWeb) {
                 $cordovaSQLite.execute(db, 'INSERT INTO Users (uid) VALUES (?)', [$scope.logininfo.strDriverId])
                   .then(function(result) {}, function(error) {})

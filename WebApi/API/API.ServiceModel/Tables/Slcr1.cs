@@ -19,6 +19,8 @@ namespace WebApi.ServiceModel.Tables
         public DateTime ReceiptDate { get; set; }
         public Nullable<System.DateTime> ChequeDate { get; set; }
         public string UpdateBy { get; set; }
+        public string CollectBy { get; set; }
 
+        
     }
 }
