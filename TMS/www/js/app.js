@@ -17,9 +17,9 @@ var app = angular.module('TMS', [
 ]);
 app.run(['ENV', '$ionicPlatform', '$rootScope', '$state', '$location', '$timeout', '$ionicHistory', '$ionicLoading', '$cordovaToast', '$cordovaKeyboard', '$cordovaFile', '$cordovaSQLite',
   function(ENV, $ionicPlatform, $rootScope, $state, $location, $timeout, $ionicHistory, $ionicLoading, $cordovaToast, $cordovaKeyboard, $cordovaFile, $cordovaSQLite) {
-
       $ionicPlatform.ready(function() {
     if (window.cordova) {
+
        ENV.fromWeb = false;
        $cordovaKeyboard.hideAccessoryBar(true);
          $cordovaKeyboard.disableScroll(true);
@@ -94,8 +94,8 @@ app.run(['ENV', '$ionicPlatform', '$rootScope', '$state', '$location', '$timeout
     }
     $ionicPlatform.ready(function() {
       if (!ENV.fromWeb) {
-        $cordovaKeyboard.hideAccessoryBar(true);
-        $cordovaKeyboard.disableScroll(true);
+        // $cordovaKeyboard.hideAccessoryBar(true);
+        // $cordovaKeyboard.disableScroll(true);
         try {
           db = $cordovaSQLite.openDB({
             name: 'AppTms.db',
@@ -228,6 +228,15 @@ app.config(['ENV', '$stateProvider', '$urlRouterProvider', '$ionicConfigProvider
         templateUrl: 'view/joblisting/search.html',
         controller: 'JoblistingCtrl'
       })
+      .state( 'index.update', {
+        url: 'updateApp/update/:Version',
+        views: {
+            'menuContent': {
+                templateUrl: 'view/updateApp/update.html',
+                controller: 'UpdateCtrl'
+            }
+        }
+    } )
       .state('jobListingList', {
         url: '/joblisting/list',
         cache: 'false',

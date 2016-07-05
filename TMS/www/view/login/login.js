@@ -67,9 +67,6 @@ app.controller('LoginCtrl', ['ENV', '$scope', '$http', '$state', '$stateParams',
                   .then(function(result) {}, function(error) {})
               }
 
-
-
-
               $state.go('index.main', {}, {
                 reload: true
               });
