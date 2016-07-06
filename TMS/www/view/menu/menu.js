@@ -1,12 +1,28 @@
 'use strict';
-app.controller('IndexCtrl', ['ENV', '$scope', '$state', '$rootScope', '$http',
+app.controller('IndexCtrl', ['ENV', '$ionicPlatform', '$scope', '$state', '$rootScope', '$http',
   '$ionicLoading', '$ionicPopup', '$ionicSideMenuDelegate', '$cordovaAppVersion', '$cordovaFile', '$cordovaToast', '$cordovaSQLite',
-  function(ENV, $scope, $state, $rootScope, $http, $ionicLoading, $ionicPopup,
+  function(ENV, $ionicPlatform, $scope, $state, $rootScope, $http, $ionicLoading, $ionicPopup,
     $ionicSideMenuDelegate, $cordovaAppVersion, $cordovaFile, $cordovaToast, $cordovaSQLite) {
     var alertPopup = null;
     var alertPopupTitle = '';
     $scope.Status = {
       Login: false
+    };
+    var deleteLogin = function() {
+      if (!ENV.fromWeb) {
+        $cordovaSQLite.execute(db, 'DELETE FROM Users')
+          .then(
+            function(res) {
+              console.log('Delete LoginInfo');
+              $rootScope.$broadcast('logout');
+              $state.go('index.login', {}, {});
+            },
+            function(error) {}
+          );
+      } else {
+        $state.go('index.login', {}, {});
+        $rootScope.$broadcast('logout');
+      }
     };
     $scope.logout = function() {
       var confirmPopup = $ionicPopup.confirm({
@@ -18,8 +34,6 @@ app.controller('IndexCtrl', ['ENV', '$scope', '$state', '$rootScope', '$http',
           deleteLogin();
         }
       });
-      // $rootScope.$broadcast( 'logout' );
-      // $state.go( 'index.login', {}, {} );
     };
     $scope.gotoSetting = function() {
       $state.go('index.setting', {}, {
@@ -62,22 +76,6 @@ app.controller('IndexCtrl', ['ENV', '$scope', '$state', '$rootScope', '$http',
         });
       }
     }
-    var deleteLogin = function() {
-      if (!ENV.fromWeb) {
-        $cordovaSQLite.execute(db, 'DELETE FROM Users')
-          .then(
-            function(res) {
-              console.log('Delete LoginInfo');
-              $rootScope.$broadcast('logout');
-              $state.go('index.login', {}, {});
-            },
-            function(error) {}
-          );
-      } else {
-        $state.go('index.login', {}, {});
-        $rootScope.$broadcast('logout');
-      }
-    };
     $rootScope.$on('logout', function() {
       $scope.Status.Login = false;
       $ionicSideMenuDelegate.toggleLeft();
@@ -85,75 +83,76 @@ app.controller('IndexCtrl', ['ENV', '$scope', '$state', '$rootScope', '$http',
     $rootScope.$on('login', function() {
       $scope.Status.Login = true;
     });
-    // //
-    // if (window.cordova) {
-    //   //  ENV.fromWeb = false;
-    //   //  $cordovaKeyboard.hideAccessoryBar(true);
-    //   //    $cordovaKeyboard.disableScroll(true);
-    //   //
-    //   var data = 'website=' + ENV.website + '##api=' + ENV.api + '##ssl=' + ENV.ssl;
-    //   var path = cordova.file.externalRootDirectory;
-    //   var directory = ENV.rootPath;
-    //   var file = directory + '/' + ENV.configFile;
-    //   $cordovaFile.createDir(path, directory, false)
-    //     .then(function(success) {
-    //       $cordovaFile.writeFile(path, file, data, true)
-    //         .then(function(success) {
-    //           var blnSSL = ENV.ssl === 0 ? false : true;
-    //           ENV.website = appendProtocol(ENV.website, blnSSL, ENV.port);
-    //           ENV.api = appendProtocol(ENV.api, blnSSL, ENV.port);
-    //         }, function(error) {
-    //           $cordovaToast.showShortBottom(error);
-    //         });
-    //     }, function(error) { // If an existing directory exists
-    //       $cordovaFile.checkFile(path, file)
-    //         .then(function(success) {
-    //           $cordovaFile.readAsText(path, file)
-    //             .then(function(success) {
-    //               var arConf = success.split('##');
-    //               if (is.not.empty(arConf[0])) {
-    //                 var arWebServiceURL = arConf[0].split('=');
-    //                 if (is.not.empty(arWebServiceURL[1])) {
-    //                   ENV.website = arWebServiceURL[1];
-    //                 }
-    //               }
-    //               if (is.not.empty(arConf[1])) {
-    //                 var arWebSiteURL = arConf[1].split('=');
-    //                 if (is.not.empty(arWebSiteURL[1])) {
-    //                   ENV.api = arWebSiteURL[1];
-    //                 }
-    //               }
-    //               if (is.not.empty(arConf[2])) {
-    //                 var arSSL = arConf[2].split('=');
-    //                 if (is.not.empty(arSSL[1])) {
-    //                   ENV.ssl = arSSL[1];
-    //                 }
-    //               }
-    //               var blnSSL = ENV.ssl === 0 ? false : true;
-    //               ENV.website = appendProtocol(ENV.website, blnSSL, ENV.port);
-    //               ENV.api = appendProtocol(ENV.api, blnSSL, ENV.port);
-    //               //
-    //             }, function(error) {
-    //               $cordovaToast.showShortBottom(error);
-    //             });
-    //         }, function(error) {
-    //           // If file not exists
-    //           $cordovaFile.writeFile(path, file, data, true)
-    //             .then(function(success) {
-    //               var blnSSL = ENV.ssl === 0 ? false : true;
-    //               ENV.website = appendProtocol(ENV.website, blnSSL, ENV.port);
-    //               ENV.api = appendProtocol(ENV.api, blnSSL, ENV.port);
-    //             }, function(error) {
-    //               $cordovaToast.showShortBottom(error);
-    //             });
-    //         });
-    //     });
-    // } else {
-    //   var blnSSL = 'https:' === document.location.protocol ? true : false;
-    //   ENV.ssl = blnSSL ? '1' : '0';
-    //   ENV.website = appendProtocol(ENV.website, blnSSL, ENV.port);
-    //   ENV.api = appendProtocol(ENV.api, blnSSL, ENV.port);
-    // }
-
+    //
+    var writeFile = function( path, file, data ) {
+        $cordovaFile.writeFile( path, file, data, true )
+            .then( function( success ) {
+                var blnSSL = ENV.ssl === 0 ? false : true;
+                ENV.website = appendProtocol( ENV.website, blnSSL, ENV.port );
+                ENV.api = appendProtocol( ENV.api, blnSSL, ENV.port );
+            }, function( error ) {
+                $cordovaToast.showShortBottom( error );
+                console.error( error );
+            } );
+    };
+    $ionicPlatform.ready( function() {
+        console.log('ionicPlatform.ready');
+        if ( !ENV.fromWeb ) {
+            var data = 'website=' + ENV.website + '##' +
+                'api=' + ENV.api + '##' +
+                'port=' + ENV.port + '##';
+            var path = cordova.file.externalRootDirectory,
+                directory = ENV.rootPath,
+                file = ENV.rootPath + '/' + ENV.configFile;
+            $cordovaFile.createDir( path, directory, false )
+                .then( function( success ) {
+                    writeFile( path, file, data );
+                }, function( error ) {
+                    // If an existing directory exists
+                    $cordovaFile.checkFile( path, file )
+                        .then( function( success ) {
+                            $cordovaFile.readAsText( path, file )
+                                .then( function( success ) {
+                                    var arConf = success.split( '##' );
+                                    if ( arConf.length == 4 ) {
+                                        var arWebServiceURL = arConf[ 0 ].split( '=' );
+                                        if ( is.not.empty( arWebServiceURL[ 1 ] ) ) {
+                                            ENV.website = arWebServiceURL[ 1 ];
+                                        }
+                                        var arWebSiteURL = arConf[ 1 ].split( '=' );
+                                        if ( is.not.empty( arWebSiteURL[ 1 ] ) ) {
+                                            ENV.api = arWebSiteURL[ 1 ];
+                                        }
+                                        var arWebPort = arConf[ 2 ].split( '=' );
+                                        if ( is.not.empty( arWebPort[ 1 ] ) ) {
+                                            ENV.port = arWebPort[ 1 ];
+                                        }
+                                        var blnSSL = ENV.ssl === 0 ? false : true;
+                                        ENV.website = appendProtocol( ENV.website, blnSSL, ENV.port );
+                                        ENV.api = appendProtocol( ENV.api, blnSSL, ENV.port );
+                                    } else {
+                                        $cordovaFile.removeFile( path, file )
+                                            .then( function( success ) {
+                                                writeFile( path, file, data );
+                                            }, function( error ) {
+                                                $cordovaToast.showShortBottom( error );
+                                            } );
+                                    }
+                                }, function( error ) {
+                                    $cordovaToast.showShortBottom( error );
+                                    console.error( error );
+                                } );
+                        }, function( error ) {
+                            // If file not exists
+                            writeFile( path, file, data );
+                        } );
+                } );
+        } else {
+            var blnSSL = 'https:' === document.location.protocol ? true : false;
+            ENV.ssl = blnSSL ? '1' : '0';
+            ENV.website = appendProtocol( ENV.website, blnSSL, ENV.port );
+            ENV.api = appendProtocol( ENV.api, blnSSL, ENV.port );
+        }
+    } );
   }
 ]);

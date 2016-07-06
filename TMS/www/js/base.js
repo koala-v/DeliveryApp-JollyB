@@ -2,43 +2,37 @@
 var db;
 
 var appendProtocol = function(url, blnSSL, portNo) {
-  if (url.length > 0 && url.toUpperCase().indexOf('HTTPS://') < 0 && url.toUpperCase().indexOf('HTTP://') < 0) {
-    if (blnSSL) {
-      url = 'https://' + url;
-    } else {
-      var aURL = url.split('/');
-      if (aURL[0].indexOf(':') < 0) {
-        url = 'http://' + aURL[0] + ':' + portNo;
-      } else {
-        url = 'http://' + aURL[0];
-      }
-      for (var i = 1; i < aURL.length; i++) {
-        url = url + '/' + aURL[i];
-      }
+    if (url.length > 0 && url.toUpperCase().indexOf('HTTPS://') < 0 && url.toUpperCase().indexOf('HTTP://') < 0) {
+        if(blnSSL){
+            url = 'https://' + url;
+        }else{
+            var aURL = url.split('/');
+            if(aURL[0].indexOf(':') < 0){
+                url = 'http://' + aURL[0] + ':' + portNo;
+            }else{
+                url = 'http://' + aURL[0];
+            }
+            for(var i=1; i<aURL.length; i++){
+                url = url + '/' + aURL[i];
+            }
+        }
     }
-  }
-  return url;
+    return url;
 };
-// var rmProtocol = function(url, portNo) {
-//     if (is.not.empty(url)) {
-//         var regex = /(https?:\/\/)?/gi;
-//         url = url.replace(regex, '');
-//         regex = /(http?:\/\/)?/gi;
-//         url = url.replace(regex, '');
-//     }
-//     if (is.not.empty(portNo)) {
-//         var regex = /\:(\d)+/;
-//         url = url.replace(regex, '');
-//     }
-//     return url;
-// };
-var rmProtocol = function(url) {
-    if (url.length > 0) {
+var rmProtocol = function(url, portNo) {
+    if (is.not.empty(url)) {
         var regex = /(https?:\/\/)?/gi;
+        url = url.replace(regex, '');
+        regex = /(http?:\/\/)?/gi;
+        url = url.replace(regex, '');
+    }
+    if (is.not.empty(portNo)) {
+        var regex = /\:(\d)+/;
         url = url.replace(regex, '');
     }
     return url;
 };
+
 var checkDatetime = function(datetime) {
   if (is.equal(moment(datetime).format('DD-MMM-YYYY'), '01-Jan-0001')) {
     datetime = '';
@@ -48,6 +42,7 @@ var checkDatetime = function(datetime) {
   }
   return datetime;
 };
+
 var repalceObj = function(obj) {
   for (var i in obj) {
     if (obj.hasOwnProperty(i)) {

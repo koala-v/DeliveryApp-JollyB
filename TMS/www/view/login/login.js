@@ -26,7 +26,6 @@ app.controller('LoginCtrl', ['ENV', '$scope', '$http', '$state', '$stateParams',
       } else {
         ENV.mock = false;
       }
-
       if (window.cordova && window.cordova.plugins.Keyboard) {
         cordova.plugins.Keyboard.close();
       }
@@ -38,20 +37,9 @@ app.controller('LoginCtrl', ['ENV', '$scope', '$http', '$state', '$stateParams',
           reload: true
         });
       } else {
-
         if ($scope.logininfo.strDriverId === '') {
-          // alertPopupTitle = 'Please Enter Driver ID.';
-          // alertPopup = $ionicPopup.alert({
-          //   title: alertPopupTitle,
-          //   okType: 'button-assertive'
-          // });
-          // alertPopup.then(function(res) {
-          // });
-          showPopup('Please Enter Driver ID.', 'calm', function(res) {});
+          showPopup('Please Enter Driver ID.', 'assertive');
         } else {
-          // $state.go('index.main', {}, {
-          //   reload: true
-          // });
           var strUri = '/api/tms/login/check?DriverCode=' + $scope.logininfo.strDriverId;
           ApiService.GetParam(strUri, true).then(function success(result) {
             var results = result.data.results;
@@ -72,7 +60,7 @@ app.controller('LoginCtrl', ['ENV', '$scope', '$http', '$state', '$stateParams',
               });
               $rootScope.$broadcast('login');
             } else {
-              showPopup('Invalid Driver ID.', 'calm', function(res) {});
+              showPopup('Invalid Driver ID.', 'assertive', function(res) {});
             }
           });
         }
@@ -107,16 +95,11 @@ app.controller('LoginCtrl', ['ENV', '$scope', '$http', '$state', '$stateParams',
                 $state.go('index.main', {}, {
                   reload: true
                 });
-              } else {
-                //  gotoLogin(false);
               }
             },
             function(error) {
-              //  gotoLogin(false);
             }
           );
-      } else {
-        //  gotoLogin(false);
       }
     });
   }
