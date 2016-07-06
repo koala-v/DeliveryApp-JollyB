@@ -71,45 +71,30 @@ namespace WebApi.ServiceModel.TMS
           "  when DatePart(W, GETDATE()) = 7 then 'SAT'" +
          " end)),'') AS TimeFrom," +
          "isnull((Select top 1 TimeTo From Todr2 Where District like '%' + Rcbp1.DistrictCode + '%' and  day in ( case when DatePart(W, GETDATE()) = 1 then 'SUN'" +
-
          "  when DatePart(W, GETDATE()) = 2 then 'MON'" +
-
          "  when DatePart(W, GETDATE()) = 3 then 'TUE'" +
-
          "  when DatePart(W, GETDATE()) = 4 then 'WED'" +
-
-        "   when DatePart(W, GETDATE()) = 5 then 'THU'" +
-
+         "   when DatePart(W, GETDATE()) = 5 then 'THU'" +
          "  when DatePart(W, GETDATE()) = 6 then 'FRI'" +
-
          "  when DatePart(W, GETDATE()) = 7 then 'SAT'" +
-
-        " end )),'') AS TimeTo," +
-       "  isnull((Select top 1 TimeFrom From Todr2 Where District like '%' + Rcbp1.DistrictCode + '%' and  day in ( case when DatePart(W, GETDATE()) = 1 then 'SUN'" +
-          " when DatePart(W, GETDATE()) = 2 then 'MON'" +
+         " end )),'') AS TimeTo," +
+         "  isnull((Select top 1 TimeFrom From Todr2 Where District like '%' + Rcbp1.DistrictCode + '%' and  day in ( case when DatePart(W, GETDATE()) = 1 then 'SUN'" +
+         " when DatePart(W, GETDATE()) = 2 then 'MON'" +
          " when DatePart(W, GETDATE()) = 3 then 'TUE'" +
          "  when DatePart(W, GETDATE()) = 4 then 'WED'" +
          "  when DatePart(W, GETDATE()) = 5 then 'THU'" +
+         "  when DatePart(W, GETDATE()) = 6 then 'FRI'" +
+         "  when DatePart(W, GETDATE()) = 7 then 'SAT'" +
+         "  end)),'') AS ColTimeFrom," +
+         " isnull((Select top 1 TimeTo From Todr2 Where District like '%' + Rcbp1.DistrictCode + '%' and  day in ( case when DatePart(W, GETDATE()) = 1 then 'SUN'" +
+        "   when DatePart(W, GETDATE()) = 2 then 'MON'" +
+        "  when DatePart(W, GETDATE()) = 3 then 'TUE'" +
+        "  when DatePart(W, GETDATE()) = 4 then 'WED'" +
+        " when DatePart(W, GETDATE()) = 5 then 'THU'" +
         "  when DatePart(W, GETDATE()) = 6 then 'FRI'" +
-        "  when DatePart(W, GETDATE()) = 7 then 'SAT'" +
-        "  end)),'') AS ColTimeFrom," +
-       " isnull((Select top 1 TimeTo From Todr2 Where District like '%' + Rcbp1.DistrictCode + '%' and  day in ( case when DatePart(W, GETDATE()) = 1 then 'SUN'" +
-
-      "   when DatePart(W, GETDATE()) = 2 then 'MON'" +
-
-       "  when DatePart(W, GETDATE()) = 3 then 'TUE'" +
-
-       "  when DatePart(W, GETDATE()) = 4 then 'WED'" +
-
-       " when DatePart(W, GETDATE()) = 5 then 'THU'" +
-
-       "  when DatePart(W, GETDATE()) = 6 then 'FRI'" +
-
         " when DatePart(W, GETDATE()) = 7 then 'SAT'" +
-
-       " end )),'') AS ColTimeTo," +
-
-         "Csbk1.BookingNo,Csbk1.StatusCode,isnull(Csbk1.JobNo, '') as JobNo,isnull(Csbk1.BookingCustomerCode, '') as BookingCustomerCode,isnull(Csbk1.CollectionTimeStart, '') as CollectionTimeStart,isnull(Csbk1.CollectionTimeEnd, '') as CollectionTimeEnd ,sum(Csbk2.Pcs) as Pcs, isnull(rcbp1.BusinessPartyCode,'') as BusinessPartyCode,isnull(Rcbp1.PostalCode, '') as PostalCode,isnull(rcbp1.FirstName, '')+isnull(rcbp1.LastName, '') as BusinessPartyName,isnull(Rcbp1.Address1, '') as Address1,isnull(Rcbp1.Address2, '') as Address2,isnull(Rcbp1.Address3, '') as Address3,isnull(Rcbp1.Address4, '') as Address4 ,isnull(Csbk1.CompletedFlag, '') AS CompletedFlag, (Select CONVERT(varchar(100), GETDATE(), 121)) as ScanDate " +
+        " end )),'') AS ColTimeTo," +
+        " Csbk1.BookingNo,Csbk1.StatusCode,isnull(Csbk1.JobNo, '') as JobNo,isnull(Csbk1.BookingCustomerCode, '') as BookingCustomerCode,isnull(Csbk1.CollectionTimeStart, '') as CollectionTimeStart,isnull(Csbk1.CollectionTimeEnd, '') as CollectionTimeEnd ,sum(Csbk2.Pcs) as Pcs, isnull(rcbp1.BusinessPartyCode,'') as BusinessPartyCode,isnull(Rcbp1.PostalCode, '') as PostalCode,isnull(rcbp1.FirstName, '')+isnull(rcbp1.LastName, '') as BusinessPartyName,isnull(Rcbp1.Address1, '') as Address1,isnull(Rcbp1.Address2, '') as Address2,isnull(Rcbp1.Address3, '') as Address3,isnull(Rcbp1.Address4, '') as Address4 ,isnull(Csbk1.CompletedFlag, '') AS CompletedFlag, (Select CONVERT(varchar(100), GETDATE(), 121)) as ScanDate " +
                        "  from Csbk1 left join Csbk2 on Csbk1.TrxNo = Csbk2.TrxNo  left" +
                        "  join rcbp1 on Csbk1.BookingCustomerCode = rcbp1.BusinessPartyCode    " + strWhere +
                        "  group  by Csbk1.jobno,rcbp1.BusinessPartyCode,Csbk1.BookingNo,Csbk1.StatusCode,Rcbp1.PostalCode,Rcbp1.BusinessPartyName,Rcbp1.Address1,Rcbp1.Address2,Rcbp1.Address3,Rcbp1.Address4,Csbk1.BookingCustomerCode,Csbk1.CollectionTimeStart,Csbk1.CollectionTimeEnd,Csbk1.CompletedFlag,Csbk1.TrxNo ,Rcbp1.DistrictCode,rcbp1.FirstName,rcbp1.LastName";

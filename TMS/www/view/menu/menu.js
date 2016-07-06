@@ -61,7 +61,7 @@ app.controller('IndexCtrl', ['ENV', '$scope', '$state', '$rootScope', '$http',
           okType: 'button-calm'
         });
       }
-    }
+    };
     var deleteLogin = function() {
       if (!ENV.fromWeb) {
         $cordovaSQLite.execute(db, 'DELETE FROM Users')
