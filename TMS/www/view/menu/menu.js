@@ -62,6 +62,7 @@ app.controller( 'IndexCtrl', [ 'ENV', '$ionicPlatform', '$scope', '$state', '$ro
                         } );
                     } )
                     .error( function ( res ) {
+                        console.error(res);
                         alertPopupTitle = 'Connect Update Server Error!';
                         alertPopup = $ionicPopup.alert( {
                             title: alertPopupTitle,

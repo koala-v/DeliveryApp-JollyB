@@ -14,7 +14,7 @@ appConfig.constant( 'ENV', {
     'mock': false,
     'fromWeb': true,
     'appId': '9CBA0A78-7D1D-49D3-BA71-C72E93F9E48F',
-    'apkName': 'TMS',
+    'apkName': 'TMS-JollyB',
     'updateFile': 'update.json',
     'rootPath': 'JollyB',
     'configFile': 'config.txt',
