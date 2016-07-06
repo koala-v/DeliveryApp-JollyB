@@ -4,5 +4,5 @@ app.controller('SplashCtrl',
     function ($state, $timeout) {
         $timeout(function () {
             $state.go('index.login', {}, { reload: true });
-        }, 2000);
+        }, 1500);
     }]);

@@ -18,32 +18,19 @@
         <div class="list list-inset">
             <label class="item item-input item-stacked-label">
                 <span class="input-label">API URL</span>
-                <input type="text" placeholder="www.sysfreight.com:8081/WebApi" ng-model="Setting.WebApiURL">
+                <input type="text" placeholder="www.sysfreight.com/apis/tms/jollyb" ng-model="Setting.WebApiURL">
             </label>
             <label class="item item-input item-stacked-label">
                 <span class="input-label">Web Site URL</span>
-                <input type="text" placeholder="www.sysfreight.net:8081/mobileapp" ng-model="Setting.WebSiteUrl">
+                <input type="text" placeholder="www.sysfreight.net/app/tms/jollyb" ng-model="Setting.WebSiteUrl">
             </label>
             <label class="item item-input item-stacked-label">
-        <span class="input-label">Port No</span>
-        <input type="text" placeholder="80" ng-model="Setting.WebPort">
-    </label>
-            <!-- <label class="item item-input item-select">
-                <div class="input-label">
-                    Map Provider
-                </div>
-                <select ng-model="Setting.MapProvider">
-                    <option value="">None</option>
-                    <option value="google">Google</option>
-                    <option value="baidu">Baidu</option>
-                </select>
-            </label> -->
-            <ion-toggle ng-model="Setting.SSL.checked" ng-if="Setting.blnWeb">
-             SSL Encryption
-         </ion-toggle>
+                <span class="input-label">Port No</span>
+                <input type="text" placeholder="80" ng-model="Setting.WebPort">
+            </label>
         </div>
     </ion-pane>
-    <ion-footer-bar class="bar-positive">
+    <ion-footer-bar class="bar-positive hide-on-keyboard-open">
         <div class="row" style="padding: 0px;">
             <button class="col button" ng-click="save()">
                 <i class="icon ion-android-done"></i>&nbsp;&nbsp;Save

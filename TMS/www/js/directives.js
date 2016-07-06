@@ -1,5 +1,5 @@
 //'use strict';
-( function() {
+( function () {
     // GetUserMedia is not yet supported by all browsers
     // Until then, we need to handle the vendor prefixes
     navigator.getMedia = ( navigator.getUserMedia ||
@@ -13,7 +13,7 @@
     };
 } )();
 
-var appDirectives = angular.module('TMS.directives', []);
+var appDirectives = angular.module( 'TMS.directives', [] );
 // appDirectives.directive('dateFormat', ['$filter', function ($filter) {
 //     var dateFilter = $filter('date');
 //     return {
@@ -32,7 +32,7 @@ var appDirectives = angular.module('TMS.directives', []);
 // }]);
 
 angular.module( 'TMS.directives', [] )
-    .directive( 'webcam', function() {
+    .directive( 'webcam', function () {
         return {
             template: '<div class="webcam" ng-transclude></div>',
             restrict: 'E',
@@ -101,7 +101,7 @@ angular.module( 'TMS.directives', [] )
                     if ( $scope.onStream ) {
                         $scope.onStream( {
                             stream: stream
-                        });
+                        } );
                     }
                 };
 
@@ -159,7 +159,7 @@ angular.module( 'TMS.directives', [] )
                     /* Start streaming the webcam data when the video element can play
                      * It will do it only once
                      */
-                    videoElem.addEventListener( 'canplay', function() {
+                    videoElem.addEventListener( 'canplay', function () {
                         if ( !isStreaming ) {
                             var scale = width / videoElem.videoWidth;
                             height = ( videoElem.videoHeight * scale ) ||
