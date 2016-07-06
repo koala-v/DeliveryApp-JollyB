@@ -1,43 +1,43 @@
 <ion-view title="Daily Completed">
-  <ion-header-bar align-title="center" no-tap-scroll=false class="bar-positive">
-    <div class="buttons">
-      <button class="button button-icon button-clear ion-android-arrow-back" ng-click="returnMain()"></button>
-    </div>
-    <h1 class="title">Daily Completed</h1>
-  </ion-header-bar>
-  <ion-pane style="margin-top:44px; height:64px; overflow:visible;">
-    <div>
-        <div class="row row-center" id="div-list-rcbp">
-            <div class="col col-40" style="text-align:center;">
-                <label>Completed Date</label>
-            </div>
-            <div class="col col-60">
-                <button class="button button-light" id="idCompletedDate" ng-click="OnDatePicker()">
-                    <i class="icon ion-calendar"></i>&nbsp;&nbsp;
-                    <span ng-bind="Search.CompletedDate"></span>&nbsp;
-                    <i class="icon ion-android-arrow-dropdown"></i>
-                </button>
-            </div>
+    <ion-header-bar align-title="center" no-tap-scroll=false class="bar-positive">
+        <div class="buttons">
+            <button class="button button-icon button-clear ion-android-arrow-back" ng-click="returnMain()"></button>
         </div>
-        <hr style="margin-top:-0.3em;">
-    </div>
-  </ion-pane>
-  <ion-content style="margin-top:100px;">
-    <ion-list tabindex="-1" id="div-list">
-        <div class="card" ng-repeat="Csbk1 in Csbk1s">
-          <ion-item class="item">
-            <p style="font-size:0.8em;">BookingNo&nbsp;&nbsp;:&nbsp;&nbsp;<span ng-bind="Csbk1.bookingno" style="font-size:1.3em;"></span></p>
-            <p style="font-size:0.8em;">JobNo&nbsp;&nbsp;:&nbsp;&nbsp;<span ng-bind="Csbk1.JobNo" style="font-size:1.1em;"></span></p>
-            <p style="font-size:0.8em;">Amt&nbsp;&nbsp;:&nbsp;&nbsp;<span ng-bind="Csbk1.CollectedAmt" style="font-size:1.1em;"></span></p>
-          </ion-item>
+        <h1 class="title">Daily Completed</h1>
+    </ion-header-bar>
+    <ion-pane style="margin-top:44px; height:64px; overflow:visible;">
+        <div>
+            <div class="row row-center" id="div-list-rcbp">
+                <div class="col col-40" style="text-align:center;">
+                    <label>Completed Date</label>
+                </div>
+                <div class="col col-60">
+                    <button class="button button-light" id="idCompletedDate" ng-click="OnDatePicker()">
+                        <i class="icon ion-calendar"></i>&nbsp;&nbsp;
+                        <span ng-bind="Search.CompletedDate"></span>&nbsp;
+                        <i class="icon ion-android-arrow-dropdown"></i>
+                    </button>
+                </div>
+            </div>
+            <hr style="margin-top:-0.3em;">
         </div>
-    </ion-list>
-  </ion-content>
-  <ion-footer-bar class="bar-positive">
-    <div class="row" style="padding: 0px;">
-      <button class="col button" ng-click="returnMain()">
-        <i class="icon ion-arrow-return-right"></i>&nbsp;&nbsp;Return
-      </button>
-    </div>
-  </ion-footer-bar>
+    </ion-pane>
+    <ion-content style="margin-top:100px;">
+        <ion-list tabindex="-1" id="div-list">
+            <div class="card" ng-repeat="Csbk1 in Csbk1s">
+                <ion-item class="item">
+                    <p style="font-size:0.8em;">BookingNo&nbsp;&nbsp;:&nbsp;&nbsp;<span ng-bind="Csbk1.bookingno" style="font-size:1.3em;"></span></p>
+                    <p style="font-size:0.8em;">JobNo&nbsp;&nbsp;:&nbsp;&nbsp;<span ng-bind="Csbk1.JobNo" style="font-size:1.1em;"></span></p>
+                    <p style="font-size:0.8em;">Amt&nbsp;&nbsp;:&nbsp;&nbsp;<span ng-bind="Csbk1.CollectedAmt" style="font-size:1.1em;"></span></p>
+                </ion-item>
+            </div>
+        </ion-list>
+    </ion-content>
+    <ion-footer-bar class="bar-positive">
+        <div class="row" style="padding: 0px;">
+            <button class="col button" ng-click="returnMain()">
+                <i class="icon ion-arrow-return-right"></i>&nbsp;&nbsp;Return
+            </button>
+        </div>
+    </ion-footer-bar>
 </ion-view>
