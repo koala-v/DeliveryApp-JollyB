@@ -17,7 +17,7 @@
                     </div>
                     <div class="col">
                         <!-- <h2><span ng-model="Amount"></span></h2> -->
-                            <h2><span ng-bind="Detail.Amount"></span></h2>
+                        <h2><span ng-bind="Detail.Amount"></span></h2>
                     </div>
                 </div>
                 <div class="row">
@@ -29,16 +29,16 @@
                     </div>
                 </div>
             </div>
-            <div class="item item-body" >
+            <div class="item item-body">
                 <div style="height: 4px"></div>
-                <div >
+                <div>
                     <canvas id='signatureCanvas' width="323px" height="140px" style="border: 1px solid black;" ng-show="signature==null"></canvas>
-                    <img ng-src='{{signature}}' ng-show="signature!=null"/>
+                    <img ng-src='{{signature}}' ng-show="signature!=null" />
                     <a class="button icon-left ion-android-refresh button-clear button-dark" ng-click="clearCanvas()">Clear</a>
                     <a class="button icon-left ion-android-done button-clear button-dark" ng-click="saveCanvas()" ng-show="signature==null">Save</a>
                 </div>
             </div>
-              <!-- <div class="item item-divider">
+            <!-- <div class="item item-divider">
                  Service Rating
               </div>
               <div class="button-bar">
