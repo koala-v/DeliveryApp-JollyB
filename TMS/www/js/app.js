@@ -88,8 +88,8 @@ app.run( [ 'ENV', '$ionicPlatform', '$rootScope', '$state', '$location', '$timeo
     }, 101 );
   }
 ] );
-app.config( [ 'ENV', '$stateProvider', '$urlRouterProvider', '$ionicConfigProvider', '$ionicFilterBarConfigProvider',
-  function( ENV, $stateProvider, $urlRouterProvider, $ionicConfigProvider, $ionicFilterBarConfigProvider ) {
+app.config( [ 'ENV', '$stateProvider', '$urlRouterProvider', '$ionicConfigProvider', '$ionicFilterBarConfigProvider', '$httpProvider',
+  function( ENV, $stateProvider, $urlRouterProvider, $ionicConfigProvider, $ionicFilterBarConfigProvider, $httpProvider ) {
       $ionicConfigProvider.platform.ios.tabs.style('standard');
           $ionicConfigProvider.platform.ios.tabs.position('top');
           $ionicConfigProvider.platform.android.tabs.style('standard');

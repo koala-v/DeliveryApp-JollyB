@@ -1,7 +1,7 @@
 'use strict';
-app.controller('IndexCtrl', ['ENV', '$scope', '$state', '$rootScope', '$http',
+app.controller('IndexCtrl', ['ENV', '$ionicPlatform', '$scope', '$state', '$rootScope', '$http',
   '$ionicLoading', '$ionicPopup', '$ionicSideMenuDelegate', '$cordovaAppVersion', '$cordovaFile', '$cordovaToast', '$cordovaSQLite',
-  function(ENV, $scope, $state, $rootScope, $http, $ionicLoading, $ionicPopup,
+  function(ENV, $ionicPlatform, $scope, $state, $rootScope, $http, $ionicLoading, $ionicPopup,
     $ionicSideMenuDelegate, $cordovaAppVersion, $cordovaFile, $cordovaToast, $cordovaSQLite) {
     var alertPopup = null;
     var alertPopupTitle = '';
