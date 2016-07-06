@@ -25,7 +25,6 @@
     "cordova-plugin-battery-status",
     "cordova-plugin-camera",
     "cordova-plugin-contacts",
-    "cordova-plugin-datepicker",
     "cordova-plugin-device-motion",
     "cordova-plugin-device-orientation",
     "cordova-plugin-dialogs",
@@ -45,7 +44,8 @@
     "cordova-plugin-crosswalk-webview",
     "https://github.com/phonegap/phonegap-plugin-barcodescanner.git",
     "cordova-sqlite-storage",
-    "https://github.com/litehelpers/Cordova-sqlite-storage"
+    "https://github.com/litehelpers/Cordova-sqlite-storage",
+    "cordova-plugin-image-picker"
   ],
   "cordovaPlatforms": [
     "android"

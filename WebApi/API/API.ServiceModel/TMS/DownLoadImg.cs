@@ -109,18 +109,25 @@ namespace WebApi.ServiceModel.TMS
                 //   GetAllDirList(strPath);
 
                 strPath = DocumentPath  + "\\csbk1\\" + request.BookingNo + "\\"+ "signature.png";          /*20160518 download file path for signature.png*/
-             //   strPath = "E:\\" + "\\Sysfreight\\" + "\\csbk1\\" + request.BookingNo + "\\" + "signature.png";
-                using (FileStream fsRead = new FileStream(strPath, FileMode.Open))
+                if (File.Exists(strPath))
                 {
-                    int fsLen = (int)fsRead.Length;                      /*20160518 To convert imgage ask Base64 */    
-                    Image img = Image.FromStream(fsRead);           
-                    MemoryStream ms = new MemoryStream();
-                    byte[] imagedata = null;
-                    img.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
-                    imagedata = ms.GetBuffer();
-                    Result= Convert.ToBase64String(imagedata);
-                
+
+                    //   strPath = "E:\\" + "\\Sysfreight\\" + "\\csbk1\\" + request.BookingNo + "\\" + "signature.png";
+                    using (FileStream fsRead = new FileStream(strPath, FileMode.Open))
+                    {
+                        int fsLen = (int)fsRead.Length;                      /*20160518 To convert imgage ask Base64 */
+                        Image img = Image.FromStream(fsRead);
+                        MemoryStream ms = new MemoryStream();
+                        byte[] imagedata = null;
+                        img.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+                        imagedata = ms.GetBuffer();
+                        Result = Convert.ToBase64String(imagedata);
+
+                    }
                 }
+                else {
+                    Result = null;
+                }         
 
             }
             catch { throw; }

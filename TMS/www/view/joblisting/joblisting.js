@@ -203,8 +203,12 @@ app.controller('JoblistingCtrl', ['$scope', '$state', '$stateParams',
   }
 ]);
 
-app.controller('JoblistingDetailCtrl', ['ENV', '$scope', '$state', '$ionicActionSheet', '$cordovaSms', '$stateParams', 'ApiService', '$cordovaSQLite', '$ionicPlatform', '$ionicPopup',
-  function(ENV, $scope, $state, $ionicActionSheet, $cordovaSms, $stateParams, ApiService, $cordovaSQLite, $ionicPlatform, $ionicPopup) {
+app.controller('JoblistingDetailCtrl', ['ENV', '$scope', '$state', '$ionicActionSheet', '$cordovaSms', '$stateParams', 'ApiService', '$cordovaSQLite', '$ionicPlatform', '$ionicPopup', '$ionicModal', '$ionicLoading', '$cordovaCamera', '$cordovaBarcodeScanner', '$cordovaImagePicker', '$cordovaFile', '$cordovaFileTransfer',
+  function(ENV, $scope, $state, $ionicActionSheet, $cordovaSms, $stateParams, ApiService, $cordovaSQLite, $ionicPlatform, $ionicPopup, $ionicModal, $ionicLoading, $cordovaCamera, $cordovaBarcodeScanner, $cordovaImagePicker, $cordovaFile, $cordovaFileTransfer) {
+    var canvas = null,
+      context = null;
+    $scope.capture = null;
+    $scope.modal_camera = null;
     var dataResults = new Array();
     $scope.Detail = {
       csbk1: {
@@ -221,23 +225,144 @@ app.controller('JoblistingDetailCtrl', ['ENV', '$scope', '$state', '$ionicAction
       csbk2: {}
     };
 
-    $scope.capturePhoto = function() {
-      navigator.camera.getPicture(onSuccess, onFail, {
-        quality: 25,
-        destinationType: Camera.DestinationType.FILE_URI,
-        sourceType: Camera.PictureSourceType.PHOTOLIBRARY,
-      });
-
-      function onSuccess(imageData) {
-        var image = document.getElementById('myImage');
-        image.src = "data:image/jpeg;base64," + imageData;
+    // ===============================scan
+    var showCamera = function(type) {
+      $ionicLoading.show();
+      var sourceType = Camera.PictureSourceType.CAMERA;
+      if (is.equal(type, 1)) {
+        sourceType = Camera.PictureSourceType.SAVEDPHOTOALBUM;
       }
+      var options = {
+        quality: 100,
+        destinationType: Camera.DestinationType.FILE_URI,
+        sourceType: sourceType,
+        allowEdit: false,
+        encodingType: Camera.EncodingType.JPEG,
+        //targetWidth: 768,
+        //targetHeight: 1024,
+        mediaType: Camera.MediaType.PICTURE,
+        cameraDirection: Camera.Direction.BACK,
+        //popoverOptions: new CameraPopoverOptions(300, 300, 100, 100, Camera.PopoverArrowDirection.ARROW_ANY),
+        saveToPhotoAlbum: true
+          //correctOrientation:true
+      };
+      try {
 
-      function onFail(message) {
-        // alert('Failed because: ' + message);
+        $cordovaCamera.getPicture(options).then(function(imageUri) {
+          // var url = ENV.api + '/api/freight/upload/img?JobNo=' + $scope.Doc.JobNo;
+          var url = '';
+          var filePath = imageUri,
+            trustHosts = true,
+            options = {
+              fileName: moment().format('YYYY-MM-DD-HH-mm-ss').toString() + '.jpg'
+            };
+          $cordovaFileTransfer.upload(url, filePath, options, trustHosts)
+            .then(function(result) {
+              $ionicLoading.hide();
+              showPopup('Upload Successfully', 'calm');
+            }, function(err) {
+              $ionicLoading.hide();
+              console.error(err);
+              showPopup(err.message, 'assertive');
+            }, function(progress) {});
+        }, function(err) {
+          $ionicLoading.hide();
+        });
+      } catch (e) {
+        $ionicLoading.hide();
+        console.error(e);
       }
 
     };
+
+
+    $scope.myChannel = {
+      // the fields below are all optional
+      videoHeight: 480,
+      videoWidth: 320,
+      video: null // Will reference the video element on success
+    };
+    $ionicModal.fromTemplateUrl('camera.html', {
+      scope: $scope,
+      animation: 'slide-in-up'
+    }).then(function(modal) {
+      $scope.modal_camera = modal;
+    });
+    $scope.$on('$destroy', function() {
+      if (is.not.null($scope.modal_camera)) {
+        $scope.modal_camera.remove();
+      }
+    });
+
+    $scope.takePhoto = function() {
+      var video = document.getElementById('videoS');
+      context.drawImage(video, 0, 0, 320, 480);
+      $scope.capture = canvas.toDataURL();
+    };
+    $scope.reCapture = function() {
+      context.clearRect(0, 0, 320, 480);
+      $scope.capture = null;
+    };
+    $scope.uploadPhoto = function() {
+      var jsonData = {
+        'Base64': $scope.capture,
+        'FileName': moment().format('YYYY-MM-DD-HH-mm-ss').toString() + '.jpg'
+      };
+      // =======upload api
+
+      // =======
+    };
+    $scope.showActionSheet = function() {
+      var actionSheet = $ionicActionSheet.show({
+        buttons: [{
+          text: 'Camera'
+        }, {
+          text: 'From Gallery'
+        }],
+        //destructiveText: 'Delete',
+        titleText: 'Select Picture',
+        cancelText: 'Cancel',
+        cancel: function() {
+          // add cancel code..
+        },
+        buttonClicked: function(index) {
+          if (index === 0) {
+            if (!ENV.fromWeb) {
+              showCamera(0);
+            } else {
+              $scope.modal_camera.show();
+              canvas = document.getElementById('canvas1');
+              context = canvas.getContext('2d');
+              $scope.reCapture();
+            }
+          } else if (index === 1) {
+            if (!ENV.fromWeb) {
+              showCamera(1);
+
+            } else {
+              $state.go('upload', {
+                'BookingNo': $scope.Detail.csbk1.BookingNo,
+                'JobNo': 1
+              }, {});
+            }
+          }
+          return true;
+        }
+      });
+    };
+
+    $scope.closeModal = function() {
+      $scope.modal_camera.hide();
+    };
+    // ===============================scan
+
+
+
+
+
+
+
+
 
     var strUri = '/api/tms/rcbp1?BookingNo=' + $scope.Detail.csbk1.BookingNo;
     ApiService.GetParam(strUri, true).then(function success(result) {
@@ -448,7 +573,7 @@ app.controller('JoblistingDetailCtrl', ['ENV', '$scope', '$state', '$ionicAction
         $scope.title = 'Collect : ' + $scope.Detail.csbk1.BookingNo;
       }
     }
-    $scope.showActionSheet = function() {
+    $scope.showActionSheet1 = function() {
       var actionSheet = $ionicActionSheet.show({
         buttons: [{
 
@@ -607,11 +732,9 @@ app.controller('JoblistingDetailCtrl', ['ENV', '$scope', '$state', '$ionicAction
                     }, {
                       reload: true
                     });
-                  } else {
-                  }
+                  } else {}
                 },
-                function(error) {
-                }
+                function(error) {}
               );
           } else {
             if (dbTms) {
@@ -683,7 +806,7 @@ app.controller('JoblistingDetailCtrl', ['ENV', '$scope', '$state', '$ionicAction
       "Detail.csbk2s[7].CollectedPcs",
     ], function(newValue, oldValue) {
       for (var i = 0; i < $scope.Detail.csbk2s.length; i++) {
-        if (newValue[i]> $scope.Detail.csbk2s[i].Pcs) {
+        if (newValue[i] > $scope.Detail.csbk2s[i].Pcs) {
           showPopup('Collected < Qty', 'calm', function(res) {});
           $scope.Detail.csbk2s[i].CollectedPcs = 0;
         }
@@ -711,8 +834,6 @@ app.controller('JoblistingConfirmCtrl', ['ENV', '$scope', '$state', '$stateParam
       csbk2s: [],
       Csbk2ReusltLength: 0
     };
-    console.log($scope.Detail.CashAmt);
-    console.log('$scope.Detail.CashAmt');
     $ionicPlatform.ready(function() {
       if (!ENV.fromWeb) {
         $cordovaSQLite.execute(db, "SELECT * FROM Csbk2 left join CsbkDetail on Csbk2.TrxNo = CsbkDetail.TrxNo  where BookingNo='" + $scope.Detail.BookingNo + "' ")
@@ -780,7 +901,6 @@ app.controller('JoblistingConfirmCtrl', ['ENV', '$scope', '$state', '$stateParam
     };
     var getSignature = function() {
       var strUri = '/api/tms/csbk1/attach?BookingNo=' + $stateParams.BookingNo;
-      console.log(strUri);
       ApiService.GetParam(strUri, true).then(function success(result) {
         if (is.not.undefined(result.data.results)) {
           $scope.signature = 'data:image/png;base64,' + result.data.results;
@@ -800,13 +920,13 @@ app.controller('JoblistingConfirmCtrl', ['ENV', '$scope', '$state', '$stateParam
     $scope.clearCanvas = function() {
       $scope.signature = null;
       signaturePad.clear();
-    }
+    };
     $scope.saveCanvas = function() {
       var sigImg = signaturePad.toDataURL();
       $scope.signature = sigImg;
-    }
+    };
     $scope.confirm = function() {
-
+      $scope.signature = signaturePad.toDataURL();
       var strUri = '/api/tms/csbk1/confirm?BookingNo=' + $stateParams.BookingNo;
       ApiService.GetParam(strUri, true).then(function success(result) {
         var Csbk1 = {
@@ -832,16 +952,19 @@ app.controller('JoblistingConfirmCtrl', ['ENV', '$scope', '$state', '$stateParam
               showPopup('Please Signature', 'calm', function(res) {});
             } else {
               showPopup('Confirm Success', 'calm', function(res) {
+                strUri = '/api/tms/slcr1/complete?BookingNo=' + $scope.Detail.BookingNo + '&JobNo=' + $scope.Detail.JobNo + '&CashAmt=' + $scope.Detail.CashAmt + '&UpdateBy=' + sessionStorage.getItem("strDriverId") + '&CollectBy=' + sessionStorage.getItem("strVehicleNo");
+                ApiService.GetParam(strUri, true).then(function success(result) {});
                 $scope.returnList();
               });
             }
           } else {
             showPopup('Confirm Success', 'calm', function(res) {
+              strUri = '/api/tms/slcr1/complete?BookingNo=' + $scope.Detail.BookingNo + '&JobNo=' + $scope.Detail.JobNo + '&CashAmt=' + $scope.Detail.CashAmt + '&UpdateBy=' + sessionStorage.getItem("strDriverId") + '&CollectBy=' + sessionStorage.getItem("strVehicleNo");
+              ApiService.GetParam(strUri, true).then(function success(result) {});
               $scope.returnList();
             });
           }
         });
-
 
         // updae ActualCollectionDate
         if (!ENV.fromWeb) {
@@ -881,19 +1004,49 @@ app.controller('JoblistingConfirmCtrl', ['ENV', '$scope', '$state', '$stateParam
             });
           });
         }
-
-
-
-
-
-
-        strUri = '/api/tms/slcr1/complete?BookingNo=' + $scope.Detail.BookingNo + '&JobNo=' + $scope.Detail.JobNo + '&CashAmt=' + $scope.Detail.CashAmt + '&UpdateBy=' + sessionStorage.getItem("strDriverId");
-        ApiService.GetParam(strUri, true).then(function success(result) {});
-
-
       });
     };
     getSignature();
     resizeCanvas();
+  }
+]);
+
+
+app.controller('UploadCtrl', ['ENV', '$scope', '$state', '$stateParams', '$ionicPopup', 'FileUploader', 'ApiService',
+  function(ENV, $scope, $state, $stateParams, $ionicPopup, FileUploader, ApiService) {
+    var alertPopup = null;
+    $scope.Detail = {
+      BookingNo: $stateParams.BookingNo,
+      JobNo: $stateParams.JobNo
+    };
+    var showPopup = function(title, type, callback) {
+      if (alertPopup != null) {
+        alertPopup.close();
+        alertPopup = null;
+      }
+      alertPopup = $ionicPopup.alert({
+        title: title,
+        okType: 'button-' + type
+      });
+      alertPopup.then(function(res) {
+        if (typeof(callback) == 'function') callback(res);
+      });
+    };
+    $scope.returnDoc = function() {
+      $state.go('jobListingDetail', {
+        BookingNo: $stateParams.BookingNo,
+      }, {});
+    };
+    var uploader = $scope.uploader = new FileUploader({
+      // url: ENV.api + '/api/freight/upload/img?JobNo=' + $scope.Detail.JobNo
+      url: ''
+    });
+
+    uploader.onSuccessItem = function(fileItem, response, status, headers) {
+      console.info('onSuccessItem', fileItem, response, status, headers);
+      showPopup('Upload Successfully', 'calm', function(res) {
+        $scope.returnDoc();
+      });
+    };
   }
 ]);

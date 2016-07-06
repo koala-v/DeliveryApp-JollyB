@@ -13,17 +13,26 @@ appServices.service('ApiService', ['$q', 'ENV', '$http', '$ionicLoading', '$ioni
       var config = {
         'Content-Type': 'application/json'
       };
-      $http.post(url, requestData, config).success(function(data, status, headers, config, statusText) {
+      $http.post(url, requestData, config).success(function(result, status, headers, config, statusText) {
         if (blnShowLoad) {
           $ionicLoading.hide();
         }
-        deferred.resolve(data);
-      }).error(function(data, status, headers, config, statusText) {
+        if (is.equal(result.meta.errors.code, 0) || is.equal(result.meta.errors.code, 200)) {
+          deferred.resolve(result);
+        } else {
+          deferred.reject(result);
+          var alertPopup = $ionicPopup.alert({
+            title: result.meta.message,
+            subTitle: result.meta.errors.message,
+            okType: 'button-assertive'
+          });
+        }
+      }).error(function(result, status, headers, config, statusText) {
         if (blnShowLoad) {
           $ionicLoading.hide();
         }
-        deferred.reject(data);
-        console.log(data);
+        deferred.reject(result);
+        console.log(result);
       });
       return deferred.promise;
     };
@@ -34,17 +43,26 @@ appServices.service('ApiService', ['$q', 'ENV', '$http', '$ionicLoading', '$ioni
       var deferred = $q.defer();
       var url = ENV.api + requestUrl + "?format=json";
       console.log(url);
-      $http.get(url).success(function(data, status, headers, config, statusText) {
+      $http.get(url).success(function(result, status, headers, config, statusText) {
         if (blnShowLoad) {
           $ionicLoading.hide();
         }
-        deferred.resolve(data);
-      }).error(function(data, status, headers, config, statusText) {
+        if (is.equal(result.meta.errors.code, 0) || is.equal(result.meta.errors.code, 200)) {
+          deferred.resolve(result);
+        } else {
+          deferred.reject(result);
+          var alertPopup = $ionicPopup.alert({
+            title: result.meta.message,
+            subTitle: result.meta.errors.message,
+            okType: 'button-assertive'
+          });
+        }
+      }).error(function(result, status, headers, config, statusText) {
         if (blnShowLoad) {
           $ionicLoading.hide();
         }
-        deferred.reject(data);
-        console.log(data);
+        deferred.reject(result);
+        console.log(result);
       });
       return deferred.promise;
     };
@@ -55,17 +73,26 @@ appServices.service('ApiService', ['$q', 'ENV', '$http', '$ionicLoading', '$ioni
       var deferred = $q.defer();
       var url = ENV.api + requestUrl + "&format=json";
       console.log(url);
-      $http.get(url).success(function(data, status, headers, config, statusText) {
+      $http.get(url).success(function(result, status, headers, config, statusText) {
         if (blnShowLoad) {
           $ionicLoading.hide();
         }
-        deferred.resolve(data);
-      }).error(function(data, status, headers, config, statusText) {
+        if (is.equal(result.meta.errors.code, 0) || is.equal(result.meta.errors.code, 200)) {
+          deferred.resolve(result);
+        } else {
+          deferred.reject(result);
+          var alertPopup = $ionicPopup.alert({
+            title: result.meta.message,
+            subTitle: result.meta.errors.message,
+            okType: 'button-assertive'
+          });
+        }
+      }).error(function(result, status, headers, config, statusText) {
         if (blnShowLoad) {
           $ionicLoading.hide();
         }
-        deferred.reject(data);
-        console.log(data);
+        deferred.reject(result);
+        console.log(result);
       });
       return deferred.promise;
     };

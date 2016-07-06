@@ -9,63 +9,25 @@
     <div style="height: 43px;"></div>
     <div class="card" style="margin: 10px 10px;">
       <div class="item" style="padding: 2px;">
-        <!--ion-md-input type="text" id="iBookingNo" class="pull-left" style="width:80%;" placeholder="Scan Booking No To Accept" highlight-color="balanced" ng-model="Search.BookingNo"></ion-md-input>
-                <div style="width:20%;position:relative;">
-                    <button class="button button-clear" style="position:absolute; top:50%; margin-top:12px;" ng-click="openCam()">
-                        <i class="icon iconfont ion-qr-scanner"></i>
-                    </button>
-                </div-->
         <div class="row">
           <div class="col col-50" style="padding:0px;">
             <label class="item item-input" style="padding-left: 0px;">
               <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">CompletedDate.&nbsp;</span>
             </label>
-            <!-- <input type="text" id="txt-bookingno" ng-model="Search.CompletedDate" style="padding-right: 14px;" ng-readonly="true"> -->
           </div>
-
-
           <div class="col col-40">
-              <button class="button button-clear button-small" ng-click="OnDatePicker()">{{Search.CompletedDate}}</button>
+            <input type="text" id="idCompletedDate" ng-model="Search.CompletedDate" style="padding-right: 14px;" ng-click="OnDatePicker()">
           </div>
-
-          <!-- <div class="col col-10">
-            <ui-select ng-model="allCompletedDate.selected" theme="bootstrap" reset-search-input="true" on-select="ShowDailyCompleted(allCompletedDate.selected.CompletedDate)">
-            <ui-select-match allow-clear="true" placeholder="Enter to search..." style="overflow:hidden;">
-             {{$select.selected.CompletedDate}}
-            </ui-select-match>
-              <ui-select-choices repeat="allCompletedDate in Search.allCompletedDates track by $index"  refresh="refreshCompleteDate($select.search)" refresh-delay="0" position="down">
-                <div ng-bind="allCompletedDate.CompletedDate"></div>
-              </ui-select-choices>
-            </ui-select>
-          </div> -->
-
-          <!-- <div class="col col-10">
-                        <button class="button button-clear button-small" ng-click="openCam()"><i class="icon ion-qr-scanner"></i></button>
-                    </div>
-                    <div class="col">
-                        <button class="button button-clear button-small" ng-click="clearInput()"><i class="icon ion-android-close"></i></button>
-                    </div> -->
         </div>
       </div>
     </div>
   </ion-pane>
   <ion-content style="margin-top:110px;">
     <ion-list tabindex="-1" id="div-list">
-      <ion-item class="item" ng-repeat="Csbk1 in Csbk1s" >
+      <ion-item class="item" ng-repeat="Csbk1 in Csbk1s">
         <p style="font-size:0.8em;">BookingNo&nbsp;&nbsp;:&nbsp;&nbsp;<span ng-bind="Csbk1.bookingno" style="font-size:1.3em;"></span></p>
         <p style="font-size:0.8em;">JobNo&nbsp;&nbsp;:&nbsp;&nbsp;<span ng-bind="Csbk1.JobNo" style="font-size:1.1em;"></span></p>
         <p style="font-size:0.8em;">Amt&nbsp;&nbsp;:&nbsp;&nbsp;<span ng-bind="Csbk1.CollectedAmt" style="font-size:1.1em;"></span></p>
-        <!-- <div class="row">
-          <div class="col col-40">
-            <p><span ng-bind="job.bookingno"></span>&nbsp;&nbsp;<span ng-bind="job.amt"></span></p>
-            <p><span ng-bind="job.CollectedAmt"></span></p>
-            <p><span ng-bind="job.code"></span></p>
-          </div>
-          <div class="col">
-            <p><span ng-bind="job.JobNo"></span></p>
-            <p><span ng-bind=""></span></p>
-          </div>
-        </div> -->
       </ion-item>
     </ion-list>
   </ion-content>
