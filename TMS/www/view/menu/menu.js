@@ -76,7 +76,7 @@ app.controller( 'IndexCtrl', [ 'ENV', '$ionicPlatform', '$scope', '$state', '$ro
                     okType: 'button-calm'
                 } );
             }
-        }
+        };
         $rootScope.$on( 'logout', function () {
             $scope.Status.Login = false;
             $ionicSideMenuDelegate.toggleLeft();

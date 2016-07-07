@@ -11,7 +11,7 @@ app.controller( 'JoblistingListCtrl', [ 'ENV', '$scope', '$state', '$ionicLoadin
         var getBookingNo = function () {
             $ionicPlatform.ready( function () {
                 if ( !ENV.fromWeb ) {
-                    $cordovaSQLite.execute( db, 'SELECT * FROM Csbk1 ORDER BY TrxNo DESC' )
+                    $cordovaSQLite.execute( db, "SELECT * FROM Csbk1 where DriverCode='"+ sessionStorage.getItem( "strDriverId" )+"' ORDER BY TrxNo DESC" )
                         .then(
                             function ( results ) {
                                 if ( results.rows.length > 0 ) {
@@ -56,7 +56,7 @@ app.controller( 'JoblistingListCtrl', [ 'ENV', '$scope', '$state', '$ionicLoadin
                 } else {
                     if ( dbTms ) {
                         dbTms.transaction( function ( tx ) {
-                            dbSql = 'select * from Csbk1_Accept';
+                            dbSql = "select * from Csbk1_Accept where DriverCode='"+sessionStorage.getItem( "strDriverId" )+"'";
                             tx.executeSql( dbSql, [], function ( tx, results ) {
                                 if ( results.rows.length > 0 ) {
                                     for ( var i = 0; i < results.rows.length; i++ ) {

@@ -102,3 +102,51 @@ appServices.service( 'ApiService', [ '$q', 'ENV', '$http', '$ionicLoading', '$io
         };
   }
 ] );
+
+appServices.service( 'DownloadFileService', [ 'ENV', '$timeout', '$ionicLoading', '$cordovaToast', '$cordovaFile', '$cordovaFileTransfer', '$cordovaFileOpener2',
+    function( ENV, $timeout, $ionicLoading, $cordovaToast, $cordovaFile, $cordovaFileTransfer, $cordovaFileOpener2 ) {
+        this.Download = function( url, fileName, fileType, onPlatformError, onCheckError, onDownloadError ) {
+            $ionicLoading.show( {
+                template: 'Download  0%'
+            } );
+            if ( !ENV.fromWeb ) {
+                var targetPath = cordova.file.externalRootDirectory + '/' + ENV.rootPath + '/' + fileName;
+                var trustHosts = true;
+                var options = {};
+
+                $cordovaFileTransfer.download( url, targetPath, trustHosts, options ).then( function( result ) {
+                    $ionicLoading.hide();
+                    $cordovaFileOpener2.open( targetPath, fileType ).then( function() {
+                        // success
+                    }, function( err ) {
+                        console.error( err );
+                    } ).catch( function( ex ) {
+                        console.error( ex );
+                    } );
+                }, function( err ) {
+                    $ionicLoading.hide();
+                    console.error( err );
+                    $cordovaToast.showShortCenter( 'Download faild' );
+                    if ( typeof( onDownloadError ) == 'function' ) onDownloadError();
+                }, function( progress ) {
+                    $timeout( function() {
+                        var downloadProgress = ( progress.loaded / progress.total ) * 100;
+                        $ionicLoading.show( {
+                            template: 'Download  ' + Math.floor( downloadProgress ) + '%'
+                        } );
+                        if ( downloadProgress > 99 ) {
+                            $ionicLoading.hide();
+                        }
+                    } );
+                } ).catch( function( ex ) {
+                    $ionicLoading.hide();
+                    console.error( ex );
+                } );
+
+            } else {
+                $ionicLoading.hide();
+                if ( typeof( onPlatformError ) == 'function' ) onPlatformError( url );
+            }
+        };
+    }
+] );
