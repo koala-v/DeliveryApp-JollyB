@@ -1,5 +1,6 @@
 var gulp = require('gulp');
 var gutil = require('gulp-util');
+var uglify = require('gulp-uglify');
 var bower = require('bower');
 var concat = require('gulp-concat');
 var sass = require('gulp-sass');
@@ -11,7 +12,14 @@ var paths = {
   sass: ['./scss/**/*.scss']
 };
 
-gulp.task('default', ['sass']);
+gulp.task('default', ['sass','concat']);
+
+gulp.task('concat', function () {
+    gulp.src('./www/js/*.js')
+        .pipe(uglify())
+        .pipe(concat('all.min.js'))
+        .pipe(gulp.dest('./build'));
+});
 
 gulp.task('sass', function(done) {
   gulp.src('./scss/ionic.app.scss')
