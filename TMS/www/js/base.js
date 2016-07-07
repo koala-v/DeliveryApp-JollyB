@@ -1,38 +1,3 @@
-// Database instance.
-var db;
-
-var appendProtocol = function ( url, blnSSL, portNo ) {
-    if ( url.length > 0 && url.toUpperCase().indexOf( 'HTTPS://' ) < 0 && url.toUpperCase().indexOf( 'HTTP://' ) < 0 ) {
-        if ( blnSSL ) {
-            url = 'https://' + url;
-        } else {
-            var aURL = url.split( '/' );
-            if ( aURL[ 0 ].indexOf( ':' ) < 0 ) {
-                url = 'http://' + aURL[ 0 ] + ':' + portNo;
-            } else {
-                url = 'http://' + aURL[ 0 ];
-            }
-            for ( var i = 1; i < aURL.length; i++ ) {
-                url = url + '/' + aURL[ i ];
-            }
-        }
-    }
-    return url;
-};
-var rmProtocol = function ( url, portNo ) {
-    if ( is.not.empty( url ) ) {
-        var regex = /(https?:\/\/)?/gi;
-        url = url.replace( regex, '' );
-        regex = /(http?:\/\/)?/gi;
-        url = url.replace( regex, '' );
-    }
-    if ( is.not.empty( portNo ) ) {
-        var regex = /\:(\d)+/;
-        url = url.replace( regex, '' );
-    }
-    return url;
-};
-
 var checkDatetime = function ( datetime ) {
     if ( is.equal( moment( datetime ).format( 'DD-MMM-YYYY' ), '01-Jan-0001' ) ) {
         datetime = '';
@@ -42,7 +7,6 @@ var checkDatetime = function ( datetime ) {
     }
     return datetime;
 };
-
 var repalceObj = function ( obj ) {
     for ( var i in obj ) {
         if ( obj.hasOwnProperty( i ) ) {
@@ -59,7 +23,8 @@ var repalceObj = function ( obj ) {
     }
     return obj;
 };
-
+// Database instance.
+var db;
 var dbInfo = {
     dbName: 'TmsDB',
     dbVersion: '1.0',
@@ -67,7 +32,6 @@ var dbInfo = {
     dbEstimatedSize: 10 * 11024 * 1024
 };
 var dbSql = '';
-
 function dbError( tx, error ) {
     console.log( error.message );
 }
@@ -128,7 +92,6 @@ var db_add_Csbk2_Accept = function ( Csbk2 ) {
         } );
     }
 }
-
 var db_add_Csbk1Detail_Accept = function ( Csbk1Detail ) {
     if ( dbTms ) {
         dbTms.transaction( function ( tx ) {
@@ -138,14 +101,6 @@ var db_add_Csbk1Detail_Accept = function ( Csbk1Detail ) {
         } );
     }
 }
-
-var onStrToURL = function ( strURL ) {
-    if ( strURL.length > 0 && strURL.indexOf( 'http://' ) < 0 && strURL.indexOf( 'HTTP://' ) < 0 ) {
-        strURL = "http://" + strURL;
-    }
-    return strURL;
-};
-
 var db_update_Csbk1_Accept = function ( Csbk1 ) {
     if ( dbTms ) {
         dbTms.transaction( function ( tx ) {
@@ -155,7 +110,6 @@ var db_update_Csbk1_Accept = function ( Csbk1 ) {
         } );
     }
 }
-
 var db_update_Csbk1Detail_Accept = function ( Csbk1 ) {
     if ( dbTms ) {
         dbTms.transaction( function ( tx ) {
@@ -165,7 +119,6 @@ var db_update_Csbk1Detail_Accept = function ( Csbk1 ) {
         } );
     }
 }
-
 var db_update_Csbk1DetailAmount_Accept = function ( Csbk1 ) {
     if ( dbTms ) {
         dbTms.transaction( function ( tx ) {
@@ -175,7 +128,6 @@ var db_update_Csbk1DetailAmount_Accept = function ( Csbk1 ) {
         } );
     }
 }
-
 var db_update_Csbk2_Amount = function ( Csbk2 ) {
     if ( dbTms ) {
         dbTms.transaction( function ( tx ) {
@@ -185,7 +137,6 @@ var db_update_Csbk2_Amount = function ( Csbk2 ) {
         } );
     }
 }
-
 var db_update_Csbk2_Accept = function ( Csbk2 ) {
     if ( dbTms ) {
         dbTms.transaction( function ( tx ) {

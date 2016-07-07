@@ -1,21 +1,19 @@
-app.controller( 'SettingCtrl', [ 'ENV', '$scope', '$state', '$ionicHistory', '$ionicPopup', '$cordovaToast', '$cordovaFile',
-  function ( ENV, $scope, $state, $ionicHistory, $ionicPopup, $cordovaToast, $cordovaFile ) {
+app.controller( 'SettingCtrl', [ 'ENV', '$scope', '$state', '$ionicHistory', '$ionicPopup', '$cordovaToast', '$cordovaFile', 'ApiService',
+  function ( ENV, $scope, $state, $ionicHistory, $ionicPopup, $cordovaToast, $cordovaFile, ApiService ) {
         $scope.Setting = {
             Version: ENV.version,
-            WebApiURL: rmProtocol( ENV.api, ENV.port ),
-            WebSiteUrl: rmProtocol( ENV.website, ENV.port ),
+            WebApiURL: ENV.api,
+            WebSiteUrl: ENV.website,
             WebPort: ENV.port,
             SSL: {
-                checked: ENV.ssl === '0' ? false : true
+                checked: ENV.ssl
             },
             blnWeb: ENV.fromWeb
         };
         var writeFile = function ( path, file, data ) {
             $cordovaFile.writeFile( path, file, data, true )
                 .then( function ( success ) {
-                    var blnSSL = ENV.ssl === 0 ? false : true;
-                    ENV.website = appendProtocol( ENV.website, blnSSL, ENV.port );
-                    ENV.api = appendProtocol( ENV.api, blnSSL, ENV.port );
+                    ApiService.Init();
                     $scope.return();
                 }, function ( error ) {
                     $cordovaToast.showShortBottom( error );
@@ -32,8 +30,7 @@ app.controller( 'SettingCtrl', [ 'ENV', '$scope', '$state', '$ionicHistory', '$i
             }
         };
         $scope.save = function () {
-            ENV.ssl = $scope.Setting.SSL.checked ? '1' : '0';
-            var blnSSL = $scope.Setting.SSL.checked ? true : false;
+            ENV.ssl = $scope.Setting.SSL.checked;
             if ( is.not.empty( $scope.Setting.WebPort ) ) {
                 ENV.port = $scope.Setting.WebPort;
             } else {
@@ -42,12 +39,12 @@ app.controller( 'SettingCtrl', [ 'ENV', '$scope', '$state', '$ionicHistory', '$i
             if ( is.not.empty( $scope.Setting.WebApiURL ) ) {
                 ENV.api = $scope.Setting.WebApiURL;
             } else {
-                $scope.Setting.WebApiURL = rmProtocol( ENV.api, ENV.port );
+                $scope.Setting.WebApiURL = ENV.api;
             }
             if ( is.not.empty( $scope.Setting.WebSiteUrl ) ) {
                 ENV.website = $scope.Setting.WebSiteUrl;
             } else {
-                $scope.Setting.WebSiteUrl = rmProtocol( ENV.website, ENV.port );
+                $scope.Setting.WebSiteUrl = ENV.website;
             }
             if ( !ENV.fromWeb ) {
                 var data = 'website=' + ENV.website +
@@ -57,8 +54,7 @@ app.controller( 'SettingCtrl', [ 'ENV', '$scope', '$state', '$ionicHistory', '$i
                 var file = ENV.rootPath + '/' + ENV.configFile;
                 writeFile( path, file, data );
             } else {
-                ENV.website = appendProtocol( ENV.website, blnSSL, ENV.port );
-                ENV.api = appendProtocol( ENV.api, blnSSL, ENV.port );
+                ApiService.Init();
                 $scope.return();
             }
         };
@@ -71,10 +67,13 @@ app.controller( 'SettingCtrl', [ 'ENV', '$scope', '$state', '$ionicHistory', '$i
                 var file = ENV.rootPath + '/' + ENV.configFile;
                 $cordovaFile.removeFile( path, file )
                     .then( function ( success ) {
+                        ApiService.Init();
                         $scope.save();
                     }, function ( error ) {
                         $cordovaToast.showShortBottom( error );
                     } );
+            }else{
+                ApiService.Init();
             }
         };
   }
