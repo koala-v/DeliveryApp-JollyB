@@ -18,7 +18,8 @@
     "angular-file-upload": "^2.2.0",
     "hashmap": "^2.0.5",
     "bootstrap": "^3.3.6",
-    "urijs": "uri.js#^1.18.1"
+    "urijs": "uri.js#^1.18.1",
+    "echarts": "^3.2.1"
   },
   "resolutions": {
     "ionic": ">=0.9.27",
