@@ -257,6 +257,12 @@ app.config( [ 'ENV', '$stateProvider', '$urlRouterProvider', '$ionicConfigProvid
                 cache: 'false',
                 templateUrl: 'view/joblisting/confirm.html',
                 controller: 'JoblistingConfirmCtrl'
+            } )
+            .state( 'reports', {
+                url: '/reports',
+                cache: 'false',
+                templateUrl: 'view/reports/list.html',
+                controller: 'reportsListCtrl'
             } );
         $urlRouterProvider.otherwise( '/splash' );
         /*

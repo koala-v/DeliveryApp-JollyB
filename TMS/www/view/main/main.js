@@ -28,11 +28,10 @@ app.controller( 'MainCtrl', [ '$scope', '$state', '$ionicPopup',
             $state.go( 'jobListingList', {}, {} );
         };
         $scope.func_DC = function () {
-
             $state.go( 'dailycompleted', {}, {} );
         };
         $scope.func_Reports = function () {
-            showPopup( 'Stay Tuned', 'calm' );
+            $state.go( 'reports', {}, {} );
         };
         $scope.func_Setting = function () {
             showPopup( 'Stay Tuned', 'calm' );
