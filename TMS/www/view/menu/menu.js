@@ -1,8 +1,8 @@
 'use strict';
 app.controller( 'IndexCtrl', [ 'ENV', '$ionicPlatform', '$scope', '$state', '$rootScope', '$http',
-  '$ionicLoading', '$ionicPopup', '$ionicSideMenuDelegate', '$cordovaAppVersion', '$cordovaFile', '$cordovaToast', '$cordovaSQLite',
+  '$ionicLoading', '$ionicPopup', '$ionicSideMenuDelegate', '$cordovaAppVersion', '$cordovaFile', '$cordovaToast', '$cordovaSQLite', 'ApiService',
   function ( ENV, $ionicPlatform, $scope, $state, $rootScope, $http, $ionicLoading, $ionicPopup,
-        $ionicSideMenuDelegate, $cordovaAppVersion, $cordovaFile, $cordovaToast, $cordovaSQLite ) {
+        $ionicSideMenuDelegate, $cordovaAppVersion, $cordovaFile, $cordovaToast, $cordovaSQLite, ApiService ) {
         var alertPopup = null;
         var alertPopupTitle = '';
         $scope.Status = {
@@ -88,9 +88,7 @@ app.controller( 'IndexCtrl', [ 'ENV', '$ionicPlatform', '$scope', '$state', '$ro
         var writeFile = function ( path, file, data ) {
             $cordovaFile.writeFile( path, file, data, true )
                 .then( function ( success ) {
-                    var blnSSL = ENV.ssl === 0 ? false : true;
-                    ENV.website = appendProtocol( ENV.website, blnSSL, ENV.port );
-                    ENV.api = appendProtocol( ENV.api, blnSSL, ENV.port );
+                    ApiService.Init();
                 }, function ( error ) {
                     $cordovaToast.showShortBottom( error );
                     console.error( error );
@@ -101,7 +99,7 @@ app.controller( 'IndexCtrl', [ 'ENV', '$ionicPlatform', '$scope', '$state', '$ro
             if ( !ENV.fromWeb ) {
                 var data = 'website=' + ENV.website + '##' +
                     'api=' + ENV.api + '##' +
-                    'port=' + ENV.port + '##';
+                    'port=' + ENV.port;
                 var path = cordova.file.externalRootDirectory,
                     directory = ENV.rootPath,
                     file = ENV.rootPath + '/' + ENV.configFile;
@@ -115,7 +113,7 @@ app.controller( 'IndexCtrl', [ 'ENV', '$ionicPlatform', '$scope', '$state', '$ro
                                 $cordovaFile.readAsText( path, file )
                                     .then( function ( success ) {
                                         var arConf = success.split( '##' );
-                                        if ( arConf.length == 4 ) {
+                                        if ( arConf.length == 3 ) {
                                             var arWebServiceURL = arConf[ 0 ].split( '=' );
                                             if ( is.not.empty( arWebServiceURL[ 1 ] ) ) {
                                                 ENV.website = arWebServiceURL[ 1 ];
@@ -128,9 +126,7 @@ app.controller( 'IndexCtrl', [ 'ENV', '$ionicPlatform', '$scope', '$state', '$ro
                                             if ( is.not.empty( arWebPort[ 1 ] ) ) {
                                                 ENV.port = arWebPort[ 1 ];
                                             }
-                                            var blnSSL = ENV.ssl === 0 ? false : true;
-                                            ENV.website = appendProtocol( ENV.website, blnSSL, ENV.port );
-                                            ENV.api = appendProtocol( ENV.api, blnSSL, ENV.port );
+                                            ApiService.Init();
                                         } else {
                                             $cordovaFile.removeFile( path, file )
                                                 .then( function ( success ) {
@@ -149,10 +145,8 @@ app.controller( 'IndexCtrl', [ 'ENV', '$ionicPlatform', '$scope', '$state', '$ro
                             } );
                     } );
             } else {
-                var blnSSL = 'https:' === document.location.protocol ? true : false;
-                ENV.ssl = blnSSL ? '1' : '0';
-                ENV.website = appendProtocol( ENV.website, blnSSL, ENV.port );
-                ENV.api = appendProtocol( ENV.api, blnSSL, ENV.port );
+                ENV.ssl = 'https:' === document.location.protocol ? true : false;
+                ApiService.Init();
             }
         } );
   }

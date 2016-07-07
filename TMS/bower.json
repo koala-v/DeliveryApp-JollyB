@@ -17,7 +17,8 @@
     "ionic-image-lazy-load": "ion-image-lazy-load#*",
     "angular-file-upload": "^2.2.0",
     "hashmap": "^2.0.5",
-    "bootstrap": "^3.3.6"
+    "bootstrap": "^3.3.6",
+    "urijs": "uri.js#^1.18.1"
   },
   "resolutions": {
     "ionic": ">=0.9.27",
