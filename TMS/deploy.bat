@@ -1,9 +1,9 @@
 @echo on
-
-xcopy /y/e/s www \\192.168.0.230\wwwroot\mobileapp-JollyB\www
-copy /y index.html \\192.168.0.230\wwwroot\mobileapp-JollyB\
-copy /y update.json \\192.168.0.230\wwwroot\mobileapp-JollyB\
-copy /y TMS.apk \\192.168.0.230\wwwroot\mobileapp-JollyB\TMS.apk
-del TMS.apk /f /q
-
+set target="\\192.168.0.230\wwwroot\app\tms\jollyb"
+xcopy /y/e/s www %target%\www
+pause 
+copy /y index.html %target%
+copy /y update.json %target%
+copy /y TMS-JollyB.apk %target%\TMS-JollyB.apk
+del TMS-JollyB.apk /f /q
 pause 

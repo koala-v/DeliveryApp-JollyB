@@ -1,3 +1,5 @@
+// Database instance.
+var db;
 var checkDatetime = function ( datetime ) {
     if ( is.equal( moment( datetime ).format( 'DD-MMM-YYYY' ), '01-Jan-0001' ) ) {
         datetime = '';
@@ -7,6 +9,7 @@ var checkDatetime = function ( datetime ) {
     }
     return datetime;
 };
+
 var repalceObj = function ( obj ) {
     for ( var i in obj ) {
         if ( obj.hasOwnProperty( i ) ) {
@@ -23,8 +26,7 @@ var repalceObj = function ( obj ) {
     }
     return obj;
 };
-// Database instance.
-var db;
+
 var dbInfo = {
     dbName: 'TmsDB',
     dbVersion: '1.0',
@@ -32,15 +34,16 @@ var dbInfo = {
     dbEstimatedSize: 10 * 11024 * 1024
 };
 var dbSql = '';
+
 function dbError( tx, error ) {
     console.log( error.message );
 }
 var dbTms = window.openDatabase( dbInfo.dbName, dbInfo.dbVersion, dbInfo.dbDisplayName, dbInfo.dbEstimatedSize );
 if ( dbTms ) {
     dbTms.transaction( function ( tx ) {
-        dbSql = 'DROP TABLE if exists Csbk1_Accept';
+        dbSql = 'DROP TABLE if exists Csbk1';
         tx.executeSql( dbSql, [], null, dbError );
-        dbSql = "CREATE TABLE Csbk1_Accept (TrxNo INT,BookingNo TEXT, JobNo TEXT, StatusCode TEXT,BookingCustomerCode TEXT,Pcs INT,CollectionTimeStart TEXT,CollectionTimeEnd TEXT,PostalCode TEXT,BusinessPartyCode TEXT,BusinessPartyName TEXT,Address1 TEXT,Address2 TEXT,Address3 TEXT,Address4 TEXT,CompletedFlag TEXT,TimeFrom TEXT,TimeTo TEXT,ColTimeFrom TEXT,ColTimeTo TEXT,ScanDate TEXT)";
+        dbSql = "CREATE TABLE Csbk1 (TrxNo INT,BookingNo TEXT, JobNo TEXT, StatusCode TEXT,BookingCustomerCode TEXT,Pcs INT,CollectionTimeStart TEXT,CollectionTimeEnd TEXT,PostalCode TEXT,BusinessPartyCode TEXT,BusinessPartyName TEXT,Address1 TEXT,Address2 TEXT,Address3 TEXT,Address4 TEXT,CompletedFlag TEXT,TimeFrom TEXT,TimeTo TEXT,ColTimeFrom TEXT,ColTimeTo TEXT,CompletedDate TEXT,DriverId TEXT,CollectedAmt INT,ScanDate TEXT,DriverCode TEXT)";
         tx.executeSql( dbSql, [], null, dbError );
     } );
     dbTms.transaction( function ( tx ) {
@@ -51,9 +54,9 @@ if ( dbTms ) {
     } );
 
     dbTms.transaction( function ( tx ) {
-        dbSql = 'DROP TABLE if exists Csbk1Detail_Accept';
+        dbSql = 'DROP TABLE if exists CsbkDetail';
         tx.executeSql( dbSql, [], null, dbError );
-        dbSql = "CREATE TABLE Csbk1Detail_Accept (BookingNo TEXT, JobNo TEXT,TrxNo INT,StatusCode TEXT,ItemNo INT,DepositAmt INT,DiscountAmt  INT,CollectedAmt  INT,CompletedFlag TEXT,PaidAmt INT)";
+        dbSql = "CREATE TABLE CsbkDetail (BookingNo TEXT, JobNo TEXT,TrxNo INT,StatusCode TEXT,ItemNo INT,DepositAmt INT,DiscountAmt  INT,CollectedAmt  INT,CompletedFlag TEXT,PaidAmt INT)";
         tx.executeSql( dbSql, [], null, dbError );
     } );
 }
@@ -78,8 +81,8 @@ var db_add_Csbk1_Accept = function ( Csbk1 ) {
         console.log( Csbk1 );
         dbTms.transaction( function ( tx ) {
             Csbk1 = repalceObj( Csbk1 );
-            dbSql = 'INSERT INTO Csbk1_Accept(TrxNo,BookingNo,JobNo,StatusCode,BookingCustomerCode,Pcs,CollectionTimeStart,CollectionTimeEnd,PostalCode,BusinessPartyCode,BusinessPartyName,Address1,Address2,Address3,Address4,CompletedFlag,TimeFrom,TimeTo,ColTimeFrom,ColTimeTo,ScanDate) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
-            tx.executeSql( dbSql, [ Csbk1.TrxNo, Csbk1.BookingNo, Csbk1.JobNo, Csbk1.StatusCode, Csbk1.BookingCustomerCode, Csbk1.Pcs, Csbk1.CollectionTimeStart, Csbk1.CollectionTimeEnd, Csbk1.PostalCode, Csbk1.BusinessPartyCode, Csbk1.BusinessPartyName, Csbk1.Address1, Csbk1.Address2, Csbk1.Address3, Csbk1.Address4, Csbk1.CompletedFlag, Csbk1.TimeFrom, Csbk1.TimeTo, Csbk1.ColTimeFrom, Csbk1.ColTimeTo, Csbk1.ScanDate ], null, dbError );
+            dbSql = 'INSERT INTO Csbk1(TrxNo,BookingNo,JobNo,StatusCode,BookingCustomerCode,Pcs,CollectionTimeStart,CollectionTimeEnd,PostalCode,BusinessPartyCode,BusinessPartyName,Address1,Address2,Address3,Address4,CompletedFlag,TimeFrom,TimeTo,ColTimeFrom,ColTimeTo,ScanDate,DriverCode) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+            tx.executeSql( dbSql, [ Csbk1.TrxNo, Csbk1.BookingNo, Csbk1.JobNo, Csbk1.StatusCode, Csbk1.BookingCustomerCode, Csbk1.Pcs, Csbk1.CollectionTimeStart, Csbk1.CollectionTimeEnd, Csbk1.PostalCode, Csbk1.BusinessPartyCode, Csbk1.BusinessPartyName, Csbk1.Address1, Csbk1.Address2, Csbk1.Address3, Csbk1.Address4, Csbk1.CompletedFlag, Csbk1.TimeFrom, Csbk1.TimeTo, Csbk1.ColTimeFrom, Csbk1.ColTimeTo, Csbk1.ScanDate ,Csbk1.DriverCode], null, dbError );
         } );
     }
 }
@@ -92,6 +95,7 @@ var db_add_Csbk2_Accept = function ( Csbk2 ) {
         } );
     }
 }
+
 var db_add_Csbk1Detail_Accept = function ( Csbk1Detail ) {
     if ( dbTms ) {
         dbTms.transaction( function ( tx ) {
@@ -101,6 +105,14 @@ var db_add_Csbk1Detail_Accept = function ( Csbk1Detail ) {
         } );
     }
 }
+
+var onStrToURL = function ( strURL ) {
+    if ( strURL.length > 0 && strURL.indexOf( 'http://' ) < 0 && strURL.indexOf( 'HTTP://' ) < 0 ) {
+        strURL = "http://" + strURL;
+    }
+    return strURL;
+};
+
 var db_update_Csbk1_Accept = function ( Csbk1 ) {
     if ( dbTms ) {
         dbTms.transaction( function ( tx ) {
@@ -110,6 +122,18 @@ var db_update_Csbk1_Accept = function ( Csbk1 ) {
         } );
     }
 }
+
+var db_update_Csbk1_Accept_DriverCode = function ( Csbk1 ) {
+    if ( dbTms ) {
+        dbTms.transaction( function ( tx ) {
+            Csbk1 = repalceObj( Csbk1 );
+            dbSql = 'Update Csbk1_Accept set DriverCode=? where BookingNo=?';
+            tx.executeSql( dbSql, [ Csbk1.DriverCode, Csbk1.BookingNo ], null, dbError );
+        } );
+    }
+}
+
+
 var db_update_Csbk1Detail_Accept = function ( Csbk1 ) {
     if ( dbTms ) {
         dbTms.transaction( function ( tx ) {
@@ -119,6 +143,7 @@ var db_update_Csbk1Detail_Accept = function ( Csbk1 ) {
         } );
     }
 }
+
 var db_update_Csbk1DetailAmount_Accept = function ( Csbk1 ) {
     if ( dbTms ) {
         dbTms.transaction( function ( tx ) {
@@ -128,6 +153,7 @@ var db_update_Csbk1DetailAmount_Accept = function ( Csbk1 ) {
         } );
     }
 }
+
 var db_update_Csbk2_Amount = function ( Csbk2 ) {
     if ( dbTms ) {
         dbTms.transaction( function ( tx ) {
@@ -137,6 +163,7 @@ var db_update_Csbk2_Amount = function ( Csbk2 ) {
         } );
     }
 }
+
 var db_update_Csbk2_Accept = function ( Csbk2 ) {
     if ( dbTms ) {
         dbTms.transaction( function ( tx ) {

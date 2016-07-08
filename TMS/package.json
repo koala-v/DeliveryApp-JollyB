@@ -34,7 +34,6 @@
     "cordova-plugin-actionsheet",
     "cordova-plugin-inappbrowser",
     "cordova-plugin-file",
-    "cordova-plugin-file-transfer",
     "cordova-plugin-file-opener2",
     "cordova-plugin-geolocation",
     "cordova-plugin-globalization",
@@ -47,7 +46,8 @@
     "https://github.com/phonegap/phonegap-plugin-barcodescanner.git",
     "cordova-sqlite-storage",
     "https://github.com/litehelpers/Cordova-sqlite-storage",
-    "cordova-plugin-image-picker"
+    "cordova-plugin-image-picker",
+    "cordova-plugin-file-transfer"
   ],
   "cordovaPlatforms": [
     "android"
