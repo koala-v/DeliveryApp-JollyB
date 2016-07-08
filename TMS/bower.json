@@ -23,6 +23,8 @@
   },
   "resolutions": {
     "ionic": ">=0.9.27",
-    "angular": "1.5.3"
+    "angular": "1.5.3",
+    "angular-animate": "1.5.3",
+    "angular-sanitize": "1.5.3"
   }
 }
