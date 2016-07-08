@@ -57,7 +57,7 @@
                             <p> <span ng-bind="Csbk2.Pcs"></span></p>
                         </div>
                         <div class="col col-25">
-                            <input type="text" id="iCollectedPcs" style="height:20px;" ng-model="Csbk2.CollectedPcs">
+                            <input type="text" id="iCollectedPcs" style="height:20px;" ng-model="Csbk2.CollectedPcs" ng-change="checkQty(Csbk2)">
                         </div>
                         <div class="col col-25">
                             <input type="text" id="AddQty" style="height:20px;" ng-model="Csbk2.AddQty">

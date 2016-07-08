@@ -43,9 +43,38 @@ appFactory.factory( 'TABLE_DB', function () {
             CompletedDate: 'TEXT',
             DriverId: 'TEXT',
             CollectedAmt: 'INT',
+            DepositAmt: 'INT',
+            DiscountAmt: 'INT',
+            PaidAmt : 'INT',
+            ItemNo: 'INT',
             ScanDate: 'TEXT',
             DriverCode: 'TEXT'
+        },
+          Csbk2:{
+            TrxNo: 'INT',
+            LineItemNo: 'INT',
+            BoxCode: 'TEXT',
+            Pcs: 'INT',
+            UnitRate: 'TEXT',
+            CollectedPcs: 'INT',
+            AddQty: 'INT'
+          },
+          Users:{
+            uid:'TEXT'
+          },
+        CsbkDetail: {
+          BookingNo: 'TEXT',
+          JobNo: 'TEXT',
+          TrxNo: 'INT',
+          StatusCode: 'TEXT',
+          ItemNo: 'INT',
+          DepositAmt: 'INT',
+          DiscountAmt:  'INT',
+          CollectedAmt:  'INT',
+          CompletedFlag: 'TEXT',
+          PaidAmt: 'INT'
         }
+
     };
     return TABLE_DB;
 } );

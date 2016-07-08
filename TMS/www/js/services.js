@@ -154,6 +154,21 @@ appServices.service( 'SqlService', [ '$q', 'ENV', '$timeout', '$ionicLoading', '
 
                 });
             });
+            cur.Drop('Users').then(function(res){
+                cur.Create('Users', TABLE_DB.Users).then(function(res){
+
+                });
+            });
+            cur.Drop('Csbk2').then(function(res){
+                cur.Create('Csbk2', TABLE_DB.Csbk2).then(function(res){
+
+                });
+            });
+            cur.Drop('CsbkDetail').then(function(res){
+                cur.Create('CsbkDetail', TABLE_DB.CsbkDetail).then(function(res){
+
+                });
+            });
             //$cordovaSQLite.execute( db, 'CREATE TABLE IF NOT EXISTS Users (id INTEGER PRIMARY KEY AUTOINCREMENT, uid TEXT)' );
             //$cordovaSQLite.execute( db, 'CREATE TABLE IF NOT EXISTS Csbk1(TrxNo INTEGER,BookingNo TEXT, JobNo TEXT, StatusCode TEXT,BookingCustomerCode TEXT,Pcs INTEGER,CollectionTimeStart TEXT,CollectionTimeEnd TEXT,PostalCode TEXT,BusinessPartyCode TEXT,BusinessPartyName TEXT,Address1 TEXT,Address2 TEXT,Address3 TEXT,Address4 TEXT,CompletedFlag TEXT,TimeFrom TEXT,TimeTo TEXT,ColTimeFrom TEXT,ColTimeTo TEXT,CompletedDate TEXT,DriverId TEXT,CollectedAmt INTEGER,ScanDate TEXT,DriverCode TEXT)' );
             //$cordovaSQLite.execute( db, 'CREATE TABLE IF NOT EXISTS Csbk2 (TrxNo INTEGER,LineItemNo INTEGER, BoxCode TEXT,Pcs INTEGER,UnitRate TEXT,CollectedPcs INTEGER,AddQty INTEGER)' );
@@ -339,18 +354,72 @@ appServices.service( 'SqlService', [ '$q', 'ENV', '$timeout', '$ionicLoading', '
             }
             return deferred.promise;
         };
+        this.Update = function ( table, obj, strFilter) {
+            var deferred = $q.defer();
+            var strSql = 'Update ' + table + ' Set ';
+            if(is.not.empty(obj)){
+                var fileds = '';
+                for ( var key in obj ) {
+                    if ( obj.hasOwnProperty( key ) ) {
+                        if ( is.null( obj[ key ] ) || is.undefined( obj[ key ] ) || is.equal( obj[ key ], 'undefined' )) {
+                            obj[ key ] = '';
+                        }
+                        if ( is.string(obj[ key ]) ) {
+                            obj[ key ] = '\'' + obj[ key ] + '\'';
+                        }
+                        if(is.empty(fileds)){
+                            fileds = key + '=' + obj[ key ];
+                        }else{
+                            fileds = fileds + ',' + key + '=' + obj[ key ];
+                        }
+                    }
+                }
+                strSql = strSql + fileds;
+                if(is.not.empty(strFilter) && is.not.empty(strFilter)){
+                    strSql = strSql + ' Where ' + strFilter;
+                }
+                if ( ENV.fromWeb ) {
+                    if ( db_websql ) {
+                        db_websql.transaction( function ( tx ) {
+                            tx.executeSql( strSql, [], function ( tx, results ) {
+                                deferred.resolve( results );
+                            }, function ( tx, error ) {
+                                deferred.reject( error );
+                                console.error( error );
+                                $cordovaToast.showShortBottom( error.message );
+                            } );
+                        } );
+                    } else {
+                        deferred.reject( null );
+                        console.error( 'No WebSql Instance' );
+                        $cordovaToast.showShortBottom( 'No WebSql Instance' );
+                    }
+                } else {
+                    $cordovaSQLite.execute( db_sqlite, strSql )
+                        .then( function ( results ) {
+                                deferred.resolve( results );
+                            },
+                            function ( error ) {
+                                deferred.reject( error );
+                                console.error( error );
+                                $cordovaToast.showShortBottom( error );
+                            }
+                        );
+                }
+            }else{
+                deferred.reject( null );
+                console.error( 'Insert Script Error' );
+                $cordovaToast.showShortBottom( 'Insert Script Error' );
+            }
+            return deferred.promise;
+        };
         this.Exec = function ( strSql ) {
             var deferred = $q.defer();
             if ( ENV.fromWeb ) {
                 if ( db_websql ) {
                     db_websql.transaction( function ( tx ) {
-                        tx.executeSql( strSql, [], function ( tx, results ) {
-                            if ( results.rows.length > 0 ) {
-                                deferred.resolve( results );
-                            } else {
-                                deferred.reject( results );
-                                $cordovaToast.showShortBottom( result.meta.message + '\r\n' + result.meta.errors.message );
-                            }
+                        tx.executeSql( strSql, [], function ( tx, results ) {                          
+                              deferred.resolve( results );
                         }, function ( tx, error ) {
                             deferred.reject( error );
                             console.error( error );
