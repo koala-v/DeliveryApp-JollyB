@@ -99,71 +99,70 @@ appServices.service('ApiService', ['$q', 'ENV', '$http', '$ionicLoading', '$ioni
             });
             return deferred.promise;
         };
-        // this.GetParam = function (uri, blnShowLoad) {
-        //     if (blnShowLoad) {
-        //         $ionicLoading.show();
-        //     }
-        //     var deferred = $q.defer();
-        //     var url = uri.addSearch('format', 'json').normalizeProtocol().normalizeHostname().normalizePort().normalizeSearch().toString();
-        //     console.log(url);
-        //     /*
-        //     $http( { method: 'GET', url: url } ).then(function(response){
-        //         if ( blnShowLoad ) {
-        //             $ionicLoading.hide();
-        //         }
-        //         var result = response.data;
-        //         if ( is.equal( result.meta.errors.code, 0 ) || is.equal( result.meta.errors.code, 200 ) ) {
-        //             deferred.resolve( result );
-        //         } else {
-        //             deferred.reject( result );
-        //             var alertPopup = $ionicPopup.alert( {
-        //                 title: result.meta.message,
-        //                 subTitle: result.meta.errors.message,
-        //                 okType: 'button-assertive'
-        //             } );
-        //         }
-        //     }, function(response){
-        //         if ( blnShowLoad ) {
-        //             $ionicLoading.hide();
-        //         }
-        //         deferred.reject( response.data );
-        //         console.log( response.status );
-        //         var alertPopup = $ionicPopup.alert( {
-        //             title: response.data || 'Request failed',
-        //             okType: 'button-assertive'
-        //         } );
-        //     })
-        //     */
-        //     $http.get(url).success(function (result, status, headers, config, statusText) {
-        //         if (blnShowLoad) {
-        //             $ionicLoading.hide();
-        //         }
-        //         if (is.equal(result.meta.errors.code, 0) || is.equal(result.meta.errors.code, 200)) {
-        //             deferred.resolve(result);
-        //         } else {
-        //             deferred.reject(result);
-        //             var alertPopup = $ionicPopup.alert({
-        //                 title: result.meta.message,
-        //                 subTitle: result.meta.errors.message,
-        //                 okType: 'button-assertive'
-        //             });
-        //         }
-        //     }).error(function (result, status, headers, config, statusText) {
-        //         if (blnShowLoad) {
-        //             $ionicLoading.hide();
-        //         }
-        //         deferred.reject(result);
-        //         console.log(result);
-        //         var alertPopup = $ionicPopup.alert({
-        //             title: result || 'Request failed',
-        //             okType: 'button-assertive'
-        //         });
-        //     });
-        //     return deferred.promise;
-        // };
+        this.GetParam = function (uri, blnShowLoad) {
+            if (blnShowLoad) {
+                $ionicLoading.show();
+            }
+            var deferred = $q.defer();
+            var url = uri.addSearch('format', 'json').normalizeProtocol().normalizeHostname().normalizePort().normalizeSearch().toString();
+            console.log(url);
+            /*
+            $http( { method: 'GET', url: url } ).then(function(response){
+                if ( blnShowLoad ) {
+                    $ionicLoading.hide();
+                }
+                var result = response.data;
+                if ( is.equal( result.meta.errors.code, 0 ) || is.equal( result.meta.errors.code, 200 ) ) {
+                    deferred.resolve( result );
+                } else {
+                    deferred.reject( result );
+                    var alertPopup = $ionicPopup.alert( {
+                        title: result.meta.message,
+                        subTitle: result.meta.errors.message,
+                        okType: 'button-assertive'
+                    } );
+                }
+            }, function(response){
+                if ( blnShowLoad ) {
+                    $ionicLoading.hide();
+                }
+                deferred.reject( response.data );
+                console.log( response.status );
+                var alertPopup = $ionicPopup.alert( {
+                    title: response.data || 'Request failed',
+                    okType: 'button-assertive'
+                } );
+            })
+            */
+            $http.get(url).success(function (result, status, headers, config, statusText) {
+                if (blnShowLoad) {
+                    $ionicLoading.hide();
+                }
+                if (is.equal(result.meta.errors.code, 0) || is.equal(result.meta.errors.code, 200)) {
+                    deferred.resolve(result);
+                } else {
+                    deferred.reject(result);
+                    var alertPopup = $ionicPopup.alert({
+                        title: result.meta.message,
+                        subTitle: result.meta.errors.message,
+                        okType: 'button-assertive'
+                    });
+                }
+            }).error(function (result, status, headers, config, statusText) {
+                if (blnShowLoad) {
+                    $ionicLoading.hide();
+                }
+                deferred.reject(result);
+                console.log(result);
+                var alertPopup = $ionicPopup.alert({
+                    title: result || 'Request failed',
+                    okType: 'button-assertive'
+                });
+            });
+            return deferred.promise;
+        };
     }
 ]);
-
 appServices.service('SqlService', ['$q', 'ENV', '$ionicLoading', '$ionicPopup', '$timeout', '$cordovaSQLite',
             function ($q, ENV, $ionicLoading, $ionicPopup, $timeout, $cordovaSQLite) {
                 this.Exec = function (strSql) {

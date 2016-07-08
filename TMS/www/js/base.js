@@ -67,15 +67,15 @@ var db_del_Csbk1_Accept = function () {
             tx.executeSql( dbSql, [], null, dbError )
         } );
     }
-}
+};
 var db_del_Csbk1_Accept_detail = function ( bookingNo ) {
     if ( dbTms ) {
         dbTms.transaction( function ( tx ) {
             dbSql = "Delete from Csbk1_Accept where BookingNo='" + bookingNo + "'";
-            tx.executeSql( dbSql, [], null, dbError )
+            tx.executeSql( dbSql, [], null, dbError );
         } );
     }
-}
+};
 var db_add_Csbk1_Accept = function ( Csbk1 ) {
     if ( dbTms ) {
         console.log( Csbk1 );
@@ -127,7 +127,7 @@ var db_update_Csbk1_Accept_DriverCode = function ( Csbk1 ) {
     if ( dbTms ) {
         dbTms.transaction( function ( tx ) {
             Csbk1 = repalceObj( Csbk1 );
-            dbSql = 'Update Csbk1_Accept set DriverCode=? where BookingNo=?';
+            dbSql = 'Update Csbk1 set DriverCode=? where BookingNo=?';
             tx.executeSql( dbSql, [ Csbk1.DriverCode, Csbk1.BookingNo ], null, dbError );
         } );
     }
