@@ -22,23 +22,24 @@ app.controller('dailycompletedCtrl', ['ENV', '$scope', '$state', '$ionicPopup', 
                 alertPopup = null;
             }
         };
-        var sumBoxes = function (bookingNo) {
-            var strSql = "SELECT * FROM Csbk2 left join Csbk1 on Csbk2.TrxNo = Csbk1.TrxNo  where BookingNo='" + bookingNo + "'";
-            if (!ENV.fromWeb) {
-                SqlService.Exec(strSql).then(function (results) {
-                    for (var i = 0; i < results.rows.length; i++) {
-                        var Csbk2_acc = results.rows.item(i);
-                        $scope.Detail.Packages = $scope.Detail.Packages + Csbk2_acc.CollectedPcs;
-                    }
-                });
-            }
-        };
+        // var sumBoxes = function (bookingNo) {
+        //     var strSql = "SELECT * FROM Csbk2 left join Csbk1 on Csbk2.TrxNo = Csbk1.TrxNo  where BookingNo='" + bookingNo + "'";
+        //     if (!ENV.fromWeb) {
+        //         SqlService.Exec(strSql).then(function (results) {
+        //             for (var i = 0; i < results.rows.length; i++) {
+        //                 var Csbk2_acc = results.rows.item(i);
+        //                 $scope.Detail.Packages = $scope.Detail.Packages + Csbk2_acc.CollectedPcs;
+        //             }
+        //         });
+        //     }
+        // };
 
         var ShowDailyCompleted = function () {
             $ionicPlatform.ready(function () {
-                if (!ENV.fromWeb) {
-                    var strSql = "SELECT * FROM Csbk1  where  DriverId='" + sessionStorage.getItem("strDriverId") + "' and CompletedDate='" + $scope.Search.CompletedDate + "' ";
+              var strSql = "SELECT * FROM Csbk2 left join Csbk1 on Csbk2.TrxNo = Csbk1.TrxNo  where  DriverId='" + sessionStorage.getItem("strDriverId") + "' and CompletedDate='" + $scope.Search.CompletedDate + "'";
                     SqlService.Exec(strSql).then(function (results) {
+                      console.log(results);
+                        console.log('resuddddddlts');
                         $scope.Csbk1s = new Array();
                         if (results.rows.length > 0) {
                             var jobs = '';
@@ -48,13 +49,13 @@ app.controller('dailycompletedCtrl', ['ENV', '$scope', '$state', '$ionicPopup', 
                                     bookingno: Csbk1_acc.BookingNo,
                                     JobNo: Csbk1_acc.JobNo,
                                     CollectedAmt: Csbk1_acc.CollectedAmt,
-                                    TotalBoxes: $scope.Detail.Packages
+                                    TotalBoxes: Csbk1_acc.CollectedPcs
                                 };
                                 $scope.Csbk1s.push(jobs);
                             }
                         }
                     });
-                }
+
             });
         };
         $scope.returnMain = function () {

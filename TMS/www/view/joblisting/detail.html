@@ -27,7 +27,7 @@
                 <label class="item-input-wrapper">
                     <!-- style="font-weight:bold;" -->
                     <label>Box No: </label>
-                    <input type="text" placeholder="Box No" style="height:25px;" ng-model="Detail.csbk1.ItemNo" ng-readonly="true">
+                    <input type="text" placeholder="" style="height:25px;" ng-model="Detail.csbk1.ItemNo" ng-readonly="true">
                 </label>
                 <button class="button icon ion-android-refresh">
                 </button>
@@ -57,7 +57,7 @@
                             <p> <span ng-bind="Csbk2.Pcs"></span></p>
                         </div>
                         <div class="col col-25">
-                            <input type="text" id="iCollectedPcs" style="height:20px;" ng-model="Csbk2.CollectedPcs">
+                            <input type="text" id="iCollectedPcs" style="height:20px;" ng-model="Csbk2.CollectedPcs" ng-change="checkQty(Csbk2)">
                         </div>
                         <div class="col col-25">
                             <input type="text" id="AddQty" style="height:20px;" ng-model="Csbk2.AddQty">
