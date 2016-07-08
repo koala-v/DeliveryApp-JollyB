@@ -1,5 +1,3 @@
-// Database instance.
-var db;
 var checkDatetime = function ( datetime ) {
     if ( is.equal( moment( datetime ).format( 'DD-MMM-YYYY' ), '01-Jan-0001' ) ) {
         datetime = '';
@@ -10,166 +8,102 @@ var checkDatetime = function ( datetime ) {
     return datetime;
 };
 
-var repalceObj = function ( obj ) {
-    for ( var i in obj ) {
-        if ( obj.hasOwnProperty( i ) ) {
-            if ( is.null( obj[ i ] ) ) {
-                obj[ i ] = '';
-            }
-            if ( is.undefined( obj[ i ] ) ) {
-                obj[ i ] = '';
-            }
-            if ( is.equal( obj[ i ], 'undefined' ) ) {
-                obj[ i ] = '';
-            }
-        }
-    }
-    return obj;
-};
+/*
+var db_websql = window.openDatabase( db_websql_info.Name, db_websql_info.Version, db_websql_info.DisplayName, db_websql_info.EstimatedSize );
 
-var dbInfo = {
-    dbName: 'TmsDB',
-    dbVersion: '1.0',
-    dbDisplayName: 'TMS Database',
-    dbEstimatedSize: 10 * 11024 * 1024
-};
-var dbSql = '';
-
-function dbError( tx, error ) {
-    console.log( error.message );
-}
-var dbTms = window.openDatabase( dbInfo.dbName, dbInfo.dbVersion, dbInfo.dbDisplayName, dbInfo.dbEstimatedSize );
-if ( dbTms ) {
-    dbTms.transaction( function ( tx ) {
-        dbSql = 'DROP TABLE if exists Csbk1';
-        tx.executeSql( dbSql, [], null, dbError );
-        dbSql = "CREATE TABLE Csbk1 (TrxNo INT,BookingNo TEXT, JobNo TEXT, StatusCode TEXT,BookingCustomerCode TEXT,Pcs INT,CollectionTimeStart TEXT,CollectionTimeEnd TEXT,PostalCode TEXT,BusinessPartyCode TEXT,BusinessPartyName TEXT,Address1 TEXT,Address2 TEXT,Address3 TEXT,Address4 TEXT,CompletedFlag TEXT,TimeFrom TEXT,TimeTo TEXT,ColTimeFrom TEXT,ColTimeTo TEXT,CompletedDate TEXT,DriverId TEXT,CollectedAmt INT,ScanDate TEXT,DriverCode TEXT)";
-        tx.executeSql( dbSql, [], null, dbError );
-    } );
-    dbTms.transaction( function ( tx ) {
-        dbSql = 'DROP TABLE if exists Csbk2_Accept';
-        tx.executeSql( dbSql, [], null, dbError );
-        dbSql = "CREATE TABLE Csbk2_Accept (TrxNo INT,LineItemNo INT, BoxCode TEXT,Pcs INT,UnitRate TEXT,CollectedPcs INT,AddQty INT)";
-        tx.executeSql( dbSql, [], null, dbError );
+if ( db_websql ) {
+    db_websql.transaction( function ( tx ) {
+        db_strSql = 'DROP TABLE if exists Csbk2';
+        tx.executeSql( db_strSql, [], null, dbError );
+        db_strSql = 'CREATE TABLE Csbk2 (TrxNo INT,LineItemNo INT, BoxCode TEXT,Pcs INT,UnitRate TEXT,CollectedPcs INT,AddQty INT)';
+        tx.executeSql( db_strSql, [], null, dbError );
     } );
 
-    dbTms.transaction( function ( tx ) {
-        dbSql = 'DROP TABLE if exists CsbkDetail';
-        tx.executeSql( dbSql, [], null, dbError );
-        dbSql = "CREATE TABLE CsbkDetail (BookingNo TEXT, JobNo TEXT,TrxNo INT,StatusCode TEXT,ItemNo INT,DepositAmt INT,DiscountAmt  INT,CollectedAmt  INT,CompletedFlag TEXT,PaidAmt INT)";
-        tx.executeSql( dbSql, [], null, dbError );
+    db_websql.transaction( function ( tx ) {
+        db_strSql = 'DROP TABLE if exists CsbkDetail';
+        tx.executeSql( db_strSql, [], null, dbError );
+        db_strSql = 'CREATE TABLE CsbkDetail (BookingNo TEXT, JobNo TEXT,TrxNo INT,StatusCode TEXT,ItemNo INT,DepositAmt INT,DiscountAmt  INT,CollectedAmt  INT,CompletedFlag TEXT,PaidAmt INT)';
+        tx.executeSql( db_strSql, [], null, dbError );
     } );
-}
-var db_del_Csbk1_Accept = function () {
-    if ( dbTms ) {
-        dbTms.transaction( function ( tx ) {
-            dbSql = 'Delete from Csbk1_Accept';
-            tx.executeSql( dbSql, [], null, dbError )
-        } );
-    }
-}
-var db_del_Csbk1_Accept_detail = function ( bookingNo ) {
-    if ( dbTms ) {
-        dbTms.transaction( function ( tx ) {
-            dbSql = "Delete from Csbk1_Accept where BookingNo='" + bookingNo + "'";
-            tx.executeSql( dbSql, [], null, dbError )
-        } );
-    }
-}
-var db_add_Csbk1_Accept = function ( Csbk1 ) {
-    if ( dbTms ) {
-        console.log( Csbk1 );
-        dbTms.transaction( function ( tx ) {
-            Csbk1 = repalceObj( Csbk1 );
-            dbSql = 'INSERT INTO Csbk1(TrxNo,BookingNo,JobNo,StatusCode,BookingCustomerCode,Pcs,CollectionTimeStart,CollectionTimeEnd,PostalCode,BusinessPartyCode,BusinessPartyName,Address1,Address2,Address3,Address4,CompletedFlag,TimeFrom,TimeTo,ColTimeFrom,ColTimeTo,ScanDate,DriverCode) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
-            tx.executeSql( dbSql, [ Csbk1.TrxNo, Csbk1.BookingNo, Csbk1.JobNo, Csbk1.StatusCode, Csbk1.BookingCustomerCode, Csbk1.Pcs, Csbk1.CollectionTimeStart, Csbk1.CollectionTimeEnd, Csbk1.PostalCode, Csbk1.BusinessPartyCode, Csbk1.BusinessPartyName, Csbk1.Address1, Csbk1.Address2, Csbk1.Address3, Csbk1.Address4, Csbk1.CompletedFlag, Csbk1.TimeFrom, Csbk1.TimeTo, Csbk1.ColTimeFrom, Csbk1.ColTimeTo, Csbk1.ScanDate ,Csbk1.DriverCode], null, dbError );
-        } );
-    }
 }
 var db_add_Csbk2_Accept = function ( Csbk2 ) {
-    if ( dbTms ) {
-        dbTms.transaction( function ( tx ) {
+    if ( db_websql ) {
+        db_websql.transaction( function ( tx ) {
             Csbk2 = repalceObj( Csbk2 );
-            dbSql = 'INSERT INTO Csbk2_Accept(TrxNo,LineItemNo, BoxCode,Pcs,UnitRate,CollectedPcs,AddQty) values(?,?,?,?,?,?,?)';
-            tx.executeSql( dbSql, [ Csbk2.TrxNo, Csbk2.LineItemNo, Csbk2.BoxCode, Csbk2.Pcs, Csbk2.UnitRate, Csbk2.CollectedPcs, Csbk2.AddQty ], null, dbError );
+            db_strSql = 'INSERT INTO Csbk2_Accept(TrxNo,LineItemNo, BoxCode,Pcs,UnitRate,CollectedPcs,AddQty) values(?,?,?,?,?,?,?)';
+            tx.executeSql( db_strSql, [ Csbk2.TrxNo, Csbk2.LineItemNo, Csbk2.BoxCode, Csbk2.Pcs, Csbk2.UnitRate, Csbk2.CollectedPcs, Csbk2.AddQty ], null, dbError );
         } );
     }
 }
 
 var db_add_Csbk1Detail_Accept = function ( Csbk1Detail ) {
-    if ( dbTms ) {
-        dbTms.transaction( function ( tx ) {
+    if ( db_websql ) {
+        db_websql.transaction( function ( tx ) {
             Csbk1Detail = repalceObj( Csbk1Detail );
-            dbSql = 'INSERT INTO Csbk1Detail_Accept(BookingNo,JobNo,TrxNo,StatusCode,ItemNo,DepositAmt,DiscountAmt,CollectedAmt,CompletedFlag,PaidAmt) values(?,?,?,?,?,?,?,?,?,?)';
-            tx.executeSql( dbSql, [ Csbk1Detail.BookingNo, Csbk1Detail.JobNo, Csbk1Detail.TrxNo, Csbk1Detail.StatusCode, Csbk1Detail.ItemNo, Csbk1Detail.DepositAmt, Csbk1Detail.DiscountAmt, Csbk1Detail.CollectedAmt, Csbk1Detail.CompletedFlag, Csbk1Detail.PaidAmt ], null, dbError );
+            db_strSql = 'INSERT INTO Csbk1Detail_Accept(BookingNo,JobNo,TrxNo,StatusCode,ItemNo,DepositAmt,DiscountAmt,CollectedAmt,CompletedFlag,PaidAmt) values(?,?,?,?,?,?,?,?,?,?)';
+            tx.executeSql( db_strSql, [ Csbk1Detail.BookingNo, Csbk1Detail.JobNo, Csbk1Detail.TrxNo, Csbk1Detail.StatusCode, Csbk1Detail.ItemNo, Csbk1Detail.DepositAmt, Csbk1Detail.DiscountAmt, Csbk1Detail.CollectedAmt, Csbk1Detail.CompletedFlag, Csbk1Detail.PaidAmt ], null, dbError );
         } );
     }
 }
 
-var onStrToURL = function ( strURL ) {
-    if ( strURL.length > 0 && strURL.indexOf( 'http://' ) < 0 && strURL.indexOf( 'HTTP://' ) < 0 ) {
-        strURL = "http://" + strURL;
-    }
-    return strURL;
-};
-
 var db_update_Csbk1_Accept = function ( Csbk1 ) {
-    if ( dbTms ) {
-        dbTms.transaction( function ( tx ) {
+    if ( db_websql ) {
+        db_websql.transaction( function ( tx ) {
             Csbk1 = repalceObj( Csbk1 );
-            dbSql = 'Update Csbk1_Accept set CompletedFlag=? where BookingNo=?';
-            tx.executeSql( dbSql, [ Csbk1.CompletedFlag, Csbk1.BookingNo ], null, dbError );
+            db_strSql = 'Update Csbk1_Accept set CompletedFlag=? where BookingNo=?';
+            tx.executeSql( db_strSql, [ Csbk1.CompletedFlag, Csbk1.BookingNo ], null, dbError );
         } );
     }
 }
 
 var db_update_Csbk1_Accept_DriverCode = function ( Csbk1 ) {
-    if ( dbTms ) {
-        dbTms.transaction( function ( tx ) {
+    if ( db_websql ) {
+        db_websql.transaction( function ( tx ) {
             Csbk1 = repalceObj( Csbk1 );
-            dbSql = 'Update Csbk1_Accept set DriverCode=? where BookingNo=?';
-            tx.executeSql( dbSql, [ Csbk1.DriverCode, Csbk1.BookingNo ], null, dbError );
+            db_strSql = 'Update Csbk1 set DriverCode=? where BookingNo=?';
+            tx.executeSql( db_strSql, [ Csbk1.DriverCode, Csbk1.BookingNo ], null, dbError );
         } );
     }
 }
 
 
 var db_update_Csbk1Detail_Accept = function ( Csbk1 ) {
-    if ( dbTms ) {
-        dbTms.transaction( function ( tx ) {
+    if ( db_websql ) {
+        db_websql.transaction( function ( tx ) {
             Csbk1 = repalceObj( Csbk1 );
-            dbSql = 'Update Csbk1Detail_Accept set CompletedFlag=?,CollectedAmt=? where BookingNo=?';
-            tx.executeSql( dbSql, [ Csbk1.CompletedFlag, Csbk1.CollectedAmt, Csbk1.BookingNo ], null, dbError );
+            db_strSql = 'Update Csbk1Detail_Accept set CompletedFlag=?,CollectedAmt=? where BookingNo=?';
+            tx.executeSql( db_strSql, [ Csbk1.CompletedFlag, Csbk1.CollectedAmt, Csbk1.BookingNo ], null, dbError );
         } );
     }
 }
 
 var db_update_Csbk1DetailAmount_Accept = function ( Csbk1 ) {
-    if ( dbTms ) {
-        dbTms.transaction( function ( tx ) {
+    if ( db_websql ) {
+        db_websql.transaction( function ( tx ) {
             Csbk1 = repalceObj( Csbk1 );
-            dbSql = 'Update Csbk1Detail_Accept set CollectedAmt=? where BookingNo=?';
-            tx.executeSql( dbSql, [ Csbk1.CollectedAmt, Csbk1.BookingNo ], null, dbError );
+            db_strSql = 'Update Csbk1Detail_Accept set CollectedAmt=? where BookingNo=?';
+            tx.executeSql( db_strSql, [ Csbk1.CollectedAmt, Csbk1.BookingNo ], null, dbError );
         } );
     }
 }
 
 var db_update_Csbk2_Amount = function ( Csbk2 ) {
-    if ( dbTms ) {
-        dbTms.transaction( function ( tx ) {
+    if ( db_websql ) {
+        db_websql.transaction( function ( tx ) {
             Csbk2 = repalceObj( Csbk2 );
-            dbSql = 'Update Csbk2_Accept set CollectedAmt=? where  BookingNo=?';
-            tx.executeSql( dbSql, [ Csbk2.CollectedAmt, Csbk2.BookingNo ], null, dbError );
+            db_strSql = 'Update Csbk2_Accept set CollectedAmt=? where  BookingNo=?';
+            tx.executeSql( db_strSql, [ Csbk2.CollectedAmt, Csbk2.BookingNo ], null, dbError );
         } );
     }
 }
 
 var db_update_Csbk2_Accept = function ( Csbk2 ) {
-    if ( dbTms ) {
-        dbTms.transaction( function ( tx ) {
+    if ( db_websql ) {
+        db_websql.transaction( function ( tx ) {
             Csbk2 = repalceObj( Csbk2 );
-            dbSql = 'Update Csbk2_Accept set CollectedPcs=?,AddQty=? where TrxNo=? and LineItemNo=?';
-            tx.executeSql( dbSql, [ Csbk2.CollectedPcs, Csbk2.AddQty, Csbk2.TrxNo, Csbk2.LineItemNo ], null, dbError );
+            db_strSql = 'Update Csbk2_Accept set CollectedPcs=?,AddQty=? where TrxNo=? and LineItemNo=?';
+            tx.executeSql( db_strSql, [ Csbk2.CollectedPcs, Csbk2.AddQty, Csbk2.TrxNo, Csbk2.LineItemNo ], null, dbError );
         } );
     }
 }
+*/
