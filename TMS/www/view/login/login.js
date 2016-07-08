@@ -40,7 +40,7 @@ app.controller( 'LoginCtrl', [ 'ENV', '$scope', '$http', '$state', '$stateParams
                     showPopup( 'Please Enter Driver ID.', 'assertive' );
                 } else {
                     var objUri = ApiService.Uri(ENV.apiMap.login.check).addSearch('DriverCode', $scope.logininfo.strDriverId);
-                    ApiService.GetParam( objUri, true ).then( function success( result ) {
+                    ApiService.Get( objUri, true ).then( function success( result ) {
                         var results = result.data.results;
                         if ( is.not.empty( results ) ) {
                             sessionStorage.clear();
