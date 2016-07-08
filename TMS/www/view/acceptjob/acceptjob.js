@@ -35,8 +35,8 @@ app.controller('AcceptJobCtrl', ['ENV', '$scope', '$state', '$ionicPopup', '$cor
                 showPopup('Booking No is already exists', 'assertive');
             } else {
                 if (is.not.empty(bookingNo)) {
-                    var strUri = '/api/tms/csbk1?BookingNo=' + bookingNo;
-                    ApiService.GetParam(strUri, true).then(function success(result) {
+                  var objUri = ApiService.Uri('/api/tms/csbk1').addSearch('BookingNo', bookingNo);
+                    ApiService.GetParam(objUri, true).then(function success(result) {
                         var results = result.data.results;
                         if (is.not.empty(results)) {
                             hmcsbk1.set(bookingNo, bookingNo);

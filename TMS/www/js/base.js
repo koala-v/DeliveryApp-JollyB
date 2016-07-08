@@ -1,38 +1,5 @@
 // Database instance.
 var db;
-
-var appendProtocol = function ( url, blnSSL, portNo ) {
-    if ( url.length > 0 && url.toUpperCase().indexOf( 'HTTPS://' ) < 0 && url.toUpperCase().indexOf( 'HTTP://' ) < 0 ) {
-        if ( blnSSL ) {
-            url = 'https://' + url;
-        } else {
-            var aURL = url.split( '/' );
-            if ( aURL[ 0 ].indexOf( ':' ) < 0 ) {
-                url = 'http://' + aURL[ 0 ] + ':' + portNo;
-            } else {
-                url = 'http://' + aURL[ 0 ];
-            }
-            for ( var i = 1; i < aURL.length; i++ ) {
-                url = url + '/' + aURL[ i ];
-            }
-        }
-    }
-    return url;
-};
-var rmProtocol = function ( url, portNo ) {
-    if ( is.not.empty( url ) ) {
-        var regex = /(https?:\/\/)?/gi;
-        url = url.replace( regex, '' );
-        regex = /(http?:\/\/)?/gi;
-        url = url.replace( regex, '' );
-    }
-    if ( is.not.empty( portNo ) ) {
-        var regex = /\:(\d)+/;
-        url = url.replace( regex, '' );
-    }
-    return url;
-};
-
 var checkDatetime = function ( datetime ) {
     if ( is.equal( moment( datetime ).format( 'DD-MMM-YYYY' ), '01-Jan-0001' ) ) {
         datetime = '';
@@ -74,9 +41,9 @@ function dbError( tx, error ) {
 var dbTms = window.openDatabase( dbInfo.dbName, dbInfo.dbVersion, dbInfo.dbDisplayName, dbInfo.dbEstimatedSize );
 if ( dbTms ) {
     dbTms.transaction( function ( tx ) {
-        dbSql = 'DROP TABLE if exists Csbk1_Accept';
+        dbSql = 'DROP TABLE if exists Csbk1';
         tx.executeSql( dbSql, [], null, dbError );
-        dbSql = "CREATE TABLE Csbk1_Accept (TrxNo INT,BookingNo TEXT, JobNo TEXT, StatusCode TEXT,BookingCustomerCode TEXT,Pcs INT,CollectionTimeStart TEXT,CollectionTimeEnd TEXT,PostalCode TEXT,BusinessPartyCode TEXT,BusinessPartyName TEXT,Address1 TEXT,Address2 TEXT,Address3 TEXT,Address4 TEXT,CompletedFlag TEXT,TimeFrom TEXT,TimeTo TEXT,ColTimeFrom TEXT,ColTimeTo TEXT,ScanDate TEXT,DriverCode TEXT)";
+        dbSql = "CREATE TABLE Csbk1 (TrxNo INT,BookingNo TEXT, JobNo TEXT, StatusCode TEXT,BookingCustomerCode TEXT,Pcs INT,CollectionTimeStart TEXT,CollectionTimeEnd TEXT,PostalCode TEXT,BusinessPartyCode TEXT,BusinessPartyName TEXT,Address1 TEXT,Address2 TEXT,Address3 TEXT,Address4 TEXT,CompletedFlag TEXT,TimeFrom TEXT,TimeTo TEXT,ColTimeFrom TEXT,ColTimeTo TEXT,CompletedDate TEXT,DriverId TEXT,CollectedAmt INT,ScanDate TEXT,DriverCode TEXT)";
         tx.executeSql( dbSql, [], null, dbError );
     } );
     dbTms.transaction( function ( tx ) {
@@ -87,9 +54,9 @@ if ( dbTms ) {
     } );
 
     dbTms.transaction( function ( tx ) {
-        dbSql = 'DROP TABLE if exists Csbk1Detail_Accept';
+        dbSql = 'DROP TABLE if exists CsbkDetail';
         tx.executeSql( dbSql, [], null, dbError );
-        dbSql = "CREATE TABLE Csbk1Detail_Accept (BookingNo TEXT, JobNo TEXT,TrxNo INT,StatusCode TEXT,ItemNo INT,DepositAmt INT,DiscountAmt  INT,CollectedAmt  INT,CompletedFlag TEXT,PaidAmt INT)";
+        dbSql = "CREATE TABLE CsbkDetail (BookingNo TEXT, JobNo TEXT,TrxNo INT,StatusCode TEXT,ItemNo INT,DepositAmt INT,DiscountAmt  INT,CollectedAmt  INT,CompletedFlag TEXT,PaidAmt INT)";
         tx.executeSql( dbSql, [], null, dbError );
     } );
 }
@@ -114,7 +81,7 @@ var db_add_Csbk1_Accept = function ( Csbk1 ) {
         console.log( Csbk1 );
         dbTms.transaction( function ( tx ) {
             Csbk1 = repalceObj( Csbk1 );
-            dbSql = 'INSERT INTO Csbk1_Accept(TrxNo,BookingNo,JobNo,StatusCode,BookingCustomerCode,Pcs,CollectionTimeStart,CollectionTimeEnd,PostalCode,BusinessPartyCode,BusinessPartyName,Address1,Address2,Address3,Address4,CompletedFlag,TimeFrom,TimeTo,ColTimeFrom,ColTimeTo,ScanDate,DriverCode) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+            dbSql = 'INSERT INTO Csbk1(TrxNo,BookingNo,JobNo,StatusCode,BookingCustomerCode,Pcs,CollectionTimeStart,CollectionTimeEnd,PostalCode,BusinessPartyCode,BusinessPartyName,Address1,Address2,Address3,Address4,CompletedFlag,TimeFrom,TimeTo,ColTimeFrom,ColTimeTo,ScanDate,DriverCode) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
             tx.executeSql( dbSql, [ Csbk1.TrxNo, Csbk1.BookingNo, Csbk1.JobNo, Csbk1.StatusCode, Csbk1.BookingCustomerCode, Csbk1.Pcs, Csbk1.CollectionTimeStart, Csbk1.CollectionTimeEnd, Csbk1.PostalCode, Csbk1.BusinessPartyCode, Csbk1.BusinessPartyName, Csbk1.Address1, Csbk1.Address2, Csbk1.Address3, Csbk1.Address4, Csbk1.CompletedFlag, Csbk1.TimeFrom, Csbk1.TimeTo, Csbk1.ColTimeFrom, Csbk1.ColTimeTo, Csbk1.ScanDate ,Csbk1.DriverCode], null, dbError );
         } );
     }
