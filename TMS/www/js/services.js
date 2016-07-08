@@ -408,8 +408,8 @@ appServices.service( 'SqlService', [ '$q', 'ENV', '$timeout', '$ionicLoading', '
                 }
             }else{
                 deferred.reject( null );
-                console.error( 'Insert Script Error' );
-                $cordovaToast.showShortBottom( 'Insert Script Error' );
+                console.error( 'Update Script Error' );
+                $cordovaToast.showShortBottom( 'Update Script Error' );
             }
             return deferred.promise;
         };
@@ -418,7 +418,7 @@ appServices.service( 'SqlService', [ '$q', 'ENV', '$timeout', '$ionicLoading', '
             if ( ENV.fromWeb ) {
                 if ( db_websql ) {
                     db_websql.transaction( function ( tx ) {
-                        tx.executeSql( strSql, [], function ( tx, results ) {                          
+                        tx.executeSql( strSql, [], function ( tx, results ) {
                               deferred.resolve( results );
                         }, function ( tx, error ) {
                             deferred.reject( error );
@@ -428,7 +428,7 @@ appServices.service( 'SqlService', [ '$q', 'ENV', '$timeout', '$ionicLoading', '
                     } );
                 } else {
                     $cordovaSQLite.execute( db_sqlite, strSql )
-                        .then( function ( results ) {
+                    .then( function ( results ) {
                                 if ( results.rows.length > 0 ) {
                                     deferred.resolve( results );
                                 } else {
