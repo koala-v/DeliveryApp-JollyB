@@ -8,18 +8,18 @@ appServices.service( 'ApiService', [ '$q', 'ENV', '$http', '$ionicLoading', '$io
   function ( $q, ENV, $http, $ionicLoading, $ionicPopup, $timeout ) {
         var parts = {},
             folder = '';
-        this.Init = function(){
+        this.Init = function () {
             var url = ENV.api;
             var urls = url.split( '/' );
             parts = {
-              protocol: null,
-              username: null,
-              password: null,
-              hostname: urls[ 0 ],
-              port: ENV.port,
-              path: url.replace( urls[ 0 ], '' ),
-              query: null,
-              fragment: null
+                protocol: null,
+                username: null,
+                password: null,
+                hostname: urls[ 0 ],
+                port: ENV.port,
+                path: url.replace( urls[ 0 ], '' ),
+                query: null,
+                fragment: null
             };
             if ( ENV.ssl ) {
                 parts.protocol = 'https';
@@ -28,10 +28,10 @@ appServices.service( 'ApiService', [ '$q', 'ENV', '$http', '$ionicLoading', '$io
             }
             folder = parts.path;
         };
-        this.Uri = function( path ){
+        this.Uri = function ( path ) {
             parts.path = folder + path;
             //return objUri.normalizeProtocol().normalizeHostname().normalizePort().toString();
-            return new URI(URI.build(parts));
+            return new URI( URI.build( parts ) );
         };
         this.Post = function ( uri, requestData, blnShowLoad ) {
             if ( blnShowLoad ) {
@@ -39,7 +39,7 @@ appServices.service( 'ApiService', [ '$q', 'ENV', '$http', '$ionicLoading', '$io
             }
             var deferred = $q.defer();
             //var strSignature = hex_md5( uri + ENV.appId.replace( /-/ig, "" ) );
-            var url = uri.addSearch('format', 'json').normalizeProtocol().normalizeHostname().normalizePort().normalizeSearch().toString();
+            var url = uri.addSearch( 'format', 'json' ).normalizeProtocol().normalizeHostname().normalizePort().normalizeSearch().toString();
             console.log( url );
             var config = {
                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -67,45 +67,17 @@ appServices.service( 'ApiService', [ '$q', 'ENV', '$http', '$ionicLoading', '$io
             } );
             return deferred.promise;
         };
-        this.Get = function ( uri, blnShowLoad ) {
-            if ( blnShowLoad ) {
-                $ionicLoading.show();
-            }
-            var deferred = $q.defer();
-            var url = uri.addSearch('format', 'json').normalizeProtocol().normalizeHostname().normalizePort().normalizeSearch().toString();
-            console.log( url );
-            $http.get( url ).success( function ( result, status, headers, config, statusText ) {
-                if ( blnShowLoad ) {
-                    $ionicLoading.hide();
-                }
-                if ( is.equal( result.meta.errors.code, 0 ) || is.equal( result.meta.errors.code, 200 ) ) {
-                    deferred.resolve( result );
-                } else {
-                    deferred.reject( result );
-                    var alertPopup = $ionicPopup.alert( {
-                        title: result.meta.message,
-                        subTitle: result.meta.errors.message,
-                        okType: 'button-assertive'
-                    } );
-                }
-            } ).error( function ( result, status, headers, config, statusText ) {
-                if ( blnShowLoad ) {
-                    $ionicLoading.hide();
-                }
-                deferred.reject( result );
-                console.log( result );
-            } );
-            return deferred.promise;
-        };
         this.GetParam = function ( uri, blnShowLoad ) {
             if ( blnShowLoad ) {
                 $ionicLoading.show();
             }
             var deferred = $q.defer();
-            var url = uri.addSearch('format', 'json').normalizeProtocol().normalizeHostname().normalizePort().normalizeSearch().toString();
+            var url = uri.addSearch( 'format', 'json' ).normalizeProtocol().normalizeHostname().normalizePort().normalizeSearch().toString();
             console.log( url );
-            /*
-            $http( { method: 'GET', url: url } ).then(function(response){
+            $http( {
+                method: 'GET',
+                url: url
+            } ).then( function ( response ) {
                 if ( blnShowLoad ) {
                     $ionicLoading.hide();
                 }
@@ -120,7 +92,7 @@ appServices.service( 'ApiService', [ '$q', 'ENV', '$http', '$ionicLoading', '$io
                         okType: 'button-assertive'
                     } );
                 }
-            }, function(response){
+            }, function ( response ) {
                 if ( blnShowLoad ) {
                     $ionicLoading.hide();
                 }
@@ -130,33 +102,7 @@ appServices.service( 'ApiService', [ '$q', 'ENV', '$http', '$ionicLoading', '$io
                     title: response.data || 'Request failed',
                     okType: 'button-assertive'
                 } );
-            })
-            */
-            $http.get( url ).success( function ( result, status, headers, config, statusText ) {
-                if ( blnShowLoad ) {
-                    $ionicLoading.hide();
-                }
-                if ( is.equal( result.meta.errors.code, 0 ) || is.equal( result.meta.errors.code, 200 ) ) {
-                    deferred.resolve( result );
-                } else {
-                    deferred.reject( result );
-                    var alertPopup = $ionicPopup.alert( {
-                        title: result.meta.message,
-                        subTitle: result.meta.errors.message,
-                        okType: 'button-assertive'
-                    } );
-                }
-            } ).error( function ( result, status, headers, config, statusText ) {
-                if ( blnShowLoad ) {
-                    $ionicLoading.hide();
-                }
-                deferred.reject( result );
-                console.log( result );
-                var alertPopup = $ionicPopup.alert( {
-                    title: result || 'Request failed',
-                    okType: 'button-assertive'
-                } );
-            } );
+            } )
             return deferred.promise;
         };
   }
