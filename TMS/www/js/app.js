@@ -16,8 +16,8 @@ var app = angular.module( 'TMS', [
 
   'ui.select'
 ] );
-app.run( [ 'ENV', '$ionicPlatform', '$rootScope', '$state', '$location', '$timeout', '$ionicHistory', '$ionicLoading', '$cordovaToast', '$cordovaKeyboard', '$cordovaFile', '$cordovaSQLite',
-  function ( ENV, $ionicPlatform, $rootScope, $state, $location, $timeout, $ionicHistory, $ionicLoading, $cordovaToast, $cordovaKeyboard, $cordovaFile, $cordovaSQLite ) {
+app.run( [ 'ENV', '$ionicPlatform', '$rootScope', '$state', '$location', '$timeout', '$ionicHistory', '$ionicLoading', '$cordovaToast', '$cordovaKeyboard', '$cordovaFile', '$cordovaSQLite', 'SqlService',
+  function ( ENV, $ionicPlatform, $rootScope, $state, $location, $timeout, $ionicHistory, $ionicLoading, $cordovaToast, $cordovaKeyboard, $cordovaFile, $cordovaSQLite, SqlService ) {
         if ( window.cordova ) {
             ENV.fromWeb = false;
         } else {
@@ -27,43 +27,12 @@ app.run( [ 'ENV', '$ionicPlatform', '$rootScope', '$state', '$location', '$timeo
             if ( !ENV.fromWeb ) {
                 $cordovaKeyboard.hideAccessoryBar( true );
                 $cordovaKeyboard.disableScroll( true );
-                try {
-                    db = $cordovaSQLite.openDB( {
-                        name: 'AppTms.db',
-                        location: 'default'
-                    } );
-                } catch ( error ) {
-                    console.error( error );
-                }
-                $cordovaSQLite.execute( db, 'CREATE TABLE IF NOT EXISTS Users (id INTEGER PRIMARY KEY AUTOINCREMENT, uid TEXT)' );
-                $cordovaSQLite.execute( db, 'CREATE TABLE IF NOT EXISTS Csbk1(TrxNo INTEGER,BookingNo TEXT, JobNo TEXT, StatusCode TEXT,BookingCustomerCode TEXT,Pcs INTEGER,CollectionTimeStart TEXT,CollectionTimeEnd TEXT,PostalCode TEXT,BusinessPartyCode TEXT,BusinessPartyName TEXT,Address1 TEXT,Address2 TEXT,Address3 TEXT,Address4 TEXT,CompletedFlag TEXT,TimeFrom TEXT,TimeTo TEXT,ColTimeFrom TEXT,ColTimeTo TEXT,CompletedDate TEXT,DriverId TEXT,CollectedAmt INTEGER,ScanDate TEXT,DriverCode TEXT)' );
-                $cordovaSQLite.execute( db, 'CREATE TABLE IF NOT EXISTS Csbk2 (TrxNo INTEGER,LineItemNo INTEGER, BoxCode TEXT,Pcs INTEGER,UnitRate TEXT,CollectedPcs INTEGER,AddQty INTEGER)' );
-                $cordovaSQLite.execute( db, 'CREATE TABLE IF NOT EXISTS CsbkDetail (BookingNo TEXT, JobNo TEXT,TrxNo INTEGER,StatusCode TEXT,ItemNo INTEGER,DepositAmt INTEGER,DiscountAmt  INTEGER,CollectedAmt  INTEGER,CompletedFlag TEXT,PaidAmt INTEGER)' );
-                // sqlLite for mobile APP
-                $rootScope.sqlLite_add_Csbk1 = function ( Csbk1 ) {
-                    if ( db ) {
-                        var sql = 'INSERT INTO Csbk1(TrxNo,BookingNo,JobNo,StatusCode,BookingCustomerCode,Pcs,CollectionTimeStart,CollectionTimeEnd,PostalCode,BusinessPartyCode,BusinessPartyName,Address1,Address2,Address3,Address4,CompletedFlag,TimeFrom,TimeTo,ColTimeFrom,ColTimeTo,ScanDate) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
-                        $cordovaSQLite.execute( db, sql, [
-          Csbk1.TrxNo, Csbk1.BookingNo, Csbk1.JobNo, Csbk1.StatusCode, Csbk1.BookingCustomerCode, Csbk1.Pcs, Csbk1.CollectionTimeStart, Csbk1.CollectionTimeEnd, Csbk1.PostalCode, Csbk1.BusinessPartyCode, Csbk1.BusinessPartyName, Csbk1.Address1, Csbk1.Address2, Csbk1.Address3, Csbk1.Address4, Csbk1.CompletedFlag, Csbk1.TimeFrom, Csbk1.TimeTo, Csbk1.ColTimeFrom, Csbk1.ColTimeTo, Csbk1.ScanDate
-        ] )
-                            .then( function ( result ) {}, function ( error ) {} );
-                    }
-                };
-
-                $rootScope.sqlLite_update_Csbk1_DriverCode = function ( Csbk1 ) {
-                    if ( db ) {
-                      var sql = 'Update Csbk1 set DriverCode=? where BookingNo=?';
-                                $cordovaSQLite.execute(db, sql, [Csbk1.DriverCode, Csbk1.BookingNo])
-                                  .then(function(result) {}, function(error) {});
-
-                                        }
-                };
-                // sqlLite for mobile APP
             }
             if ( window.StatusBar ) {
                 // org.apache.cordova.statusbar required
                 StatusBar.styleDefault();
             }
+            SqlService.Init();
         } );
         $ionicPlatform.registerBackButtonAction( function ( e ) {
             e.preventDefault();

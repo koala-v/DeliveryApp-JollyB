@@ -26,7 +26,7 @@ app.controller( 'driverCodeCtrl', [ '$scope', '$state', 'ApiService', '$cordovaS
                 cordova.plugins.Keyboard.close();
             }
             var strUri = '' + $scope.Search.driverPhoneNumber;
-            ApiService.GetParam( strUri, true ).then( function success( result ) {
+            ApiService.Get( strUri, true ).then( function success( result ) {
                 $scope.driverId = result.data.results;
             } );
             $state.go( 'index.main', {}, {

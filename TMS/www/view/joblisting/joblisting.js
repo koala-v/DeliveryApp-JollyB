@@ -56,14 +56,9 @@ app.controller('JoblistingListCtrl', ['ENV', '$scope', '$state', '$ionicLoading'
         };
         getBookingNo();
         $scope.deleteCsbk1 = function (index, job) {
-            if (!ENV.fromWeb) {
-                var sql = "delete from Csbk1 where BookingNo='" + job.bookingno + "'";
-                $cordovaSQLite.execute(db, sql, [])
-                    .then(function (result) {}, function (error) {});
-            } else {
-                db_del_Csbk1_Accept_detail(job.bookingno);
-            }
-            $scope.jobs.splice(index, 1);
+            SqlService.Del('Csbk1','BookingNo', job.bookingNo).then(function(result){
+                $scope.jobs.splice(index, 1);
+            });
         };
         $scope.showFilterBar = function () {
             filterBarInstance = $ionicFilterBar.show({
@@ -108,10 +103,10 @@ app.controller('JoblistingCtrl', ['$scope', '$state', '$stateParams',
         $scope.List = {
             BookingNo: $stateParams.BookingNo
         };
-        if (dbTms) {
-            dbTms.transaction(function (tx) {
-                dbSql = 'select * from Csbk1_Accept';
-                tx.executeSql(dbSql, [], function (tx, results) {
+        if (db_websql) {
+            db_websql.transaction(function (tx) {
+                db_strSql = 'select * from Csbk1_Accept';
+                tx.executeSql(db_strSql, [], function (tx, results) {
                     if (results.rows.length > 0) {
                         for (var i = 0; i < results.rows.length; i++) {
                             if ($scope.List.BookingNo === results.rows.item(i).BookingNo) {
@@ -306,7 +301,7 @@ app.controller('JoblistingDetailCtrl', ['ENV', '$scope', '$state', '$ionicAction
 
         // var strUri = '/api/tms/rcbp1?BookingNo=' + $scope.Detail.csbk1.BookingNo;
         var objUri = ApiService.Uri('/api/tms/rcbp1').addSearch('BookingNo', $scope.Detail.csbk1.BookingNo);
-        ApiService.GetParam(objUri, true).then(function success(result) {
+        ApiService.Get(objUri, true).then(function success(result) {
             var results = result.data.results;
             if (is.not.empty(results)) {
                 $scope.Detail.PhoneNumber = "tel:" + results[0].Handphone1;
@@ -374,7 +369,7 @@ app.controller('JoblistingDetailCtrl', ['ENV', '$scope', '$state', '$ionicAction
                                     if (is.not.empty($scope.Detail.csbk1.BookingNo)) {
                                         // var strUri = '/api/tms/csbk2?BookingNo=' + $scope.Detail.csbk1.BookingNo;
                                         var objUri = ApiService.Uri('/api/tms/csbk2').addSearch('BookingNo', $scope.Detail.csbk1.BookingNo);
-                                        ApiService.GetParam(objUri, true).then(function success(result) {
+                                        ApiService.Get(objUri, true).then(function success(result) {
                                             var results = result.data.results;
                                             if (is.not.empty(results)) {
                                                 $scope.Detail.csbk1 = results.csbk1;
@@ -428,10 +423,10 @@ app.controller('JoblistingDetailCtrl', ['ENV', '$scope', '$state', '$ionicAction
                         );
                 });
             } else {
-                if (dbTms) {
-                    dbTms.transaction(function (tx) {
-                        dbSql = "select * from Csbk2_Accept left join Csbk1Detail_Accept on Csbk2_Accept.TrxNo = Csbk1Detail_Accept.TrxNo  where BookingNo='" + $scope.Detail.csbk1.BookingNo + "'";
-                        tx.executeSql(dbSql, [], function (tx, results) {
+                if (db_websql) {
+                    db_websql.transaction(function (tx) {
+                        db_strSql = "select * from Csbk2_Accept left join Csbk1Detail_Accept on Csbk2_Accept.TrxNo = Csbk1Detail_Accept.TrxNo  where BookingNo='" + $scope.Detail.csbk1.BookingNo + "'";
+                        tx.executeSql(db_strSql, [], function (tx, results) {
                             if (results.rows.length > 0) {
                                 for (var i = 0; i < results.rows.length; i++) {
                                     var csbk2s = {
@@ -445,9 +440,9 @@ app.controller('JoblistingDetailCtrl', ['ENV', '$scope', '$state', '$ionicAction
                                     };
                                     $scope.Detail.csbk2s.push(csbk2s);
                                 }
-                                dbTms.transaction(function (tx) {
-                                    dbSql = "select * from  Csbk1Detail_Accept  where BookingNo='" + $scope.Detail.csbk1.BookingNo + "'";
-                                    tx.executeSql(dbSql, [], function (tx, results) {
+                                db_websql.transaction(function (tx) {
+                                    db_strSql = "select * from  Csbk1Detail_Accept  where BookingNo='" + $scope.Detail.csbk1.BookingNo + "'";
+                                    tx.executeSql(db_strSql, [], function (tx, results) {
                                         if (results.rows.length > 0) {
                                             var csbk1detail = '';
                                             for (var i = 0; i < results.rows.length; i++) {
@@ -466,7 +461,7 @@ app.controller('JoblistingDetailCtrl', ['ENV', '$scope', '$state', '$ionicAction
                                 if (is.not.empty($scope.Detail.csbk1.BookingNo)) {
                                     // var strUri = '/api/tms/csbk2?BookingNo=' + $scope.Detail.csbk1.BookingNo;
                                     var objUri = ApiService.Uri('/api/tms/csbk2').addSearch('BookingNo', $scope.Detail.csbk1.BookingNo);
-                                    ApiService.GetParam(objUri, true).then(function success(result) {
+                                    ApiService.Get(objUri, true).then(function success(result) {
                                         var results = result.data.results;
                                         if (is.not.empty(results)) {
                                             $scope.Detail.csbk1 = results.csbk1;
@@ -554,7 +549,7 @@ app.controller('JoblistingDetailCtrl', ['ENV', '$scope', '$state', '$ionicAction
                     objUri.addSearch('BookingNo', $scope.Detail.csbk1.BookingNo);
                     objUri.addSearch('Amount', 100);
                     objUri.addSearch('ActualDeliveryDate', $scope.Detail.ScanDate);
-                    ApiService.GetParam(objUri, false).then(function success(result) {
+                    ApiService.Get(objUri, false).then(function success(result) {
                         for (var intI = 0; intI < $scope.Detail.csbk2s.length; intI++) {
                             // strUri = '/api/tms/csbk2/update?CollectedPcs=' + $scope.Detail.csbk2s[intI].CollectedPcs + '&AddQty=' + $scope.Detail.csbk2s[intI].AddQty + '&TrxNo=' + $scope.Detail.csbk2s[intI].TrxNo + '&LineItemNo=' + $scope.Detail.csbk2s[intI].LineItemNo;
                             var objUri = ApiService.Uri('/api/tms/csbk2/update');
@@ -562,19 +557,19 @@ app.controller('JoblistingDetailCtrl', ['ENV', '$scope', '$state', '$ionicAction
                             objUri.addSearch('AddQty', $scope.Detail.csbk2s[intI].AddQty);
                             objUri.addSearch('TrxNo', $scope.Detail.csbk2s[intI].TrxNo);
                             objUri.addSearch('LineItemNo', $scope.Detail.csbk2s[intI].LineItemNo);
-                            ApiService.GetParam(objUri, false).then(function success(result) {});
+                            ApiService.Get(objUri, false).then(function success(result) {});
                         }
                     });
                     // var strUri = '/api/tms/csbk1/confirm?BookingNo=' + $scope.Detail.csbk1.BookingNo;
                     objUri = ApiService.Uri('/api/tms/csbk1/confirm');
                     objUri.addSearch('BookingNo', $scope.Detail.csbk1.BookingNo);
-                    ApiService.GetParam(objUri, true).then(function success(result) {
+                    ApiService.Get(objUri, true).then(function success(result) {
                         /*
                           $ionicPlatform.ready(function () {
                               if (!ENV.fromWeb) {
 
                               } else {
-                                  if (dbTms) {
+                                  if (db_websql) {
                                       var Csbk1 = {
                                           CompletedFlag: 'Y',
                                           CollectedAmt: $scope.Detail.csbk1.CollectedAmt,
@@ -583,10 +578,10 @@ app.controller('JoblistingDetailCtrl', ['ENV', '$scope', '$state', '$ionicAction
                                       //  db_update_Csbk1_Accept(Csbk1);
                                       db_update_Csbk1Detail_Accept(Csbk1);
                                       db_update_Csbk1_Accept(Csbk1);
-                                      dbTms.transaction(function (tx) {
-                                          //    dbSql = "select * from Csbk2_Accept where BookingNo='" + $scope.BookingNo + "'";
-                                          dbSql = "select * from Csbk2_Accept left join Csbk1Detail_Accept on Csbk2_Accept.TrxNo = Csbk1Detail_Accept.TrxNo  where BookingNo='" + $scope.Detail.csbk1.BookingNo + "'";
-                                          tx.executeSql(dbSql, [], function (tx, results) {
+                                      db_websql.transaction(function (tx) {
+                                          //    db_strSql = "select * from Csbk2_Accept where BookingNo='" + $scope.BookingNo + "'";
+                                          db_strSql = "select * from Csbk2_Accept left join Csbk1Detail_Accept on Csbk2_Accept.TrxNo = Csbk1Detail_Accept.TrxNo  where BookingNo='" + $scope.Detail.csbk1.BookingNo + "'";
+                                          tx.executeSql(db_strSql, [], function (tx, results) {
                                               if (results.rows.length > 0) {
                                                   var Csbk2_AcceptResultsLength = results.rows.length;
                                                   for (var i = 0; i < results.rows.length; i++) {
@@ -599,17 +594,17 @@ app.controller('JoblistingDetailCtrl', ['ENV', '$scope', '$state', '$ionicAction
                                                       };
                                                       db_update_Csbk2_Accept(jobs);
                                                   }
-                                                  dbTms.transaction(function (tx) {
-                                                      dbSql = "select * from Csbk1_Accept where BookingNo='" + $scope.Detail.csbk1.BookingNo + "'";
-                                                      tx.executeSql(dbSql, [], function (tx, results) {
+                                                  db_websql.transaction(function (tx) {
+                                                      db_strSql = "select * from Csbk1_Accept where BookingNo='" + $scope.Detail.csbk1.BookingNo + "'";
+                                                      tx.executeSql(db_strSql, [], function (tx, results) {
                                                           if (results.rows.length > 0) {
                                                               var Csbk1_acc = results.rows.item(0);
                                                               $scope.Detail.ScanDate = Csbk1_acc.ScanDate;
                                                               strUri = '/api/tms/csbk1/update?BookingNo=' + $scope.Detail.csbk1.BookingNo + '&Amount=' + $scope.Detail.csbk1.CollectedAmt + '&ActualDeliveryDate=' + $scope.Detail.ScanDate;
-                                                              ApiService.GetParam(strUri, true).then(function success(result) {
+                                                              ApiService.Get(strUri, true).then(function success(result) {
                                                                   for (var intI = 0; intI < Csbk2_AcceptResultsLength; intI++) {
                                                                       strUri = '/api/tms/csbk2/update?CollectedPcs=' + $scope.Detail.csbk2s[intI].CollectedPcs + '&AddQty=' + $scope.Detail.csbk2s[intI].AddQty + '&TrxNo=' + $scope.Detail.csbk2s[intI].TrxNo + '&LineItemNo=' + $scope.Detail.csbk2s[intI].LineItemNo;
-                                                                      ApiService.GetParam(strUri, true).then(function success(result) {});
+                                                                      ApiService.Get(strUri, true).then(function success(result) {});
                                                                   }
                                                               });
                                                           }
@@ -663,15 +658,15 @@ app.controller('JoblistingDetailCtrl', ['ENV', '$scope', '$state', '$ionicAction
                                 function (error) {}
                             );
                     } else {
-                        if (dbTms) {
+                        if (db_websql) {
                             var Csbk1 = {
                                 CollectedAmt: $scope.Detail.csbk1.CollectedAmt,
                                 BookingNo: $scope.Detail.csbk1.BookingNo
                             };
                             db_update_Csbk1DetailAmount_Accept(Csbk1);
-                            dbTms.transaction(function (tx) {
-                                dbSql = "select * from Csbk2_Accept left join Csbk1Detail_Accept on  Csbk2_Accept.TrxNo = Csbk1Detail_Accept.TrxNo  where BookingNo='" + $scope.Detail.csbk1.BookingNo + "'"; //dbSql = 'select * from Csbk2_Accept where';
-                                tx.executeSql(dbSql, [], function (tx, results) {
+                            db_websql.transaction(function (tx) {
+                                db_strSql = "select * from Csbk2_Accept left join Csbk1Detail_Accept on  Csbk2_Accept.TrxNo = Csbk1Detail_Accept.TrxNo  where BookingNo='" + $scope.Detail.csbk1.BookingNo + "'"; //db_strSql = 'select * from Csbk2_Accept where';
+                                tx.executeSql(db_strSql, [], function (tx, results) {
                                     if (results.rows.length > 0) {
                                         for (var i = 0; i < results.rows.length; i++) {
                                             var Csbk2_acc = results.rows.item(i);
@@ -783,10 +778,10 @@ app.controller('JoblistingConfirmCtrl', ['ENV', '$scope', '$state', '$stateParam
                         function (error) {}
                     );
             } else {
-                if (dbTms) {
-                    dbTms.transaction(function (tx) {
-                        dbSql = "select * from Csbk2_Accept left join Csbk1Detail_Accept on Csbk2_Accept.TrxNo = Csbk1Detail_Accept.TrxNo  where BookingNo='" + $scope.Detail.BookingNo + "'"; //dbSql = 'select * from Csbk2_Accept where';
-                        tx.executeSql(dbSql, [], function (tx, results) {
+                if (db_websql) {
+                    db_websql.transaction(function (tx) {
+                        db_strSql = "select * from Csbk2_Accept left join Csbk1Detail_Accept on Csbk2_Accept.TrxNo = Csbk1Detail_Accept.TrxNo  where BookingNo='" + $scope.Detail.BookingNo + "'"; //db_strSql = 'select * from Csbk2_Accept where';
+                        tx.executeSql(db_strSql, [], function (tx, results) {
                             if (results.rows.length > 0) {
                                 $scope.Detail.Csbk2ReusltLength = results.rows.length;
                                 for (var i = 0; i < results.rows.length; i++) {
@@ -827,7 +822,7 @@ app.controller('JoblistingConfirmCtrl', ['ENV', '$scope', '$state', '$stateParam
         };
         var getSignature = function () {
             var strUri = '/api/tms/csbk1/attach?BookingNo=' + $stateParams.BookingNo;
-            ApiService.GetParam(strUri, true).then(function success(result) {
+            ApiService.Get(strUri, true).then(function success(result) {
                 if (is.not.undefined(result.data.results)) {
                     $scope.signature = 'data:image/png;base64,' + result.data.results;
                 }
@@ -854,7 +849,7 @@ app.controller('JoblistingConfirmCtrl', ['ENV', '$scope', '$state', '$stateParam
         $scope.confirm = function () {
             $scope.signature = signaturePad.toDataURL();
             var strUri = '/api/tms/csbk1/confirm?BookingNo=' + $stateParams.BookingNo;
-            ApiService.GetParam(strUri, true).then(function success(result) {
+            ApiService.Get(strUri, true).then(function success(result) {
                 var Csbk1 = {
                     CompletedFlag: 'Y',
                     BookingNo: $scope.Detail.BookingNo
@@ -879,14 +874,14 @@ app.controller('JoblistingConfirmCtrl', ['ENV', '$scope', '$state', '$stateParam
                         } else {
                             showPopup('Confirm Success', 'calm', function (res) {
                                 strUri = '/api/tms/slcr1/complete?BookingNo=' + $scope.Detail.BookingNo + '&JobNo=' + $scope.Detail.JobNo + '&CashAmt=' + $scope.Detail.CashAmt + '&UpdateBy=' + sessionStorage.getItem("strDriverId") + '&CollectBy=' + sessionStorage.getItem("strVehicleNo");
-                                ApiService.GetParam(strUri, true).then(function success(result) {});
+                                ApiService.Get(strUri, true).then(function success(result) {});
                                 $scope.returnList();
                             });
                         }
                     } else {
                         showPopup('Confirm Success', 'calm', function (res) {
                             strUri = '/api/tms/slcr1/complete?BookingNo=' + $scope.Detail.BookingNo + '&JobNo=' + $scope.Detail.JobNo + '&CashAmt=' + $scope.Detail.CashAmt + '&UpdateBy=' + sessionStorage.getItem("strDriverId") + '&CollectBy=' + sessionStorage.getItem("strVehicleNo");
-                            ApiService.GetParam(strUri, true).then(function success(result) {});
+                            ApiService.Get(strUri, true).then(function success(result) {});
                             $scope.returnList();
                         });
                     }
@@ -901,10 +896,10 @@ app.controller('JoblistingConfirmCtrl', ['ENV', '$scope', '$state', '$stateParam
                                     var Csbk1_acc = results.rows.item(0);
                                     $scope.Detail.ScanDate = Csbk1_acc.ScanDate;
                                     strUri = '/api/tms/csbk1/update?BookingNo=' + $scope.Detail.BookingNo + '&Amount=' + $scope.Detail.Amount + '&ActualCollectionDate=' + $scope.Detail.ScanDate;
-                                    ApiService.GetParam(strUri, true).then(function success(result) {
+                                    ApiService.Get(strUri, true).then(function success(result) {
                                         for (var intI = 0; intI < $scope.Detail.Csbk2ReusltLength; intI++) {
                                             strUri = '/api/tms/csbk2/update?CollectedPcs=' + $scope.Detail.csbk2s[intI].CollectedPcs + '&AddQty=' + $scope.Detail.csbk2s[intI].AddQty + '&TrxNo=' + $scope.Detail.csbk2s[intI].TrxNo + '&LineItemNo=' + $scope.Detail.csbk2s[intI].LineItemNo;
-                                            ApiService.GetParam(strUri, false).then(function success(result) {});
+                                            ApiService.Get(strUri, false).then(function success(result) {});
                                         }
                                     });
                                 } else {}
@@ -912,17 +907,17 @@ app.controller('JoblistingConfirmCtrl', ['ENV', '$scope', '$state', '$stateParam
                             function (error) {}
                         );
                 } else {
-                    dbTms.transaction(function (tx) {
-                        dbSql = "select * from Csbk1_Accept where BookingNo='" + $scope.Detail.BookingNo + "'";
-                        tx.executeSql(dbSql, [], function (tx, results) {
+                    db_websql.transaction(function (tx) {
+                        db_strSql = "select * from Csbk1_Accept where BookingNo='" + $scope.Detail.BookingNo + "'";
+                        tx.executeSql(db_strSql, [], function (tx, results) {
                             if (results.rows.length > 0) {
                                 var Csbk1_acc = results.rows.item(0);
                                 $scope.Detail.ScanDate = Csbk1_acc.ScanDate;
                                 strUri = '/api/tms/csbk1/update?BookingNo=' + $scope.Detail.BookingNo + '&Amount=' + $scope.Detail.Amount + '&ActualCollectionDate=' + $scope.Detail.ScanDate;
-                                ApiService.GetParam(strUri, true).then(function success(result) {
+                                ApiService.Get(strUri, true).then(function success(result) {
                                     for (var intI = 0; intI < $scope.Detail.Csbk2ReusltLength; intI++) {
                                         strUri = '/api/tms/csbk2/update?CollectedPcs=' + $scope.Detail.csbk2s[intI].CollectedPcs + '&AddQty=' + $scope.Detail.csbk2s[intI].AddQty + '&TrxNo=' + $scope.Detail.csbk2s[intI].TrxNo + '&LineItemNo=' + $scope.Detail.csbk2s[intI].LineItemNo;
-                                        ApiService.GetParam(strUri, false).then(function success(result) {});
+                                        ApiService.Get(strUri, false).then(function success(result) {});
                                     }
                                 });
 
