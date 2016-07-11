@@ -318,6 +318,7 @@ appServices.service( 'SqlService', [ '$q', 'ENV', '$timeout', '$ionicLoading', '
                         }
                     }
                 }
+
                 strSql = strSql + '(' + fileds + ') values(' + values + ')';
                 if ( ENV.fromWeb ) {
                     if ( db_websql ) {
