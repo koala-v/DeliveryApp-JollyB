@@ -146,6 +146,7 @@ appServices.service( 'SqlService', [ '$q', 'ENV', '$timeout', '$ionicLoading', '
                     console.error( error );
                 }
             }
+            return deferred.promise;
         }
         this.Reset = function () {
             var cur = this;
@@ -416,36 +417,34 @@ appServices.service( 'SqlService', [ '$q', 'ENV', '$timeout', '$ionicLoading', '
         };
         this.Exec = function ( strSql ) {
             var deferred = $q.defer();
-            if ( ENV.fromWeb ) {
-                if ( db_websql ) {
-                    db_websql.transaction( function ( tx ) {
-                        tx.executeSql( strSql, [], function ( tx, results ) {
-                              deferred.resolve( results );
-                        }, function ( tx, error ) {
+            if ( ENV.fromWeb && db_websql ) {
+                db_websql.transaction( function ( tx ) {
+                    tx.executeSql( strSql, [], function ( tx, results ) {
+                          deferred.resolve( results );
+                    }, function ( tx, error ) {
+                        deferred.reject( error );
+                        console.error( error );
+                        $cordovaToast.showShortBottom( error.message );
+                    } );
+                } );
+            } else {
+                $cordovaSQLite.execute( db_sqlite, strSql )
+                .then( function ( results ) {
+                            if ( results.rows.length > 0 ) {
+                                deferred.resolve( results );
+                            } else {
+                                deferred.reject( results );
+                                $cordovaToast.showShortBottom( result.meta.message + '\r\n' + result.meta.errors.message );
+                            }
+                        },
+                        function ( error ) {
                             deferred.reject( error );
                             console.error( error );
-                            $cordovaToast.showShortBottom( error.message );
-                        } );
-                    } );
-                } else {
-                    $cordovaSQLite.execute( db_sqlite, strSql )
-                    .then( function ( results ) {
-                                if ( results.rows.length > 0 ) {
-                                    deferred.resolve( results );
-                                } else {
-                                    deferred.reject( results );
-                                    $cordovaToast.showShortBottom( result.meta.message + '\r\n' + result.meta.errors.message );
-                                }
-                            },
-                            function ( error ) {
-                                deferred.reject( error );
-                                console.error( error );
-                                $cordovaToast.showShortBottom( error );
-                            }
-                        );
-                }
-                return deferred.promise;
-            };
+                            $cordovaToast.showShortBottom( error );
+                        }
+                    );
+            }
+            return deferred.promise;
         };
     }
 ] );
