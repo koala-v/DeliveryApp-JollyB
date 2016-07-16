@@ -28,7 +28,7 @@ namespace WebApi.ServiceModel.TMS
         public int LineItemNo { get; set; }
         public string CollectedPcs { get; set; }
         public List<Csbk1> csbk1s { get; set; }
-        public string   ActualDeliveryDate { get; set; }
+        public string ActualDeliveryDate { get; set; }
         public string ActualCollectionDate { get; set; }
         public string AddQty { get; set; }
 
@@ -44,11 +44,11 @@ namespace WebApi.ServiceModel.TMS
             {
                 using (var db = DbConnectionFactory.OpenDbConnection("TMS"))
                 {
-                    int count = 5;
+                    int count = 15;
                     if (!string.IsNullOrEmpty(request.RecordCount))
                     {
                         count = int.Parse(request.RecordCount);
-                     
+
                     }
                     string strWhere = "";
                     if (!string.IsNullOrEmpty(request.BookingNo))
@@ -61,7 +61,7 @@ namespace WebApi.ServiceModel.TMS
                         //  " join rcbp1 on Csbk1.BookingCustomerCode = rcbp1.BusinessPartyCode " + strWhere +
                         //  " group  by Csbk1.jobno,rcbp1.BusinessPartyCode,Csbk1.BookingNo,Csbk1.StatusCode,Rcbp1.PostalCode,Rcbp1.BusinessPartyName,Rcbp1.Address1,Rcbp1.Address2,Rcbp1.Address3,Rcbp1.Address4,Csbk1.BookingCustomerCode,Csbk1.CollectionTimeStart,Csbk1.CollectionTimeEnd,Csbk1.CompletedFlag,Csbk1.TrxNo";
 
-                        strWhere = "Where BookingNo like'%" +request.BookingNo + "' and isnull(Csbk1.CompletedFlag,'')<>'Y'";
+                        strWhere = "Where BookingNo like'%" + request.BookingNo + "' and isnull(Csbk1.CompletedFlag,'')<>'Y'";
                         var strSQL = "select Csbk1.TrxNo," +
           "isnull((Select top 1 TimeFrom From Todr2 Where District like '%' + Rcbp1.DistrictCode + '%' and  day in ( case when DatePart(W, GETDATE()) = 1 then 'SUN'" +
            " when DatePart(W, GETDATE()) = 2 then 'MON'" +
@@ -101,13 +101,26 @@ namespace WebApi.ServiceModel.TMS
                        "  join rcbp1 on Csbk1.BookingCustomerCode = rcbp1.BusinessPartyCode    " + strWhere + "and Csbk1.TrxNo = C2.TrxNo AND C2.n >0 " +
                        "  group  by Csbk1.jobno,rcbp1.BusinessPartyCode,Csbk1.BookingNo,Csbk1.StatusCode,Rcbp1.PostalCode,Rcbp1.BusinessPartyName,Rcbp1.Address1,Rcbp1.Address2,Rcbp1.Address3,Rcbp1.Address4,Csbk1.BookingCustomerCode,Csbk1.CollectionTimeStart,Csbk1.CollectionTimeEnd,Csbk1.CompletedFlag,Csbk1.TrxNo ,Rcbp1.DistrictCode,rcbp1.FirstName,rcbp1.LastName";
                         Result = db.Select<Csbk1>(strSQL);
-//                        //=======
-//                        " FROM csbk1 t1," +
-//                                        "(SELECT TOP " + (count + 20) + "row_number() OVER(ORDER BY bookingNo ASC) n, bookingNo FROM csbk1  " + strWhere + " ) t2 " +
-//                                        "WHERE t1.bookingNo = t2.bookingNo AND StatusCode<> 'DEL' AND t2.n >" + count +
-//                                        "ORDER BY t2.n ASC";
-////===============
+                        //                        //=======
+                        //                        " FROM csbk1 t1," +
+                        //                                        "(SELECT TOP " + (count + 20) + "row_number() OVER(ORDER BY bookingNo ASC) n, bookingNo FROM csbk1  " + strWhere + " ) t2 " +
+                        //                                        "WHERE t1.bookingNo = t2.bookingNo AND StatusCode<> 'DEL' AND t2.n >" + count +
+                        //                                        "ORDER BY t2.n ASC";
+                        ////===============
 
+                        //if (Result.Count >0)
+                        //{
+                        
+                        //}
+                        //else {
+                        //    strWhere = "Where BookingNo like'%" + request.BookingNo + "' ";
+                        //    var  varCompletedFlag  = "SELECT CompletedFlag from csbk1" +strWhere;
+                        //  string strCompletedFlag = db.Scalar<string>(varCompletedFlag);
+                        //    if (strCompletedFlag =="Y")
+                        //    {
+                              
+                        //    }
+                        //}
 
                     }
 
@@ -168,7 +181,7 @@ namespace WebApi.ServiceModel.TMS
                         Result.csbk1 = db.Select<Csbk1>(strSQL)[0];
                         strSQL = " select Csbk2.TrxNo,Csbk2.LineItemNo,Csbk2.Pcs,Csbk2.UnitRate,Csbk2.CollectedPcs ,isnull(rcbx1.Description,'') as BoxCode,Csbk2.AddQty   from Csbk2 left join Csbk1 on Csbk2.trxno = Csbk1.trxno left join rcbx1 on csbk2.BoxCode=rcbx1.BoxCode  where BookingNo='" + request.BookingNo + "'";
                         Result.csbk2s = db.Select<Csbk2>(strSQL);
-                       
+
                     }
                 }
             }
@@ -185,12 +198,13 @@ namespace WebApi.ServiceModel.TMS
                 using (var db = DbConnectionFactory.OpenDbConnection())
                 {
                     Result = db.Update<Csbk2>(
-                        new {
+                        new
+                        {
                             CollectedPcs = int.Parse(request.CollectedPcs),
-                            AddQty= int.Parse(request.AddQty)
+                            AddQty = int.Parse(request.AddQty)
 
                         },
-               	p => p.TrxNo == request.TrxNo && p.LineItemNo == request.LineItemNo
+                   p => p.TrxNo == request.TrxNo && p.LineItemNo == request.LineItemNo
 
 
                         );
@@ -242,9 +256,9 @@ namespace WebApi.ServiceModel.TMS
                                     new
                                     {
                                         // CompletedFlag = request.CompletedFlag,
-                                        ActualDeliveryDate= request.ActualDeliveryDate,
-                                        ActualCollectionDate=request.ActualCollectionDate,
-                                        CollectedAmt =Convert.ToDecimal( request.Amount)
+                                        ActualDeliveryDate = request.ActualDeliveryDate,
+                                        ActualCollectionDate = request.ActualCollectionDate,
+                                        CollectedAmt = Convert.ToDecimal(request.Amount)
 
                                     },
                                     p => p.BookingNo == request.BookingNo

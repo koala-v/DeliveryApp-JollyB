@@ -59,16 +59,9 @@ app.run( [ 'ENV', '$ionicPlatform', '$rootScope', '$state', '$location', '$timeo
           // tx.executeSql(strSql4, [], null, dbError);
           // });
           // }
-              // SqlService.Create('Csbk1', TABLE_DB.Csbk1).then(function(res){
-              // });
-              // SqlService.Create('Csbk2', TABLE_DB.Csbk2).then(function(res){
-              // });
-              // SqlService.Create('Users', TABLE_DB.Users).then(function(res){
-              // });
-              // SqlService.Create('CsbkDetail', TABLE_DB.CsbkDetail).then(function(res){
-              // });
+              //
 
-
+ if ( ENV.fromWeb ) {
               SqlService.Drop('Csbk1').then(function(res){
                     SqlService.Create('Csbk1', TABLE_DB.Csbk1).then(function(res){
                     });
@@ -85,8 +78,16 @@ app.run( [ 'ENV', '$ionicPlatform', '$rootScope', '$state', '$location', '$timeo
                     SqlService.Create('CsbkDetail', TABLE_DB.CsbkDetail).then(function(res){
                     });
                 });
-
-
+}else{
+  SqlService.Create('Csbk1', TABLE_DB.Csbk1).then(function(res){
+ });
+ SqlService.Create('Csbk2', TABLE_DB.Csbk2).then(function(res){
+ });
+ SqlService.Create('Users', TABLE_DB.Users).then(function(res){
+ });
+ SqlService.Create('CsbkDetail', TABLE_DB.CsbkDetail).then(function(res){
+ });
+}
                 //$cordovaSQLite.execute( db, 'CREATE TABLE IF NOT EXISTS Users (id INTEGER PRIMARY KEY AUTOINCREMENT, uid TEXT)' );
                 //$cordovaSQLite.execute( db, 'CREATE TABLE IF NOT EXISTS Csbk1(TrxNo INTEGER,BookingNo TEXT, JobNo TEXT, StatusCode TEXT,BookingCustomerCode TEXT,Pcs INTEGER,CollectionTimeStart TEXT,CollectionTimeEnd TEXT,PostalCode TEXT,BusinessPartyCode TEXT,BusinessPartyName TEXT,Address1 TEXT,Address2 TEXT,Address3 TEXT,Address4 TEXT,CompletedFlag TEXT,TimeFrom TEXT,TimeTo TEXT,ColTimeFrom TEXT,ColTimeTo TEXT,CompletedDate TEXT,DriverId TEXT,CollectedAmt INTEGER,ScanDate TEXT,DriverCode TEXT)' );
                 //$cordovaSQLite.execute( db, 'CREATE TABLE IF NOT EXISTS Csbk2 (TrxNo INTEGER,LineItemNo INTEGER, BoxCode TEXT,Pcs INTEGER,UnitRate TEXT,CollectedPcs INTEGER,AddQty INTEGER)' );
