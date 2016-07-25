@@ -641,6 +641,8 @@ app.controller('JoblistingConfirmCtrl', ['ENV', '$scope', '$state', '$stateParam
                     CompletedDate: moment(new Date()).format('YYYYMMDD'),
                     DriverId: sessionStorage.getItem("strDriverId"),
                     CollectedAmt: $scope.Detail.Amount,
+                    CashAmt:$scope.Detail.CashAmt,
+                    Csbk2CollectedPcs:$scope.Detail.Packages,
                     Base64: signature
                 };
                 var CsbkDetail = {
@@ -648,7 +650,7 @@ app.controller('JoblistingConfirmCtrl', ['ENV', '$scope', '$state', '$stateParam
                 };
                 SqlService.Update('Csbk1', Csbk1, Csbk1Filter).then(function (res) {});
                 SqlService.Update('CsbkDetail', CsbkDetail, Csbk1Filter).then(function (res) {});
-                if (!ENV.wifi) {
+                if (ENV.wifi) {
                     if ($scope.Detail.CompletedFlag !== 'Y') {
                         var objUri = ApiService.Uri(true, '/api/tms/csbk1/confirm');
                         objUri.addSearch('BookingNo', $scope.Detail.BookingNo);
