@@ -64,6 +64,24 @@ app.controller('dailycompletedCtrl', ['ENV', '$scope', '$state', '$ionicPopup', 
         };
         ShowUsersVehicleNo();
         $scope.WifiConfirm = function () {
+          // ========== dlv
+          SqlService.Select('Csbk1', '*', "StatusCode='DLV'").then(
+              function (results) {
+                  if (results.rows.length > 0) {
+                    for(var i=0;i<results.rows.length;i++){
+                      var Csbk1_acc = results.rows.item(i);
+                      var objUri = ApiService.Uri(true, '/api/tms/csbk1/update');
+                      objUri.addSearch('BookingNo', Csbk1_acc.BookingNo);
+                      objUri.addSearch('Amount', Csbk1_acc.CollectedAmt);
+                      objUri.addSearch('ActualDeliveryDate', Csbk1_acc.ScanDate);
+                      ApiService.Get(objUri, false).then(function success(result) {
+                      });
+                    }
+                  } else {}
+              },
+              function (error) {}
+          );
+      // ============= col
                      SqlService.Select('TemCsbk1', '*').then(
                          function (results) {
                              if (results.rows.length > 0) {
