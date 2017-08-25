@@ -8,6 +8,7 @@ app.controller('JoblistingListCtrl', ['ENV', '$scope', '$state', '$ionicLoading'
                 reload: true
             });
         };
+        
         var getBookingNo = function () {
             $ionicPlatform.ready(function () {
                 var strSqlFilter = "DriverCode='" + sessionStorage.getItem("strDriverId") + "'";
